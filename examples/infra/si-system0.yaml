@@ -1,0 +1,20 @@
+apiVersion: srl.nddp.yndd.io/v1alpha1
+kind: SrlInterfaceSubinterface
+metadata:
+  name: subint-system0
+  namespace: default
+spec:
+  active: true
+  networkNodeRef:
+    name: leaf1
+  interface-name: system0
+  subinterface:
+    index: 0
+    admin-state: enable
+    description: "ndd-system0-leaf1"
+    ipv4:
+      - address:
+        - ip-prefix: 100.112.100.0/32
+    ipv6:
+      - address:
+        - ip-prefix: 3100:100::/128

@@ -1,0 +1,792 @@
+
+---
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  annotations:
+    controller-gen.kubebuilder.io/version: v0.4.1
+  creationTimestamp: null
+  name: srlnetworkinstanceprotocolsises.srl.nddp.yndd.io
+spec:
+  group: srl.nddp.yndd.io
+  names:
+    categories:
+    - ndd
+    - srl2
+    kind: SrlNetworkinstanceProtocolsIsis
+    listKind: SrlNetworkinstanceProtocolsIsisList
+    plural: srlnetworkinstanceprotocolsises
+    singular: srlnetworkinstanceprotocolsisis
+  scope: Cluster
+  versions:
+  - additionalPrinterColumns:
+    - jsonPath: .status.conditions[?(@.kind=='TargetFound')].status
+      name: TARGET
+      type: string
+    - jsonPath: .status.conditions[?(@.kind=='Ready')].status
+      name: STATUS
+      type: string
+    - jsonPath: .status.conditions[?(@.kind=='Synced')].status
+      name: SYNC
+      type: string
+    - jsonPath: .status.conditions[?(@.kind=='LeafrefValidationSuccess')].status
+      name: LEAFREF
+      type: string
+    - jsonPath: .status.conditions[?(@.kind=='ParentValidationSuccess')].status
+      name: PARENTDEP
+      type: string
+    - jsonPath: .metadata.creationTimestamp
+      name: AGE
+      type: date
+    name: v1alpha1
+    schema:
+      openAPIV3Schema:
+        description: SrlNetworkinstanceProtocolsIsis is the Schema for the NetworkinstanceProtocolsIsis
+          API
+        properties:
+          apiVersion:
+            description: 'APIVersion defines the versioned schema of this representation
+              of an object. Servers should convert recognized schemas to the latest
+              internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources'
+            type: string
+          kind:
+            description: 'Kind is a string value representing the REST resource this
+              object represents. Servers may infer this from the endpoint the client
+              submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
+            type: string
+          metadata:
+            type: object
+          spec:
+            description: A NetworkinstanceProtocolsIsisSpec defines the desired state
+              of a NetworkinstanceProtocolsIsis.
+            properties:
+              active:
+                default: true
+                description: Active specifies if the managed resource is active or
+                  not
+                type: boolean
+              deletionPolicy:
+                default: Delete
+                description: DeletionPolicy specifies what will happen to the underlying
+                  external when this managed resource is deleted - either "Delete"
+                  or "Orphan" the external resource.
+                enum:
+                - Orphan
+                - Delete
+                type: string
+              isis:
+                description: NetworkinstanceProtocolsIsis struct
+                properties:
+                  dynamic-label-block:
+                    type: string
+                  instance:
+                    items:
+                      description: NetworkinstanceProtocolsIsisInstance struct
+                      properties:
+                        admin-state:
+                          default: disable
+                          description: "import ( \t\"reflect\" \n \tmetav1 \"k8s.io/apimachinery/pkg/apis/meta/v1\"
+                            \tnddv1 \"github.com/yndd/ndd-runtime/apis/common/v1\"
+                            \t\"k8s.io/apimachinery/pkg/runtime/schema\" ) \n Isis"
+                          enum:
+                          - disable
+                          - enable
+                          type: string
+                        attached-bit:
+                          description: Adminstate *string `json:"admin-state,omitempty"`
+                          properties:
+                            ignore:
+                              default: false
+                              type: boolean
+                            suppress:
+                              default: false
+                              type: boolean
+                          type: object
+                        authentication:
+                          description: NetworkinstanceProtocolsIsisInstanceAuthentication
+                            struct
+                          properties:
+                            csnp-authentication:
+                              type: boolean
+                            hello-authentication:
+                              type: boolean
+                            keychain:
+                              type: string
+                            psnp-authentication:
+                              type: boolean
+                          type: object
+                        auto-cost:
+                          description: NetworkinstanceProtocolsIsisInstanceAutocost
+                            struct
+                          properties:
+                            reference-bandwidth:
+                              description: kubebuilder:validation:Minimum=1 kubebuilder:validation:Maximum=8000000000
+                              format: int64
+                              type: integer
+                          type: object
+                        export-policy:
+                          type: string
+                        graceful-restart:
+                          description: NetworkinstanceProtocolsIsisInstanceGracefulrestart
+                            struct
+                          properties:
+                            helper-mode:
+                              default: false
+                              type: boolean
+                          type: object
+                        inter-level-propagation-policies:
+                          description: NetworkinstanceProtocolsIsisInstanceInterlevelpropagationpolicies
+                            struct
+                          properties:
+                            level1-to-level2:
+                              description: NetworkinstanceProtocolsIsisInstanceInterlevelpropagationpoliciesLevel1tolevel2
+                                struct
+                              properties:
+                                summary-address:
+                                  items:
+                                    description: NetworkinstanceProtocolsIsisInstanceInterlevelpropagationpoliciesLevel1tolevel2Summaryaddress
+                                      struct
+                                    properties:
+                                      ip-prefix:
+                                        pattern: (([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])/(([0-9])|([1-2][0-9])|(3[0-2]))|((:|[0-9a-fA-F]{0,4}):)([0-9a-fA-F]{0,4}:){0,5}((([0-9a-fA-F]{0,4}:)?(:|[0-9a-fA-F]{0,4}))|(((25[0-5]|2[0-4][0-9]|[01]?[0-9]?[0-9])\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9]?[0-9])))(/(([0-9])|([0-9]{2})|(1[0-1][0-9])|(12[0-8])))
+                                        type: string
+                                      route-tag:
+                                        description: kubebuilder:validation:Minimum=1
+                                          kubebuilder:validation:Maximum=4294967295
+                                        format: int32
+                                        type: integer
+                                    type: object
+                                  maxItems: 1024
+                                  minItems: 0
+                                  type: array
+                              type: object
+                          type: object
+                        interface:
+                          items:
+                            description: NetworkinstanceProtocolsIsisInstanceInterface
+                              struct
+                            properties:
+                              admin-state:
+                                default: enable
+                                description: Isis
+                                enum:
+                                - disable
+                                - enable
+                                type: string
+                              authentication:
+                                description: Adminstate *string `json:"admin-state,omitempty"`
+                                properties:
+                                  hello-authentication:
+                                    type: boolean
+                                  keychain:
+                                    type: string
+                                type: object
+                              circuit-type:
+                                description: Isis
+                                enum:
+                                - broadcast
+                                - point-to-point
+                                type: string
+                              hello-padding:
+                                default: disable
+                                description: Circuittype *string `json:"circuit-type,omitempty"`
+                                enum:
+                                - adaptive
+                                - disable
+                                - loose
+                                - strict
+                                type: string
+                              interface-name:
+                                description: Hellopadding *string `json:"hello-padding,omitempty"`
+                                type: string
+                              ipv4-unicast:
+                                description: NetworkinstanceProtocolsIsisInstanceInterfaceIpv4unicast
+                                  struct
+                                properties:
+                                  admin-state:
+                                    default: enable
+                                    description: Isis
+                                    enum:
+                                    - disable
+                                    - enable
+                                    type: string
+                                  enable-bfd:
+                                    default: false
+                                    description: Adminstate *string `json:"admin-state,omitempty"`
+                                    type: boolean
+                                  include-bfd-tlv:
+                                    default: false
+                                    type: boolean
+                                type: object
+                              ipv6-unicast:
+                                description: NetworkinstanceProtocolsIsisInstanceInterfaceIpv6unicast
+                                  struct
+                                properties:
+                                  admin-state:
+                                    default: enable
+                                    description: Isis
+                                    enum:
+                                    - disable
+                                    - enable
+                                    type: string
+                                  enable-bfd:
+                                    default: false
+                                    description: Adminstate *string `json:"admin-state,omitempty"`
+                                    type: boolean
+                                  include-bfd-tlv:
+                                    default: false
+                                    type: boolean
+                                type: object
+                              ldp-synchronization:
+                                description: NetworkinstanceProtocolsIsisInstanceInterfaceLdpsynchronization
+                                  struct
+                                properties:
+                                  disable:
+                                    type: string
+                                  end-of-lib:
+                                    type: boolean
+                                  hold-down-timer:
+                                    description: kubebuilder:validation:Minimum=1
+                                      kubebuilder:validation:Maximum=1800
+                                    type: integer
+                                type: object
+                              level:
+                                items:
+                                  description: NetworkinstanceProtocolsIsisInstanceInterfaceLevel
+                                    struct
+                                  properties:
+                                    authentication:
+                                      description: NetworkinstanceProtocolsIsisInstanceInterfaceLevelAuthentication
+                                        struct
+                                      properties:
+                                        keychain:
+                                          type: string
+                                      type: object
+                                    disable:
+                                      default: false
+                                      type: boolean
+                                    ipv6-unicast-metric:
+                                      description: kubebuilder:validation:Minimum=1
+                                        kubebuilder:validation:Maximum=16777215
+                                      format: int32
+                                      type: integer
+                                    level-number:
+                                      description: kubebuilder:validation:Minimum=1
+                                        kubebuilder:validation:Maximum=2
+                                      type: integer
+                                    metric:
+                                      description: kubebuilder:validation:Minimum=1
+                                        kubebuilder:validation:Maximum=16777215
+                                      format: int32
+                                      type: integer
+                                    priority:
+                                      default: 64
+                                      description: kubebuilder:validation:Minimum=0
+                                        kubebuilder:validation:Maximum=127
+                                      type: integer
+                                    timers:
+                                      description: NetworkinstanceProtocolsIsisInstanceInterfaceLevelTimers
+                                        struct
+                                      properties:
+                                        hello-interval:
+                                          default: 9
+                                          description: kubebuilder:validation:Minimum=1
+                                            kubebuilder:validation:Maximum=20000
+                                          format: int32
+                                          type: integer
+                                        hello-multiplier:
+                                          default: 3
+                                          description: kubebuilder:validation:Minimum=2
+                                            kubebuilder:validation:Maximum=100
+                                          type: integer
+                                      type: object
+                                  required:
+                                  - level-number
+                                  type: object
+                                maxItems: 2
+                                minItems: 0
+                                type: array
+                              passive:
+                                default: false
+                                type: boolean
+                              segment-routing:
+                                description: NetworkinstanceProtocolsIsisInstanceInterfaceSegmentrouting
+                                  struct
+                                properties:
+                                  mpls:
+                                    description: NetworkinstanceProtocolsIsisInstanceInterfaceSegmentroutingMpls
+                                      struct
+                                    properties:
+                                      ipv4-node-sid:
+                                        description: NetworkinstanceProtocolsIsisInstanceInterfaceSegmentroutingMplsIpv4nodesid
+                                          struct
+                                        properties:
+                                          index:
+                                            description: kubebuilder:validation:Minimum=0
+                                              kubebuilder:validation:Maximum=1048575
+                                            format: int32
+                                            type: integer
+                                        required:
+                                        - index
+                                        type: object
+                                      static-adjacency-sid:
+                                        description: NetworkinstanceProtocolsIsisInstanceInterfaceSegmentroutingMplsStaticadjacencysid
+                                          struct
+                                        properties:
+                                          label-value:
+                                            description: kubebuilder:validation:Minimum=0
+                                              kubebuilder:validation:Maximum=1048575
+                                            format: int32
+                                            type: integer
+                                        type: object
+                                    type: object
+                                type: object
+                              timers:
+                                description: NetworkinstanceProtocolsIsisInstanceInterfaceTimers
+                                  struct
+                                properties:
+                                  csnp-interval:
+                                    default: 10
+                                    description: kubebuilder:validation:Minimum=1
+                                      kubebuilder:validation:Maximum=65535
+                                    type: integer
+                                  lsp-pacing-interval:
+                                    default: 100
+                                    description: kubebuilder:validation:Minimum=0
+                                      kubebuilder:validation:Maximum=100000
+                                    format: int64
+                                    type: integer
+                                type: object
+                              trace-options:
+                                description: NetworkinstanceProtocolsIsisInstanceInterfaceTraceoptions
+                                  struct
+                                properties:
+                                  trace:
+                                    description: NetworkinstanceProtocolsIsisInstanceInterfaceTraceoptionsTrace
+                                      struct
+                                    properties:
+                                      trace:
+                                        description: Isis
+                                        enum:
+                                        - adjacencies
+                                        - packets-all
+                                        - packets-l1-csnp
+                                        - packets-l1-hello
+                                        - packets-l1-lsp
+                                        - packets-l1-psnp
+                                        - packets-l2-csnp
+                                        - packets-l2-hello
+                                        - packets-l2-lsp
+                                        - packets-l2-psnp
+                                        - packets-p2p-hello
+                                        type: string
+                                    type: object
+                                type: object
+                            required:
+                            - interface-name
+                            type: object
+                          maxItems: 1024
+                          minItems: 0
+                          type: array
+                        ipv4-unicast:
+                          description: NetworkinstanceProtocolsIsisInstanceIpv4unicast
+                            struct
+                          properties:
+                            admin-state:
+                              default: enable
+                              description: Isis
+                              enum:
+                              - disable
+                              - enable
+                              type: string
+                          type: object
+                        ipv6-unicast:
+                          description: NetworkinstanceProtocolsIsisInstanceIpv6unicast
+                            struct
+                          properties:
+                            admin-state:
+                              default: enable
+                              description: Isis
+                              enum:
+                              - disable
+                              - enable
+                              type: string
+                            multi-topology:
+                              default: false
+                              description: Adminstate *string `json:"admin-state,omitempty"`
+                              type: boolean
+                          type: object
+                        ldp-synchronization:
+                          description: NetworkinstanceProtocolsIsisInstanceLdpsynchronization
+                            struct
+                          properties:
+                            end-of-lib:
+                              default: false
+                              type: boolean
+                            hold-down-timer:
+                              default: 60
+                              description: kubebuilder:validation:Minimum=1 kubebuilder:validation:Maximum=1800
+                              type: integer
+                          type: object
+                        level:
+                          items:
+                            description: NetworkinstanceProtocolsIsisInstanceLevel
+                              struct
+                            properties:
+                              authentication:
+                                description: NetworkinstanceProtocolsIsisInstanceLevelAuthentication
+                                  struct
+                                properties:
+                                  csnp-authentication:
+                                    type: boolean
+                                  hello-authentication:
+                                    type: boolean
+                                  keychain:
+                                    type: string
+                                  psnp-authentication:
+                                    type: boolean
+                                type: object
+                              bgp-ls-exclude:
+                                default: false
+                                type: boolean
+                              level-number:
+                                description: kubebuilder:validation:Minimum=1 kubebuilder:validation:Maximum=2
+                                type: integer
+                              metric-style:
+                                default: wide
+                                description: Isis
+                                enum:
+                                - narrow
+                                - wide
+                                type: string
+                              route-preference:
+                                description: Metricstyle *string `json:"metric-style,omitempty"`
+                                properties:
+                                  external:
+                                    description: kubebuilder:validation:Minimum=1
+                                      kubebuilder:validation:Maximum=255
+                                    type: integer
+                                  internal:
+                                    description: kubebuilder:validation:Minimum=1
+                                      kubebuilder:validation:Maximum=255
+                                    type: integer
+                                type: object
+                              trace-options:
+                                description: NetworkinstanceProtocolsIsisInstanceLevelTraceoptions
+                                  struct
+                                properties:
+                                  trace:
+                                    description: NetworkinstanceProtocolsIsisInstanceLevelTraceoptionsTrace
+                                      struct
+                                    properties:
+                                      trace:
+                                        description: Isis
+                                        enum:
+                                        - adjacencies
+                                        - lsdb
+                                        - routes
+                                        - spf
+                                        type: string
+                                    type: object
+                                type: object
+                            required:
+                            - level-number
+                            type: object
+                          maxItems: 2
+                          minItems: 0
+                          type: array
+                        level-capability:
+                          default: L2
+                          description: Isis
+                          enum:
+                          - L1
+                          - L1L2
+                          - L2
+                          type: string
+                        max-ecmp-paths:
+                          default: 1
+                          description: Levelcapability *string `json:"level-capability,omitempty"`
+                            kubebuilder:validation:Minimum=1 kubebuilder:validation:Maximum=64
+                          type: integer
+                        name:
+                          description: kubebuilder:validation:MinLength=1 kubebuilder:validation:MaxLength=255
+                          pattern: '[A-Za-z0-9 !@#$^&()|+=`~.,''/_:;?-]*'
+                          type: string
+                        net:
+                          description: NetworkinstanceProtocolsIsisInstanceNet struct
+                          properties:
+                            net:
+                              pattern: '[a-fA-F0-9]{2}(\.[a-fA-F0-9]{4}){3,9}\.[0]{2}'
+                              type: string
+                          type: object
+                        overload:
+                          description: NetworkinstanceProtocolsIsisInstanceOverload
+                            struct
+                          properties:
+                            advertise-external:
+                              default: false
+                              type: boolean
+                            advertise-interlevel:
+                              default: false
+                              type: boolean
+                            immediate:
+                              description: NetworkinstanceProtocolsIsisInstanceOverloadImmediate
+                                struct
+                              properties:
+                                max-metric:
+                                  default: false
+                                  type: boolean
+                                set-bit:
+                                  default: false
+                                  type: boolean
+                              type: object
+                            on-boot:
+                              description: NetworkinstanceProtocolsIsisInstanceOverloadOnboot
+                                struct
+                              properties:
+                                max-metric:
+                                  type: boolean
+                                set-bit:
+                                  type: boolean
+                                timeout:
+                                  description: kubebuilder:validation:Minimum=60 kubebuilder:validation:Maximum=1800
+                                  type: integer
+                              type: object
+                          type: object
+                        poi-tlv:
+                          default: false
+                          type: boolean
+                        segment-routing:
+                          description: NetworkinstanceProtocolsIsisInstanceSegmentrouting
+                            struct
+                          properties:
+                            mpls:
+                              description: NetworkinstanceProtocolsIsisInstanceSegmentroutingMpls
+                                struct
+                              properties:
+                                adjacency-sid-hold-time:
+                                  default: 15
+                                  type: integer
+                                static-label-block:
+                                  type: string
+                              type: object
+                          type: object
+                        te-database-install:
+                          description: NetworkinstanceProtocolsIsisInstanceTedatabaseinstall
+                            struct
+                          properties:
+                            bgp-ls:
+                              description: NetworkinstanceProtocolsIsisInstanceTedatabaseinstallBgpls
+                                struct
+                              properties:
+                                bgp-ls-identifier:
+                                  description: kubebuilder:validation:Minimum=0 kubebuilder:validation:Maximum=4294967295
+                                  format: int32
+                                  type: integer
+                                igp-identifier:
+                                  description: kubebuilder:validation:Minimum=0 kubebuilder:validation:Maximum=-1
+                                  format: int64
+                                  type: integer
+                              type: object
+                          type: object
+                        timers:
+                          description: NetworkinstanceProtocolsIsisInstanceTimers
+                            struct
+                          properties:
+                            lsp-generation:
+                              description: NetworkinstanceProtocolsIsisInstanceTimersLspgeneration
+                                struct
+                              properties:
+                                initial-wait:
+                                  default: 10
+                                  description: kubebuilder:validation:Minimum=10 kubebuilder:validation:Maximum=100000
+                                  format: int64
+                                  type: integer
+                                max-wait:
+                                  default: 5000
+                                  description: kubebuilder:validation:Minimum=10 kubebuilder:validation:Maximum=120000
+                                  format: int64
+                                  type: integer
+                                second-wait:
+                                  default: 1000
+                                  description: kubebuilder:validation:Minimum=10 kubebuilder:validation:Maximum=100000
+                                  format: int64
+                                  type: integer
+                              type: object
+                            lsp-lifetime:
+                              default: 1200
+                              description: kubebuilder:validation:Minimum=350 kubebuilder:validation:Maximum=65535
+                              type: integer
+                            lsp-refresh:
+                              description: NetworkinstanceProtocolsIsisInstanceTimersLsprefresh
+                                struct
+                              properties:
+                                half-lifetime:
+                                  default: true
+                                  type: boolean
+                                interval:
+                                  default: 600
+                                  description: kubebuilder:validation:Minimum=150
+                                    kubebuilder:validation:Maximum=65535
+                                  type: integer
+                              type: object
+                            spf:
+                              description: NetworkinstanceProtocolsIsisInstanceTimersSpf
+                                struct
+                              properties:
+                                initial-wait:
+                                  default: 1000
+                                  description: kubebuilder:validation:Minimum=10 kubebuilder:validation:Maximum=100000
+                                  format: int64
+                                  type: integer
+                                max-wait:
+                                  default: 10000
+                                  description: kubebuilder:validation:Minimum=10 kubebuilder:validation:Maximum=120000
+                                  format: int64
+                                  type: integer
+                                second-wait:
+                                  default: 1000
+                                  description: kubebuilder:validation:Minimum=10 kubebuilder:validation:Maximum=100000
+                                  format: int64
+                                  type: integer
+                              type: object
+                          type: object
+                        trace-options:
+                          description: NetworkinstanceProtocolsIsisInstanceTraceoptions
+                            struct
+                          properties:
+                            trace:
+                              description: NetworkinstanceProtocolsIsisInstanceTraceoptionsTrace
+                                struct
+                              properties:
+                                trace:
+                                  description: Isis
+                                  enum:
+                                  - adjacencies
+                                  - graceful-restart
+                                  - interfaces
+                                  - packets-all
+                                  - packets-l1-csnp
+                                  - packets-l1-hello
+                                  - packets-l1-lsp
+                                  - packets-l1-psnp
+                                  - packets-l2-csnp
+                                  - packets-l2-hello
+                                  - packets-l2-lsp
+                                  - packets-l2-psnp
+                                  - packets-p2p-hello
+                                  - routes
+                                  - summary-addresses
+                                  type: string
+                              type: object
+                          type: object
+                        traffic-engineering:
+                          description: NetworkinstanceProtocolsIsisInstanceTrafficengineering
+                            struct
+                          properties:
+                            advertisement:
+                              default: false
+                              type: boolean
+                            legacy-link-attribute-advertisement:
+                              default: true
+                              type: boolean
+                          type: object
+                        transport:
+                          description: NetworkinstanceProtocolsIsisInstanceTransport
+                            struct
+                          properties:
+                            lsp-mtu-size:
+                              default: 1492
+                              description: kubebuilder:validation:Minimum=490 kubebuilder:validation:Maximum=9490
+                              type: integer
+                          type: object
+                      required:
+                      - name
+                      type: object
+                    maxItems: 1
+                    minItems: 0
+                    type: array
+                type: object
+              network-instance-name:
+                type: string
+              networkNodeRef:
+                default:
+                  name: default
+                description: NetworkNodeReference specifies which network node will
+                  be used to create, observe, update, and delete this managed resource
+                properties:
+                  name:
+                    description: Name of the referenced object.
+                    type: string
+                required:
+                - name
+                type: object
+            required:
+            - network-instance-name
+            type: object
+          status:
+            description: A NetworkinstanceProtocolsIsisStatus represents the observed
+              state of a NetworkinstanceProtocolsIsis.
+            properties:
+              conditions:
+                description: Conditions of the resource.
+                items:
+                  description: A Condition that may apply to a resource
+                  properties:
+                    kind:
+                      description: Type of this condition. At most one of each condition
+                        type may apply to a resource at any point in time.
+                      type: string
+                    lastTransitionTime:
+                      description: LastTransitionTime is the last time this condition
+                        transitioned from one status to another.
+                      format: date-time
+                      type: string
+                    message:
+                      description: A Message containing details about this condition's
+                        last transition from one status to another, if any.
+                      type: string
+                    reason:
+                      description: A Reason for this condition's last transition from
+                        one status to another.
+                      type: string
+                    status:
+                      description: Status of this condition; is it currently True,
+                        False, or Unknown?
+                      type: string
+                  required:
+                  - kind
+                  - lastTransitionTime
+                  - reason
+                  - status
+                  type: object
+                type: array
+              externalLeafRefs:
+                description: ExternalLeafRefs tracks the external resources this resource
+                  is dependent upon
+                items:
+                  type: string
+                type: array
+              resourceIndexes:
+                additionalProperties:
+                  type: string
+                description: ResourceIndexes tracks the indexes that or used by the
+                  resource
+                type: object
+              target:
+                description: Target used by the resource
+                items:
+                  type: string
+                type: array
+            type: object
+        type: object
+    served: true
+    storage: true
+    subresources:
+      status: {}
+status:
+  acceptedNames:
+    kind: ""
+    plural: ""
+  conditions: []
+  storedVersions: []

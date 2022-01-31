@@ -1,0 +1,13 @@
+apiVersion: srl.nddp.yndd.io/v1alpha1
+kind: SrlInterface
+metadata:
+  name: int-irb0
+  namespace: default
+spec:
+  active: true
+  networkNodeRef:
+    name: leaf1
+  interface:
+    name: irb0
+    admin-state: enable
+    description: ndd-irb0

@@ -1,0 +1,253 @@
+
+---
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  annotations:
+    controller-gen.kubebuilder.io/version: v0.4.1
+  creationTimestamp: null
+  name: srlnetworkinstanceprotocolsbgpevpns.srl.nddp.yndd.io
+spec:
+  group: srl.nddp.yndd.io
+  names:
+    categories:
+    - ndd
+    - srl2
+    kind: SrlNetworkinstanceProtocolsBgpevpn
+    listKind: SrlNetworkinstanceProtocolsBgpevpnList
+    plural: srlnetworkinstanceprotocolsbgpevpns
+    singular: srlnetworkinstanceprotocolsbgpevpn
+  scope: Cluster
+  versions:
+  - additionalPrinterColumns:
+    - jsonPath: .status.conditions[?(@.kind=='TargetFound')].status
+      name: TARGET
+      type: string
+    - jsonPath: .status.conditions[?(@.kind=='Ready')].status
+      name: STATUS
+      type: string
+    - jsonPath: .status.conditions[?(@.kind=='Synced')].status
+      name: SYNC
+      type: string
+    - jsonPath: .status.conditions[?(@.kind=='LeafrefValidationSuccess')].status
+      name: LEAFREF
+      type: string
+    - jsonPath: .status.conditions[?(@.kind=='ParentValidationSuccess')].status
+      name: PARENTDEP
+      type: string
+    - jsonPath: .metadata.creationTimestamp
+      name: AGE
+      type: date
+    name: v1alpha1
+    schema:
+      openAPIV3Schema:
+        description: SrlNetworkinstanceProtocolsBgpevpn is the Schema for the NetworkinstanceProtocolsBgpevpn
+          API
+        properties:
+          apiVersion:
+            description: 'APIVersion defines the versioned schema of this representation
+              of an object. Servers should convert recognized schemas to the latest
+              internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources'
+            type: string
+          kind:
+            description: 'Kind is a string value representing the REST resource this
+              object represents. Servers may infer this from the endpoint the client
+              submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
+            type: string
+          metadata:
+            type: object
+          spec:
+            description: A NetworkinstanceProtocolsBgpevpnSpec defines the desired
+              state of a NetworkinstanceProtocolsBgpevpn.
+            properties:
+              active:
+                default: true
+                description: Active specifies if the managed resource is active or
+                  not
+                type: boolean
+              bgp-evpn:
+                description: NetworkinstanceProtocolsBgpevpn struct
+                properties:
+                  bgp-instance:
+                    items:
+                      description: NetworkinstanceProtocolsBgpevpnBgpinstance struct
+                      properties:
+                        admin-state:
+                          default: enable
+                          description: "import ( \t\"reflect\" \n \tmetav1 \"k8s.io/apimachinery/pkg/apis/meta/v1\"
+                            \tnddv1 \"github.com/yndd/ndd-runtime/apis/common/v1\"
+                            \t\"k8s.io/apimachinery/pkg/runtime/schema\" ) \n Bgpevpn"
+                          enum:
+                          - disable
+                          - enable
+                          type: string
+                        default-admin-tag:
+                          default: 0
+                          description: Adminstate *string `json:"admin-state,omitempty"`
+                            kubebuilder:validation:Minimum=0 kubebuilder:validation:Maximum=4294967295
+                          format: int32
+                          type: integer
+                        ecmp:
+                          default: 1
+                          description: kubebuilder:validation:Minimum=1 kubebuilder:validation:Maximum=8
+                          type: integer
+                        encapsulation-type:
+                          default: vxlan
+                          description: Bgpevpn
+                          enum:
+                          - vxlan
+                          type: string
+                        evi:
+                          description: Encapsulationtype *string `json:"encapsulation-type,omitempty"`
+                            kubebuilder:validation:Minimum=1 kubebuilder:validation:Maximum=65535
+                          format: int32
+                          type: integer
+                        id:
+                          type: string
+                        routes:
+                          description: NetworkinstanceProtocolsBgpevpnBgpinstanceRoutes
+                            struct
+                          properties:
+                            bridge-table:
+                              description: NetworkinstanceProtocolsBgpevpnBgpinstanceRoutesBridgetable
+                                struct
+                              properties:
+                                inclusive-mcast:
+                                  description: NetworkinstanceProtocolsBgpevpnBgpinstanceRoutesBridgetableInclusivemcast
+                                    struct
+                                  properties:
+                                    advertise:
+                                      default: true
+                                      type: boolean
+                                    originating-ip:
+                                      pattern: (([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])|((:|[0-9a-fA-F]{0,4}):)([0-9a-fA-F]{0,4}:){0,5}((([0-9a-fA-F]{0,4}:)?(:|[0-9a-fA-F]{0,4}))|(((25[0-5]|2[0-4][0-9]|[01]?[0-9]?[0-9])\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9]?[0-9])))
+                                      type: string
+                                  type: object
+                                mac-ip:
+                                  description: NetworkinstanceProtocolsBgpevpnBgpinstanceRoutesBridgetableMacip
+                                    struct
+                                  properties:
+                                    advertise:
+                                      default: true
+                                      type: boolean
+                                  type: object
+                                next-hop:
+                                  default: use-system-ipv4-address
+                                  type: string
+                              type: object
+                            route-table:
+                              description: NetworkinstanceProtocolsBgpevpnBgpinstanceRoutesRoutetable
+                                struct
+                              properties:
+                                mac-ip:
+                                  description: NetworkinstanceProtocolsBgpevpnBgpinstanceRoutesRoutetableMacip
+                                    struct
+                                  properties:
+                                    advertise-gateway-mac:
+                                      default: false
+                                      type: boolean
+                                  type: object
+                              type: object
+                          type: object
+                        vxlan-interface:
+                          type: string
+                      required:
+                      - evi
+                      - id
+                      type: object
+                    maxItems: 1
+                    minItems: 0
+                    type: array
+                type: object
+              deletionPolicy:
+                default: Delete
+                description: DeletionPolicy specifies what will happen to the underlying
+                  external when this managed resource is deleted - either "Delete"
+                  or "Orphan" the external resource.
+                enum:
+                - Orphan
+                - Delete
+                type: string
+              network-instance-name:
+                type: string
+              networkNodeRef:
+                default:
+                  name: default
+                description: NetworkNodeReference specifies which network node will
+                  be used to create, observe, update, and delete this managed resource
+                properties:
+                  name:
+                    description: Name of the referenced object.
+                    type: string
+                required:
+                - name
+                type: object
+            required:
+            - network-instance-name
+            type: object
+          status:
+            description: A NetworkinstanceProtocolsBgpevpnStatus represents the observed
+              state of a NetworkinstanceProtocolsBgpevpn.
+            properties:
+              conditions:
+                description: Conditions of the resource.
+                items:
+                  description: A Condition that may apply to a resource
+                  properties:
+                    kind:
+                      description: Type of this condition. At most one of each condition
+                        type may apply to a resource at any point in time.
+                      type: string
+                    lastTransitionTime:
+                      description: LastTransitionTime is the last time this condition
+                        transitioned from one status to another.
+                      format: date-time
+                      type: string
+                    message:
+                      description: A Message containing details about this condition's
+                        last transition from one status to another, if any.
+                      type: string
+                    reason:
+                      description: A Reason for this condition's last transition from
+                        one status to another.
+                      type: string
+                    status:
+                      description: Status of this condition; is it currently True,
+                        False, or Unknown?
+                      type: string
+                  required:
+                  - kind
+                  - lastTransitionTime
+                  - reason
+                  - status
+                  type: object
+                type: array
+              externalLeafRefs:
+                description: ExternalLeafRefs tracks the external resources this resource
+                  is dependent upon
+                items:
+                  type: string
+                type: array
+              resourceIndexes:
+                additionalProperties:
+                  type: string
+                description: ResourceIndexes tracks the indexes that or used by the
+                  resource
+                type: object
+              target:
+                description: Target used by the resource
+                items:
+                  type: string
+                type: array
+            type: object
+        type: object
+    served: true
+    storage: true
+    subresources:
+      status: {}
+status:
+  acceptedNames:
+    kind: ""
+    plural: ""
+  conditions: []
+  storedVersions: []

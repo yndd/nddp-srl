@@ -1,0 +1,13 @@
+apiVersion: srl.nddp.yndd.io/v1alpha1
+kind: SrlInterface
+metadata:
+  name: int-system0
+  namespace: default
+spec:
+  active: true
+  networkNodeRef:
+    name: leaf1
+  interface:
+    name: system0
+    admin-state: enable
+    description: ndd-system0

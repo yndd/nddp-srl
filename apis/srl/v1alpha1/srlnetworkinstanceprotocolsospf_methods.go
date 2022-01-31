@@ -1,0 +1,134 @@
+/*
+Copyright 2022 NDD.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
+
+package v1alpha1
+
+/*
+import (
+	"reflect"
+
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	nddv1 "github.com/yndd/ndd-runtime/apis/common/v1"
+	"k8s.io/apimachinery/pkg/runtime/schema"
+)
+*/
+// Ospf
+type E_NetworkinstanceProtocolsOspfInstanceAdminstate string
+
+const (
+	E_NetworkinstanceProtocolsOspfInstanceAdminstate_Disable E_NetworkinstanceProtocolsOspfInstanceAdminstate = "disable"
+	E_NetworkinstanceProtocolsOspfInstanceAdminstate_Enable  E_NetworkinstanceProtocolsOspfInstanceAdminstate = "enable"
+)
+
+// Ospf
+type E_NetworkinstanceProtocolsOspfInstanceAdvertiseroutercapability string
+
+const (
+	E_NetworkinstanceProtocolsOspfInstanceAdvertiseroutercapability_Area  E_NetworkinstanceProtocolsOspfInstanceAdvertiseroutercapability = "area"
+	E_NetworkinstanceProtocolsOspfInstanceAdvertiseroutercapability_As    E_NetworkinstanceProtocolsOspfInstanceAdvertiseroutercapability = "as"
+	E_NetworkinstanceProtocolsOspfInstanceAdvertiseroutercapability_False E_NetworkinstanceProtocolsOspfInstanceAdvertiseroutercapability = "false"
+	E_NetworkinstanceProtocolsOspfInstanceAdvertiseroutercapability_Link  E_NetworkinstanceProtocolsOspfInstanceAdvertiseroutercapability = "link"
+)
+
+// Ospf
+type E_NetworkinstanceProtocolsOspfInstanceAreaInterfaceAdminstate string
+
+const (
+	E_NetworkinstanceProtocolsOspfInstanceAreaInterfaceAdminstate_Disable E_NetworkinstanceProtocolsOspfInstanceAreaInterfaceAdminstate = "disable"
+	E_NetworkinstanceProtocolsOspfInstanceAreaInterfaceAdminstate_Enable  E_NetworkinstanceProtocolsOspfInstanceAreaInterfaceAdminstate = "enable"
+)
+
+// Ospf
+type E_NetworkinstanceProtocolsOspfInstanceAreaInterfaceInterfacetype string
+
+const (
+	E_NetworkinstanceProtocolsOspfInstanceAreaInterfaceInterfacetype_Broadcast    E_NetworkinstanceProtocolsOspfInstanceAreaInterfaceInterfacetype = "broadcast"
+	E_NetworkinstanceProtocolsOspfInstanceAreaInterfaceInterfacetype_PointToPoint E_NetworkinstanceProtocolsOspfInstanceAreaInterfaceInterfacetype = "point-to-point"
+)
+
+// Ospf
+type E_NetworkinstanceProtocolsOspfInstanceAreaInterfaceLsafilterout string
+
+const (
+	E_NetworkinstanceProtocolsOspfInstanceAreaInterfaceLsafilterout_All                        E_NetworkinstanceProtocolsOspfInstanceAreaInterfaceLsafilterout = "all"
+	E_NetworkinstanceProtocolsOspfInstanceAreaInterfaceLsafilterout_ExceptOwnRtrlsa            E_NetworkinstanceProtocolsOspfInstanceAreaInterfaceLsafilterout = "except-own-rtrlsa"
+	E_NetworkinstanceProtocolsOspfInstanceAreaInterfaceLsafilterout_ExceptOwnRtrlsaAndDefaults E_NetworkinstanceProtocolsOspfInstanceAreaInterfaceLsafilterout = "except-own-rtrlsa-and-defaults"
+	E_NetworkinstanceProtocolsOspfInstanceAreaInterfaceLsafilterout_None                       E_NetworkinstanceProtocolsOspfInstanceAreaInterfaceLsafilterout = "none"
+)
+
+// Ospf
+type E_NetworkinstanceProtocolsOspfInstanceAreaInterfaceTraceoptionsTracePacketModifier string
+
+const (
+	E_NetworkinstanceProtocolsOspfInstanceAreaInterfaceTraceoptionsTracePacketModifier_Drop        E_NetworkinstanceProtocolsOspfInstanceAreaInterfaceTraceoptionsTracePacketModifier = "drop"
+	E_NetworkinstanceProtocolsOspfInstanceAreaInterfaceTraceoptionsTracePacketModifier_Egress      E_NetworkinstanceProtocolsOspfInstanceAreaInterfaceTraceoptionsTracePacketModifier = "egress"
+	E_NetworkinstanceProtocolsOspfInstanceAreaInterfaceTraceoptionsTracePacketModifier_InAndEgress E_NetworkinstanceProtocolsOspfInstanceAreaInterfaceTraceoptionsTracePacketModifier = "in-and-egress"
+	E_NetworkinstanceProtocolsOspfInstanceAreaInterfaceTraceoptionsTracePacketModifier_Ingress     E_NetworkinstanceProtocolsOspfInstanceAreaInterfaceTraceoptionsTracePacketModifier = "ingress"
+)
+
+// Ospf
+type E_NetworkinstanceProtocolsOspfInstanceAreaInterfaceTraceoptionsTracePacketType string
+
+const (
+	E_NetworkinstanceProtocolsOspfInstanceAreaInterfaceTraceoptionsTracePacketType_All       E_NetworkinstanceProtocolsOspfInstanceAreaInterfaceTraceoptionsTracePacketType = "all"
+	E_NetworkinstanceProtocolsOspfInstanceAreaInterfaceTraceoptionsTracePacketType_Dbdescr   E_NetworkinstanceProtocolsOspfInstanceAreaInterfaceTraceoptionsTracePacketType = "dbdescr"
+	E_NetworkinstanceProtocolsOspfInstanceAreaInterfaceTraceoptionsTracePacketType_Hello     E_NetworkinstanceProtocolsOspfInstanceAreaInterfaceTraceoptionsTracePacketType = "hello"
+	E_NetworkinstanceProtocolsOspfInstanceAreaInterfaceTraceoptionsTracePacketType_LsAck     E_NetworkinstanceProtocolsOspfInstanceAreaInterfaceTraceoptionsTracePacketType = "ls-ack"
+	E_NetworkinstanceProtocolsOspfInstanceAreaInterfaceTraceoptionsTracePacketType_LsRequest E_NetworkinstanceProtocolsOspfInstanceAreaInterfaceTraceoptionsTracePacketType = "ls-request"
+	E_NetworkinstanceProtocolsOspfInstanceAreaInterfaceTraceoptionsTracePacketType_LsUpdate  E_NetworkinstanceProtocolsOspfInstanceAreaInterfaceTraceoptionsTracePacketType = "ls-update"
+)
+
+// Ospf
+type E_NetworkinstanceProtocolsOspfInstanceTraceoptionsTraceLsdbType string
+
+const (
+	E_NetworkinstanceProtocolsOspfInstanceTraceoptionsTraceLsdbType_All             E_NetworkinstanceProtocolsOspfInstanceTraceoptionsTraceLsdbType = "all"
+	E_NetworkinstanceProtocolsOspfInstanceTraceoptionsTraceLsdbType_External        E_NetworkinstanceProtocolsOspfInstanceTraceoptionsTraceLsdbType = "external"
+	E_NetworkinstanceProtocolsOspfInstanceTraceoptionsTraceLsdbType_InterAreaPrefix E_NetworkinstanceProtocolsOspfInstanceTraceoptionsTraceLsdbType = "inter-area-prefix"
+	E_NetworkinstanceProtocolsOspfInstanceTraceoptionsTraceLsdbType_InterAreaRouter E_NetworkinstanceProtocolsOspfInstanceTraceoptionsTraceLsdbType = "inter-area-router"
+	E_NetworkinstanceProtocolsOspfInstanceTraceoptionsTraceLsdbType_IntraAreaPrefix E_NetworkinstanceProtocolsOspfInstanceTraceoptionsTraceLsdbType = "intra-area-prefix"
+	E_NetworkinstanceProtocolsOspfInstanceTraceoptionsTraceLsdbType_Network         E_NetworkinstanceProtocolsOspfInstanceTraceoptionsTraceLsdbType = "network"
+	E_NetworkinstanceProtocolsOspfInstanceTraceoptionsTraceLsdbType_Nssa            E_NetworkinstanceProtocolsOspfInstanceTraceoptionsTraceLsdbType = "nssa"
+	E_NetworkinstanceProtocolsOspfInstanceTraceoptionsTraceLsdbType_Opaque          E_NetworkinstanceProtocolsOspfInstanceTraceoptionsTraceLsdbType = "opaque"
+	E_NetworkinstanceProtocolsOspfInstanceTraceoptionsTraceLsdbType_Router          E_NetworkinstanceProtocolsOspfInstanceTraceoptionsTraceLsdbType = "router"
+	E_NetworkinstanceProtocolsOspfInstanceTraceoptionsTraceLsdbType_Summary         E_NetworkinstanceProtocolsOspfInstanceTraceoptionsTraceLsdbType = "summary"
+)
+
+// Ospf
+type E_NetworkinstanceProtocolsOspfInstanceTraceoptionsTracePacketModifier string
+
+const (
+	E_NetworkinstanceProtocolsOspfInstanceTraceoptionsTracePacketModifier_Drop        E_NetworkinstanceProtocolsOspfInstanceTraceoptionsTracePacketModifier = "drop"
+	E_NetworkinstanceProtocolsOspfInstanceTraceoptionsTracePacketModifier_Egress      E_NetworkinstanceProtocolsOspfInstanceTraceoptionsTracePacketModifier = "egress"
+	E_NetworkinstanceProtocolsOspfInstanceTraceoptionsTracePacketModifier_InAndEgress E_NetworkinstanceProtocolsOspfInstanceTraceoptionsTracePacketModifier = "in-and-egress"
+	E_NetworkinstanceProtocolsOspfInstanceTraceoptionsTracePacketModifier_Ingress     E_NetworkinstanceProtocolsOspfInstanceTraceoptionsTracePacketModifier = "ingress"
+)
+
+// Ospf
+type E_NetworkinstanceProtocolsOspfInstanceTraceoptionsTracePacketType string
+
+const (
+	E_NetworkinstanceProtocolsOspfInstanceTraceoptionsTracePacketType_All       E_NetworkinstanceProtocolsOspfInstanceTraceoptionsTracePacketType = "all"
+	E_NetworkinstanceProtocolsOspfInstanceTraceoptionsTracePacketType_Dbdescr   E_NetworkinstanceProtocolsOspfInstanceTraceoptionsTracePacketType = "dbdescr"
+	E_NetworkinstanceProtocolsOspfInstanceTraceoptionsTracePacketType_Hello     E_NetworkinstanceProtocolsOspfInstanceTraceoptionsTracePacketType = "hello"
+	E_NetworkinstanceProtocolsOspfInstanceTraceoptionsTracePacketType_LsAck     E_NetworkinstanceProtocolsOspfInstanceTraceoptionsTracePacketType = "ls-ack"
+	E_NetworkinstanceProtocolsOspfInstanceTraceoptionsTracePacketType_LsRequest E_NetworkinstanceProtocolsOspfInstanceTraceoptionsTracePacketType = "ls-request"
+	E_NetworkinstanceProtocolsOspfInstanceTraceoptionsTracePacketType_LsUpdate  E_NetworkinstanceProtocolsOspfInstanceTraceoptionsTracePacketType = "ls-update"
+)
+
+func NewNetworkinstanceProtocolsOspf() *NetworkinstanceProtocolsOspf {
+	return &NetworkinstanceProtocolsOspf{}
+}

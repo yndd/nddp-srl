@@ -1,0 +1,14 @@
+apiVersion: srl.nddp.yndd.io/v1alpha1
+kind: SrlInterface
+metadata:
+  name: int-e1-49
+  namespace: default
+spec:
+  active: true
+  networkNodeRef:
+    name: leaf1
+  interface:
+    name: "ethernet-1/49"
+    admin-state: "enable"
+    description: "ndd-ethernet-1/49"
+    vlan-tagging: true
