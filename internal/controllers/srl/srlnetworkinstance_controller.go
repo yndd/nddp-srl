@@ -127,7 +127,7 @@ func (r *Networkinstance) GetRootPath(mg resource.Managed) []*gnmi.Path {
 	return []*gnmi.Path{
 		{
 			Elem: []*gnmi.PathElem{
-				{Name: "networkinstance", Key: map[string]string{
+				{Name: "network-instance", Key: map[string]string{
 					"name": *cr.Spec.Networkinstance.Name,
 				}},
 			},
@@ -386,7 +386,7 @@ func (e *externalNetworkinstance) Observe(ctx context.Context, mg resource.Manag
 			case codes.NotFound:
 				// the k8s resource does not exists but the data can still exist
 				// if data exists it means we go from UMR -> MR
-				log.Debug("observing: resource does not exist")
+				log.Debug("observing when using gnmic: resource does not exist")
 				exists = false
 			}
 		} else {

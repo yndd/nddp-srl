@@ -128,7 +128,7 @@ func (r *RoutingpolicyCommunityset) GetRootPath(mg resource.Managed) []*gnmi.Pat
 		{
 			Elem: []*gnmi.PathElem{
 				{Name: "routing-policy"},
-				{Name: "communityset", Key: map[string]string{
+				{Name: "community-set", Key: map[string]string{
 					"name": *cr.Spec.RoutingpolicyCommunityset.Name,
 				}},
 			},
@@ -387,7 +387,7 @@ func (e *externalRoutingpolicyCommunityset) Observe(ctx context.Context, mg reso
 			case codes.NotFound:
 				// the k8s resource does not exists but the data can still exist
 				// if data exists it means we go from UMR -> MR
-				log.Debug("observing: resource does not exist")
+				log.Debug("observing when using gnmic: resource does not exist")
 				exists = false
 			}
 		} else {

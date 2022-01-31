@@ -131,7 +131,7 @@ func (r *NetworkinstanceProtocolsBgpevpn) GetRootPath(mg resource.Managed) []*gn
 					"name": *cr.Spec.NetworkInstanceName,
 				}},
 				{Name: "protocols"},
-				{Name: "bgpevpn"},
+				{Name: "bgp-evpn"},
 			},
 		},
 	}
@@ -388,7 +388,7 @@ func (e *externalNetworkinstanceProtocolsBgpevpn) Observe(ctx context.Context, m
 			case codes.NotFound:
 				// the k8s resource does not exists but the data can still exist
 				// if data exists it means we go from UMR -> MR
-				log.Debug("observing: resource does not exist")
+				log.Debug("observing when using gnmic: resource does not exist")
 				exists = false
 			}
 		} else {

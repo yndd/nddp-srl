@@ -32,7 +32,7 @@ import (
 	"github.com/yndd/ndd-yang/pkg/yentry"
 	"github.com/yndd/ndd-yang/pkg/yparser"
 	"github.com/yndd/nddp-srl/internal/device"
-	deviceschema "github.com/yndd/nddp-srl/internal/yangschema"
+	deviceschema "github.com/yndd/nddp-srl/pkg/yangschema"
 	systemv1alpha1 "github.com/yndd/nddp-system/apis/system/v1alpha1"
 	nddpschema "github.com/yndd/nddp-system/pkg/yangschema"
 	"google.golang.org/grpc"

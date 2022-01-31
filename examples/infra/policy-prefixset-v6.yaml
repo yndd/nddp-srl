@@ -1,0 +1,14 @@
+apiVersion: srl.nddp.yndd.io/v1alpha1
+kind: SrlRoutingpolicyPrefixset
+metadata:
+  name: policy-system-v6
+  namespace: default
+spec:
+  active: true
+  networkNodeRef:
+    name: leaf1
+  prefix-set:
+    name: "system-v6"
+    prefix:
+    - ip-prefix: 3100:100::/48
+      mask-length-range: "128..128"

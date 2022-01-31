@@ -41,7 +41,7 @@ import (
 	"github.com/yndd/nddp-srl/internal/controllers"
 	"github.com/yndd/nddp-srl/internal/devicedriver"
 	"github.com/yndd/nddp-srl/internal/shared"
-	"github.com/yndd/nddp-srl/internal/yangschema"
+	"github.com/yndd/nddp-srl/pkg/yangschema"
 	//+kubebuilder:scaffold:imports
 )
 

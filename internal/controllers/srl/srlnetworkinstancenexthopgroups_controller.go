@@ -130,7 +130,7 @@ func (r *NetworkinstanceNexthopgroups) GetRootPath(mg resource.Managed) []*gnmi.
 				{Name: "network-instance", Key: map[string]string{
 					"name": *cr.Spec.NetworkInstanceName,
 				}},
-				{Name: "nexthopgroups"},
+				{Name: "next-hop-groups"},
 			},
 		},
 	}
@@ -387,7 +387,7 @@ func (e *externalNetworkinstanceNexthopgroups) Observe(ctx context.Context, mg r
 			case codes.NotFound:
 				// the k8s resource does not exists but the data can still exist
 				// if data exists it means we go from UMR -> MR
-				log.Debug("observing: resource does not exist")
+				log.Debug("observing when using gnmic: resource does not exist")
 				exists = false
 			}
 		} else {

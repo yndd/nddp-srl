@@ -28,7 +28,7 @@ import (
 	"github.com/yndd/ndd-runtime/pkg/logging"
 	"github.com/yndd/ndd-yang/pkg/cache"
 	"github.com/yndd/ndd-yang/pkg/yentry"
-	deviceschema "github.com/yndd/nddp-srl/internal/yangschema"
+	deviceschema "github.com/yndd/nddp-srl/pkg/yangschema"
 	nddpschema "github.com/yndd/nddp-system/pkg/yangschema"
 	"google.golang.org/grpc"
 )

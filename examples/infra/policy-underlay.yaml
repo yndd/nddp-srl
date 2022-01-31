@@ -1,0 +1,22 @@
+apiVersion: srl.nddp.yndd.io/v1alpha1
+kind: SrlRoutingpolicyPolicy
+metadata:
+  name: policy-underlay
+  namespace: default
+spec:
+  active: true
+  networkNodeRef:
+    name: leaf1
+  policy:
+    name: policy-underlay
+    statement:
+    - sequence-id: 10
+      match:
+        prefix-set: "system-v4"
+      action:
+        accept: {}
+    - sequence-id: 20
+      match:
+        prefix-set: "system-v6"
+      action:
+        accept: {}

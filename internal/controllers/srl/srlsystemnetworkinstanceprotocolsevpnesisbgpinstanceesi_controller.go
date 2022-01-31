@@ -135,7 +135,7 @@ func (r *SystemNetworkinstanceProtocolsEvpnEsisBgpinstanceEsi) GetRootPath(mg re
 				{Name: "bgp-instance", Key: map[string]string{
 					"id": *cr.Spec.BgpInstanceId,
 				}},
-				{Name: "ethernetsegment", Key: map[string]string{
+				{Name: "ethernet-segment", Key: map[string]string{
 					"name": *cr.Spec.SystemNetworkinstanceProtocolsEvpnEsisBgpinstanceEsi.Name,
 				}},
 			},
@@ -394,7 +394,7 @@ func (e *externalSystemNetworkinstanceProtocolsEvpnEsisBgpinstanceEsi) Observe(c
 			case codes.NotFound:
 				// the k8s resource does not exists but the data can still exist
 				// if data exists it means we go from UMR -> MR
-				log.Debug("observing: resource does not exist")
+				log.Debug("observing when using gnmic: resource does not exist")
 				exists = false
 			}
 		} else {

@@ -32,6 +32,10 @@ func Setup(mgr ctrl.Manager, option controller.Options, nddcopts *shared.NddCont
 		device.Setup,
 		srl.SetupInterface,
 		srl.SetupInterfaceSubinterface,
+		srl.SetupRoutingpolicyPrefixset,
+		srl.SetupRoutingpolicyPolicy,
+		srl.SetupRoutingpolicyAspathset,
+		srl.SetupRoutingpolicyCommunityset,
 	} {
 		if err := setup(mgr, option, nddcopts); err != nil {
 			return err
