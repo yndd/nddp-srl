@@ -40,7 +40,7 @@ func (r *reconciler) deletePathsFromCache(delPaths []*gnmi.Path) error {
 	}
 
 	if err := r.cache.GnmiUpdate(crDeviceName, n); err != nil {
-		return errors.New("cache update failed")
+		return errors.Wrap(err, "cache update failed")
 	}
 	return nil
 }
@@ -119,7 +119,6 @@ func (r *reconciler) updateCandidate(resource *systemv1alpha1.Gvk) error {
 
 	for _, n := range ns {
 		// create a new update where the path
-		updates := make([]*gnmi.Update, 0)
 		for _, u := range n.GetUpdate() {
 			path := yparser.DeepCopyGnmiPath(u.GetPath())
 			update := &gnmi.Update{
@@ -129,17 +128,19 @@ func (r *reconciler) updateCandidate(resource *systemv1alpha1.Gvk) error {
 				},
 				Val: u.GetVal(),
 			}
-			updates = append(updates, update)
-		}
-		// create new notification and set the target to the candidate device name iso the system
-		newNotification := &gnmi.Notification{
-			Timestamp: time.Now().UnixNano(),
-			Prefix:    &gnmi.Path{Target: crCandidateDeviceName},
-			Update:    updates,
-		}
-		r.log.Debug("updateCandidate", "notification", newNotification)
-		if err := r.cache.GnmiUpdate(crCandidateDeviceName, newNotification); err != nil {
-			return errors.New("cache update failed")
+			// create new notification and set the target to the candidate device name iso the system
+			newNotification := &gnmi.Notification{
+				Timestamp: time.Now().UnixNano(),
+				Prefix:    &gnmi.Path{Target: crCandidateDeviceName},
+				Update:    []*gnmi.Update{update},
+			}
+			r.log.Debug("updateCandidate notification",
+				"path", yparser.GnmiPath2XPath(newNotification.GetUpdate()[0].GetPath(), true),
+				"val", newNotification.GetUpdate()[0].GetVal(),
+			)
+			if err := r.cache.GnmiUpdate(crCandidateDeviceName, newNotification); err != nil {
+				return errors.Wrap(err, "cache update failed")
+			}
 		}
 	}
 	return nil

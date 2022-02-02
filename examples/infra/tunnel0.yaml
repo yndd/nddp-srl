@@ -1,0 +1,11 @@
+apiVersion: srl.nddp.yndd.io/v1alpha1
+kind: SrlTunnelinterface
+metadata:
+  name: tunnel0
+  namespace: default
+spec:
+  active: true
+  networkNodeRef:
+    name: leaf1
+  tunnel-interface:
+    name: "vxlan0"

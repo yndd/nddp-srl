@@ -1,0 +1,12 @@
+apiVersion: srl.nddp.yndd.io/v1alpha1
+kind: SrlSystemNetworkinstanceProtocolsBgpvpn
+metadata:
+  name: sys-bgpvpn
+  namespace: default
+spec:
+  active: true
+  networkNodeRef:
+    name: leaf1
+  bgp-vpn:
+    bgp-instance:
+    - id: 1

@@ -13,8 +13,8 @@ spec:
     admin-state: enable
     description: "ndd-system0-leaf1"
     ipv4:
-      - address:
+      address:
         - ip-prefix: 100.112.100.0/32
     ipv6:
-      - address:
+      address:
         - ip-prefix: 3100:100::/128

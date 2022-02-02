@@ -12,7 +12,7 @@ require (
 	github.com/stoewer/go-strcase v1.2.0
 	github.com/yndd/ndd-core v0.1.7
 	github.com/yndd/ndd-runtime v0.1.10
-	github.com/yndd/ndd-yang v0.1.456
+	github.com/yndd/ndd-yang v0.1.499
 	github.com/yndd/ndda-network v0.1.30
 	github.com/yndd/nddo-runtime v0.0.72
 	github.com/yndd/nddp-system v0.0.9

@@ -86,12 +86,19 @@ func (s *server) Set(ctx context.Context, req *gnmi.SetRequest) (*gnmi.SetRespon
 }
 
 func (s *server) UpdateCache(prefix *gnmi.Path, u *gnmi.Update) error {
-	//log.Debug("Replace", "Update", u)
-	n, err := s.cache.GetNotificationFromUpdate(prefix, u)
+	//v, _ := yparser.GetValue(u.GetVal())
+	//s.log.Debug("UpdateCache", "path", yparser.GnmiPath2XPath(u.GetPath(), true), "val", u.GetVal(), "type", reflect.TypeOf(v))
+	// Validating in the device schema if a key is present
+	hasKey, err := s.hasKey(prefix, u)
+	if err != nil {
+		return err
+	}
+	n, err := s.cache.GetNotificationFromUpdate(prefix, u, hasKey)
 	if err != nil {
 		//log.Debug("GetNotificationFromUpdate Error", "Notification", n, "Error", err)
 		return err
 	}
+	s.log.Debug("UpdateCache", "notification", n)
 	if n != nil {
 		for _, u := range n.GetUpdate() {
 			s.log.Debug("gnmiserver update cache", "notification path", yparser.GnmiPath2XPath(u.GetPath(), true), "val", u.GetVal())
@@ -150,4 +157,25 @@ func (s *server) setUpdateStatus(req *gnmi.SetRequest) error {
 	}
 
 	return nil
+}
+
+func (s *server) hasKey(prefix *gnmi.Path, u *gnmi.Update) (bool, error) {
+	// update is for the system cache
+	crDeviceName := prefix.GetTarget()
+	if strings.HasPrefix(crDeviceName, shared.SystemNamespace) {
+		// only handle the cases where the data is updated to the cache
+		if strings.HasPrefix(yparser.GnmiPath2XPath(u.GetPath(), false), "/gvk/data") {
+			//p := yparser.DeepCopyGnmiPath(u.GetPath())
+			p := &gnmi.Path{Elem: u.Path.GetElem()[2:]}
+			// check the device schema if keys exist
+			if len(s.deviceSchema.GetKeys(p)) == 0 {
+				s.log.Debug("hasKey", "path", yparser.GnmiPath2XPath(u.GetPath(), true), "Bool", false)
+				return false, nil
+			} else {
+				s.log.Debug("hasKey", "path", yparser.GnmiPath2XPath(u.GetPath(), true), "Bool", true)
+				return true, nil
+			}
+		}
+	}
+	return false, nil
 }

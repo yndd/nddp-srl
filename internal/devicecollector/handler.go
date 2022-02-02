@@ -102,8 +102,15 @@ func (c *collector) handleUpdates(crDeviceName string, resourceList []*systemv1a
 			pe.Name = strings.Split(pe.Name, ":")[len(strings.Split(pe.Name, ":"))-1]
 		}
 
+		// Validate if the path has a key using the device schema
+
+		keys := c.deviceSchema.GetKeys(upd.GetPath())
+		hashKey := false
+		if len(keys) != 0 {
+			hashKey = true
+		}
 		crDeviceName := shared.GetCrDeviceName(c.namespace, c.target.Config.Name)
-		n, err := c.cache.GetNotificationFromUpdate(&gnmi.Path{Target: crDeviceName}, upd)
+		n, err := c.cache.GetNotificationFromUpdate(&gnmi.Path{Target: crDeviceName}, upd, hashKey)
 		if err != nil {
 			return err
 		}

@@ -47,7 +47,7 @@ func (r *reconciler) setUpdateStatus(status bool) error {
 	}
 
 	if err := r.cache.GnmiUpdate(crSystemDeviceName, n); err != nil {
-		return errors.New("cache update failed")
+		return errors.Wrap(err, "cache update failed")
 	}
 	return nil
 }
@@ -126,7 +126,7 @@ func (r *reconciler) deleteResource(resourceGvkName string) error {
 	}
 
 	if err := r.cache.GnmiUpdate(crSystemDeviceName, n); err != nil {
-		return errors.New("cache update failed")
+		return errors.Wrap(err, "cache update failed")
 	}
 	return nil
 }
@@ -152,7 +152,7 @@ func (r *reconciler) updateResourceStatus(resourceGvkName string, status systemv
 	}
 
 	if err := r.cache.GnmiUpdate(crSystemDeviceName, n); err != nil {
-		return errors.New("cache update failed")
+		return errors.Wrap(err, "cache update failed")
 	}
 	return nil
 }

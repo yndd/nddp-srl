@@ -1,0 +1,25 @@
+apiVersion: srl.nddp.yndd.io/v1alpha1
+kind: SrlInterfaceSubinterface
+metadata:
+  name: subint-e1-49-0
+  namespace: default
+spec:
+  active: true
+  networkNodeRef:
+    name: leaf1
+  interface-name: ethernet-1/49
+  subinterface:
+    index: 1
+    type: routed
+    admin-state: enable
+    description: "ndd-e1-49-0-leaf1"
+    ipv4:
+      address:
+      - ip-prefix: 100.64.0.0/31
+    ipv6:
+      address:
+      - ip-prefix: 3100:64::/127
+    vlan:
+      encap:
+        single-tagged:
+          vlan-id: "1"

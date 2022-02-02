@@ -1,0 +1,68 @@
+apiVersion: srl.nddp.yndd.io/v1alpha1
+kind: SrlNetworkinstanceProtocolsBgp
+metadata:
+  name: netwinstance-default-bgp
+  namespace: default
+spec:
+  active: true
+  networkNodeRef:
+    name: leaf1
+  network-instance-name: default
+  bgp:
+    admin-state: enable
+    autonomous-system: 65000
+    router-id: 100.112.100.0
+    ebgp-default-policy:
+      import-reject-all: false
+      export-reject-all: false
+    group:
+    - group-name: underlay
+      export-policy: policy-underlay
+      admin-state: enable
+      next-hop-self: true
+      local-as:
+      -  as-number: 65000
+      ipv4-unicast:
+        admin-state: enable
+      ipv6-unicast:
+        admin-state: enable
+    - group-name: overlay
+      admin-state: enable
+      next-hop-self: true
+      local-as:
+      -  as-number: 65400
+      evpn:
+        admin-state: enable
+      ipv4-unicast:
+        admin-state: disable
+      ipv6-unicast:
+        admin-state: disable
+    ipv4-unicast:
+      admin-state: enable
+      multipath:
+        allow-multiple-as: true
+        max-paths-level-1: 64
+        max-paths-level-2: 64
+    ipv6-unicast:
+      admin-state: enable
+      multipath:
+        allow-multiple-as: true
+        max-paths-level-1: 64
+        max-paths-level-2: 64
+    neighbor:
+    - peer-address: 100.64.0.1
+      peer-as: 65001
+      peer-group: underlay
+      local-as:
+      -  as-number: 65000
+      timers:
+        connect-retry: 1
+    - peer-address: 100.112.100.1
+      peer-as: 65400
+      peer-group: overlay
+      local-as:
+      -  as-number: 65400
+      transport:
+        local-address: 100.112.100.0
+      timers:
+        connect-retry: 1

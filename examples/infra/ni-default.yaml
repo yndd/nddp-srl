@@ -1,0 +1,17 @@
+apiVersion: srl.nddp.yndd.io/v1alpha1
+kind: SrlNetworkinstance
+metadata:
+  name: netwinstance-default
+  namespace: default
+spec:
+  active: true
+  networkNodeRef:
+    name: leaf1
+  network-instance:
+    name: default
+    type: default
+    admin-state: enable
+    description: ndd-default
+    interface:
+    - name: system0.0
+    - name: ethernet-1/49.1

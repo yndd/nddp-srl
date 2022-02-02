@@ -196,16 +196,18 @@ func (r *reconciler) Reconcile(ctx context.Context) error {
 	log := r.log.WithValues("target", r.target.Config.Name, "address", r.target.Config.Address)
 	log.Debug("reconciling device config")
 
-	// gte the list of MR
+	// get the list of MR
 	resourceList, err := r.getResourceList()
 	if err != nil {
 		return err
 	}
-	resourceListRaw, err := r.getResourceListRaw()
-	if err != nil {
-		return err
-	}
-	log.Debug("resourceList1", "raw", resourceListRaw)
+	/*
+		resourceListRaw, err := r.getResourceListRaw()
+		if err != nil {
+			return err
+		}
+		log.Debug("resourceList1", "raw", resourceListRaw)
+	*/
 
 	// sort the MR list based on the pathElements
 	sort.SliceStable(resourceList, func(i, j int) bool {
@@ -306,11 +308,13 @@ func (r *reconciler) Reconcile(ctx context.Context) error {
 	}
 
 	// debug
-	resourceListRaw, err = r.getResourceListRaw()
-	if err != nil {
-		return err
-	}
-	log.Debug("resourceList2a", "raw", resourceListRaw)
+	/*
+		resourceListRaw, err = r.getResourceListRaw()
+		if err != nil {
+			return err
+		}
+		log.Debug("resourceList2a", "raw", resourceListRaw)
+	*/
 
 	doUpdate := false
 	// create a list of resources to be updated
@@ -329,11 +333,13 @@ func (r *reconciler) Reconcile(ctx context.Context) error {
 	}
 
 	// debug
-	resourceListRaw, err = r.getResourceListRaw()
-	if err != nil {
-		return err
-	}
-	log.Debug("resourceList2b", "raw", resourceListRaw)
+	/*
+		resourceListRaw, err = r.getResourceListRaw()
+		if err != nil {
+			return err
+		}
+		log.Debug("resourceList2b", "raw", resourceListRaw)
+	*/
 
 	if doUpdate {
 		// retrieve the config that will be applied to the device
@@ -359,11 +365,13 @@ func (r *reconciler) Reconcile(ctx context.Context) error {
 				}
 			}
 			// debug
-			resourceListRaw, err := r.getResourceListRaw()
-			if err != nil {
-				return err
-			}
-			log.Debug("resourceList3", "raw", resourceListRaw)
+			/*
+				resourceListRaw, err := r.getResourceListRaw()
+				if err != nil {
+					return err
+				}
+				log.Debug("resourceList3", "raw", resourceListRaw)
+			*/
 
 			// set resource status to success
 			for _, resource := range updResources {
@@ -373,11 +381,13 @@ func (r *reconciler) Reconcile(ctx context.Context) error {
 			}
 
 			// debug
-			resourceListRaw, err = r.getResourceListRaw()
-			if err != nil {
-				return err
-			}
-			log.Debug("resourceList4", "raw", resourceListRaw)
+			/*
+				resourceListRaw, err = r.getResourceListRaw()
+				if err != nil {
+					return err
+				}
+				log.Debug("resourceList4", "raw", resourceListRaw)
+			*/
 
 			if err := r.copyCandidate2Running(); err != nil {
 				return err
@@ -389,11 +399,13 @@ func (r *reconciler) Reconcile(ctx context.Context) error {
 	}
 
 	// debug
-	resourceListRaw, err = r.getResourceListRaw()
-	if err != nil {
-		return err
-	}
-	log.Debug("resourceList5", "raw", resourceListRaw)
+	/*
+		resourceListRaw, err = r.getResourceListRaw()
+		if err != nil {
+			return err
+		}
+		log.Debug("resourceList5", "raw", resourceListRaw)
+	*/
 
 	// set reconcile flag to false to avoid a new reconciliation if there is no new work
 	if err := r.setUpdateStatus(false); err != nil {

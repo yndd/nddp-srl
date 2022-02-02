@@ -30,12 +30,31 @@ import (
 func Setup(mgr ctrl.Manager, option controller.Options, nddcopts *shared.NddControllerOptions) error {
 	for _, setup := range []func(ctrl.Manager, controller.Options, *shared.NddControllerOptions) error{
 		device.Setup,
+		srl.SetupBfd,
 		srl.SetupInterface,
 		srl.SetupInterfaceSubinterface,
 		srl.SetupRoutingpolicyPrefixset,
 		srl.SetupRoutingpolicyPolicy,
 		srl.SetupRoutingpolicyAspathset,
 		srl.SetupRoutingpolicyCommunityset,
+		srl.SetupNetworkinstance,
+		srl.SetupNetworkinstanceAggregateroutes,
+		srl.SetupNetworkinstanceNexthopgroups,
+		srl.SetupNetworkinstanceProtocolsBgp,
+		srl.SetupNetworkinstanceProtocolsBgpevpn,
+		srl.SetupNetworkinstanceProtocolsBgpvpn,
+		srl.SetupNetworkinstanceProtocolsIsis,
+		srl.SetupNetworkinstanceProtocolsLinux,
+		srl.SetupNetworkinstanceProtocolsOspf,
+		srl.SetupNetworkinstanceStaticroutes,
+		srl.SetupSystemName,
+		srl.SetupSystemNetworkinstanceProtocolsBgpvpn,
+		srl.SetupSystemNetworkinstanceProtocolsEvpn,
+		srl.SetupSystemNetworkinstanceProtocolsEvpnEsisBgpinstance,
+		srl.SetupSystemNetworkinstanceProtocolsEvpnEsisBgpinstanceEsi,
+		srl.SetupSystemNtp,
+		srl.SetupTunnelinterface,
+		srl.SetupTunnelinterfaceVxlaninterface,
 	} {
 		if err := setup(mgr, option, nddcopts); err != nil {
 			return err

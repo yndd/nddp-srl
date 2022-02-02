@@ -1,0 +1,11 @@
+apiVersion: srl.nddp.yndd.io/v1alpha1
+kind: SrlSystemNetworkinstanceProtocolsEvpnEsisBgpinstance
+metadata:
+  name: sys-bgpi
+  namespace: default
+spec:
+  active: true
+  networkNodeRef:
+    name: leaf1
+  bgp-instance:
+    id: "1"

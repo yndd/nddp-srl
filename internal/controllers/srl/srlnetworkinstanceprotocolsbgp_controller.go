@@ -70,7 +70,9 @@ func SetupNetworkinstanceProtocolsBgp(mgr ctrl.Manager, o controller.Options, nd
 
 	events := make(chan cevent.GenericEvent)
 
-	y := initYangNetworkinstanceProtocolsBgp()
+	y := initYangNetworkinstanceProtocolsBgp(
+		nddcopts.DeviceSchema,
+	)
 
 	r := managed.NewReconciler(mgr,
 		resource.ManagedKind(srlv1alpha1.NetworkinstanceProtocolsBgpGroupVersionKind),
@@ -110,8 +112,10 @@ type NetworkinstanceProtocolsBgp struct {
 	*yresource.Resource
 }
 
-func initYangNetworkinstanceProtocolsBgp(opts ...yresource.Option) yresource.Handler {
-	return &NetworkinstanceProtocolsBgp{&yresource.Resource{}}
+func initYangNetworkinstanceProtocolsBgp(deviceSchem *yentry.Entry, opts ...yresource.Option) yresource.Handler {
+	return &NetworkinstanceProtocolsBgp{&yresource.Resource{
+		DeviceSchema: deviceSchem,
+	}}
 
 }
 
@@ -144,11 +148,12 @@ func (r *NetworkinstanceProtocolsBgp) GetParentDependency(mg resource.Managed) [
 	if len(rootPath[0].GetElem()) < 2 {
 		return []*leafref.LeafRef{}
 	}
+	dependencyPath := r.DeviceSchema.GetParentDependency(rootPath[0], rootPath[0], "")
 	// the dependency path is the rootPath except for the last element
-	dependencyPathElem := rootPath[0].GetElem()[:(len(rootPath[0].GetElem()) - 1)]
+	//dependencyPathElem := rootPath[0].GetElem()[:(len(rootPath[0].GetElem()) - 1)]
 	// check for keys present, if no keys present we return an empty list
 	keysPresent := false
-	for _, pathElem := range dependencyPathElem {
+	for _, pathElem := range dependencyPath.GetElem() {
 		if len(pathElem.GetKey()) != 0 {
 			keysPresent = true
 		}
@@ -160,7 +165,7 @@ func (r *NetworkinstanceProtocolsBgp) GetParentDependency(mg resource.Managed) [
 	// return the rootPath except the last entry
 	return []*leafref.LeafRef{
 		{
-			RemotePath: &gnmi.Path{Elem: dependencyPathElem},
+			RemotePath: dependencyPath,
 		},
 	}
 }
@@ -201,19 +206,31 @@ func (v *validatorNetworkinstanceProtocolsBgp) ValidateExternalleafRef(ctx conte
 
 	leafRefs := v.deviceSchema.GetLeafRefsLocal(true, rootPath[0], &gnmi.Path{}, make([]*leafref.LeafRef, 0))
 	log.Debug("Validate leafRefs ...", "Path", yparser.GnmiPath2XPath(rootPath[0], false), "leafRefs", leafRefs)
-
-	// For local external leafref validation we need to supply the external
-	// data to validate the remote leafref, we use x2 for this
-	success, resultValidation, err := yparser.ValidateLeafRef(
-		rootPath[0], x1, x2, leafRefs, v.deviceSchema)
-	if err != nil {
-		return managed.ValidateExternalleafRefObservation{
-			Success: false,
-		}, nil
-	}
-	if !success {
+	/*
+		// For local external leafref validation we need to supply the external
+		// data to validate the remote leafref, we use x2 for this
+		success, resultValidation, err := yparser.ValidateLeafRef(
+			rootPath[0], x1, x2, leafRefs, v.deviceSchema)
+		if err != nil {
+			return managed.ValidateExternalleafRefObservation{
+				Success: false,
+			}, nil
+		}
+		if !success {
+			for _, r := range resultValidation {
+				log.Debug("ValidateExternalleafRef failed",
+					"localPath", yparser.GnmiPath2XPath(r.LeafRef.LocalPath, true),
+					"RemotePath", yparser.GnmiPath2XPath(r.LeafRef.RemotePath, true),
+					"Resolved", r.Resolved,
+					"Value", r.Value,
+				)
+			}
+			return managed.ValidateExternalleafRefObservation{
+				Success:          false,
+				ResolvedLeafRefs: resultValidation}, nil
+		}
 		for _, r := range resultValidation {
-			log.Debug("ValidateExternalleafRef failed",
+			log.Debug("ValidateExternalleafRef success",
 				"localPath", yparser.GnmiPath2XPath(r.LeafRef.LocalPath, true),
 				"RemotePath", yparser.GnmiPath2XPath(r.LeafRef.RemotePath, true),
 				"Resolved", r.Resolved,
@@ -221,20 +238,12 @@ func (v *validatorNetworkinstanceProtocolsBgp) ValidateExternalleafRef(ctx conte
 			)
 		}
 		return managed.ValidateExternalleafRefObservation{
-			Success:          false,
+			Success:          true,
 			ResolvedLeafRefs: resultValidation}, nil
-	}
-	for _, r := range resultValidation {
-		log.Debug("ValidateExternalleafRef success",
-			"localPath", yparser.GnmiPath2XPath(r.LeafRef.LocalPath, true),
-			"RemotePath", yparser.GnmiPath2XPath(r.LeafRef.RemotePath, true),
-			"Resolved", r.Resolved,
-			"Value", r.Value,
-		)
-	}
+	*/
 	return managed.ValidateExternalleafRefObservation{
 		Success:          true,
-		ResolvedLeafRefs: resultValidation}, nil
+		ResolvedLeafRefs: []*leafref.ResolvedLeafRef{}}, nil
 }
 
 func (v *validatorNetworkinstanceProtocolsBgp) ValidateParentDependency(ctx context.Context, mg resource.Managed, cfg []byte) (managed.ValidateParentDependencyObservation, error) {
