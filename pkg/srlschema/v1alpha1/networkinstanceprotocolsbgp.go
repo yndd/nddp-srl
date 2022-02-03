@@ -23,6 +23,7 @@ import (
 	"strings"
 
 	"github.com/pkg/errors"
+	nddv1 "github.com/yndd/ndd-runtime/apis/common/v1"
 	"github.com/yndd/ndd-runtime/pkg/meta"
 	"github.com/yndd/nddo-runtime/pkg/odns"
 	"github.com/yndd/nddo-runtime/pkg/resource"
@@ -180,6 +181,11 @@ func (x *networkinstanceprotocolsbgp) buildCR(mg resource.Managed, deviceName st
 			OwnerReferences: []metav1.OwnerReference{meta.AsController(meta.TypedReferenceTo(mg, mg.GetObjectKind().GroupVersionKind()))},
 		},
 		Spec: srlv1alpha1.NetworkinstanceProtocolsBgpSpec{
+			ResourceSpec: nddv1.ResourceSpec{
+				NetworkNodeReference: &nddv1.Reference{
+					Name: deviceName,
+				},
+			},
 			NetworkInstanceName: &parent0Key0,
 			//1
 			NetworkinstanceProtocolsBgp: x.NetworkinstanceProtocolsBgp,

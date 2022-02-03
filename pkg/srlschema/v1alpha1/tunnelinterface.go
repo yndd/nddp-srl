@@ -23,6 +23,7 @@ import (
 	"strings"
 
 	"github.com/pkg/errors"
+	nddv1 "github.com/yndd/ndd-runtime/apis/common/v1"
 	"github.com/yndd/ndd-runtime/pkg/meta"
 	"github.com/yndd/nddo-runtime/pkg/odns"
 	"github.com/yndd/nddo-runtime/pkg/resource"
@@ -186,6 +187,11 @@ func (x *tunnelinterface) buildCR(mg resource.Managed, deviceName string, labels
 			OwnerReferences: []metav1.OwnerReference{meta.AsController(meta.TypedReferenceTo(mg, mg.GetObjectKind().GroupVersionKind()))},
 		},
 		Spec: srlv1alpha1.TunnelinterfaceSpec{
+			ResourceSpec: nddv1.ResourceSpec{
+				NetworkNodeReference: &nddv1.Reference{
+					Name: deviceName,
+				},
+			},
 			Tunnelinterface: x.Tunnelinterface,
 		},
 	}
