@@ -23,6 +23,7 @@ import (
 	"time"
 
 	"github.com/openconfig/gnmi/proto/gnmi"
+	nddv1 "github.com/yndd/ndd-runtime/apis/common/v1"
 	"github.com/yndd/ndd-yang/pkg/yentry"
 	"github.com/yndd/ndd-yang/pkg/yparser"
 	"github.com/yndd/nddp-srl/internal/shared"
@@ -87,13 +88,26 @@ func (s *server) HandleGet(req *gnmi.GetRequest) ([]*gnmi.Update, error) {
 	exists := true
 	if len(req.GetExtension()) > 0 {
 		gvkName := req.GetExtension()[0].GetRegisteredExt().GetMsg()
-		gvk, err := s.getResource(crSystemDeviceName, string(gvkName))
-		if err != nil {
-			return nil, err
+		if string(gvkName) == gvkresource.Operation_GetResourceNameFromPath {
+			// procedure to get resource name
+			updates, err := s.getResourceName(crSystemDeviceName, req.GetPath()[0])
+			if err != nil {
+				return nil, err
+			}
+			return updates, nil
+
+		} else {
+			// this is a regular get but we need to check in the systemDevice cache
+			// if a managed resource exists or not. The outcome determines if the managed resource will be created
+			gvk, err := s.getResource(crSystemDeviceName, string(gvkName))
+			if err != nil {
+				return nil, err
+			}
+			if gvk == nil {
+				exists = false
+			}
 		}
-		if gvk == nil {
-			exists = false
-		}
+
 	}
 
 	for _, path := range req.GetPath() {
@@ -135,7 +149,6 @@ func appendUpdateResponse(data interface{}, path *gnmi.Path, updates []*gnmi.Upd
 	return updates, nil
 }
 
-/*
 func (s *server) getResourceList(crSystemDeviceName string) ([]*systemv1alpha1.Gvk, error) {
 	rl, err := s.cache.GetJson(crSystemDeviceName,
 		&gnmi.Path{Target: crSystemDeviceName},
@@ -147,7 +160,6 @@ func (s *server) getResourceList(crSystemDeviceName string) ([]*systemv1alpha1.G
 
 	return gvkresource.GetResourceList(rl)
 }
-*/
 
 func (s *server) getResource(crSystemDeviceName, gvkName string) (*systemv1alpha1.Gvk, error) {
 	rl, err := s.cache.GetJson(crSystemDeviceName,
@@ -160,4 +172,43 @@ func (s *server) getResource(crSystemDeviceName, gvkName string) (*systemv1alpha
 		return nil, status.Errorf(codes.Internal, err.Error())
 	}
 	return gvkresource.GetResource(rl)
+}
+
+func (s *server) getResourceName(crSystemDeviceName string, reqpath *gnmi.Path) ([]*gnmi.Update, error) {
+	// provide a string from the gnmi Path, we expect a single path in the GetRequest
+	reqPath := yparser.GnmiPath2XPath(reqpath, true)
+	// initialize the variables which are used to keep track of the matched strings
+	matchedResourceName := ""
+	matchedResourcePath := ""
+	// loop over the resourceList
+	resourceList, err := s.getResourceList(crSystemDeviceName)
+	if err != nil {
+		return nil, err
+	}
+	for _, resource := range resourceList {
+		// check if the string is contained in the path
+		if strings.Contains(reqPath, *resource.Rootpath) {
+			// if there is a better match we use the better match
+			if len(*resource.Rootpath) > len(matchedResourcePath) {
+				matchedResourcePath = *resource.Rootpath
+				matchedResourceName = *resource.Name
+			}
+		}
+
+	}
+	s.log.Debug("K8sResource GetResourceName Match", "ResourceName", matchedResourceName)
+
+	d, err := json.Marshal(nddv1.ResourceName{
+		Name: matchedResourceName,
+	})
+	if err != nil {
+		return nil, err
+	}
+	updates := make([]*gnmi.Update, 0)
+	upd := &gnmi.Update{
+		Path: reqpath,
+		Val:  &gnmi.TypedValue{Value: &gnmi.TypedValue_JsonVal{JsonVal: d}},
+	}
+	updates = append(updates, upd)
+	return updates, nil
 }

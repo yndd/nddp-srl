@@ -230,13 +230,6 @@ func processCreateK8s(mg resource.Managed, rootPath *gnmi.Path, specData interfa
 		if err != nil {
 			return nil, err
 		}
-		/*
-			// expand the update for containers with no entries; empty map[string]interface{}
-			gnmiUpdate, err = expandUpdate(gnmiUpdate, deviceSchema)
-			if err != nil {
-				return nil, err
-			}
-		*/
 
 		gvkName := gvkresource.GetGvkName(mg)
 
@@ -284,12 +277,6 @@ func processUpdateK8s(mg resource.Managed, rootPath *gnmi.Path, specData interfa
 		if err != nil {
 			return nil, err
 		}
-		/*
-			gnmiUpdate, err = expandUpdate(gnmiUpdate, deviceSchema)
-			if err != nil {
-				return nil, err
-			}
-		*/
 
 		gvkName := gvkresource.GetGvkName(mg)
 
@@ -349,38 +336,3 @@ func removeHierarchicalResourceData(x map[string]interface{}, hierPath *gnmi.Pat
 
 	return x
 }
-
-/*
-// by doing this we avoid needing the device schema in the cache
-// for entries
-func expandUpdate(gnmiUpdate []*gnmi.Update, deviceSchema *yentry.Entry) ([]*gnmi.Update, error) {
-	for _, u := range gnmiUpdate {
-		val, err := yparser.GetValue(u.GetVal())
-		if err != nil {
-			return nil, err
-		}
-		switch value := val.(type) {
-		case map[string]interface{}:
-			p := yparser.DeepCopyGnmiPath(u.GetPath())
-			if len(value) == 0 {
-				if len(p.GetElem()) > 1 {
-					// only insert the empty entries if the pathelem does not contain a key
-					if len(deviceSchema.GetKeys(p)) == 0 {
-						update := &gnmi.Update{
-							Path: &gnmi.Path{Elem: p.GetElem()[:len(p.GetElem())-1]},
-							Val:  u.GetVal(),
-						}
-						gnmiUpdate = append(gnmiUpdate, update)
-						// debug
-						fmt.Printf("{EXPANDED UPDATE: PATH: %s, VALUE: %v\n",
-							yparser.GnmiPath2XPath(u.GetPath(), true),
-							u.GetVal(),
-						)
-					}
-				}
-			}
-		}
-	}
-	return gnmiUpdate, nil
-}
-*/

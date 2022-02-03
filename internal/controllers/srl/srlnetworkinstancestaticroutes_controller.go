@@ -29,6 +29,7 @@ import (
 	"github.com/openconfig/gnmi/proto/gnmi_ext"
 	"github.com/pkg/errors"
 	ndrv1 "github.com/yndd/ndd-core/apis/dvr/v1"
+	nddv1 "github.com/yndd/ndd-runtime/apis/common/v1"
 	"github.com/yndd/ndd-runtime/pkg/event"
 	"github.com/yndd/ndd-runtime/pkg/logging"
 	"github.com/yndd/ndd-runtime/pkg/reconciler/managed"
@@ -70,7 +71,9 @@ func SetupNetworkinstanceStaticroutes(mgr ctrl.Manager, o controller.Options, nd
 
 	events := make(chan cevent.GenericEvent)
 
-	y := initYangNetworkinstanceStaticroutes()
+	y := initYangNetworkinstanceStaticroutes(
+		nddcopts.DeviceSchema,
+	)
 
 	r := managed.NewReconciler(mgr,
 		resource.ManagedKind(srlv1alpha1.NetworkinstanceStaticroutesGroupVersionKind),
@@ -110,8 +113,10 @@ type NetworkinstanceStaticroutes struct {
 	*yresource.Resource
 }
 
-func initYangNetworkinstanceStaticroutes(opts ...yresource.Option) yresource.Handler {
-	return &NetworkinstanceStaticroutes{&yresource.Resource{}}
+func initYangNetworkinstanceStaticroutes(deviceSchema *yentry.Entry, opts ...yresource.Option) yresource.Handler {
+	return &NetworkinstanceStaticroutes{&yresource.Resource{
+		DeviceSchema: deviceSchema,
+	}}
 
 }
 
@@ -143,11 +148,12 @@ func (r *NetworkinstanceStaticroutes) GetParentDependency(mg resource.Managed) [
 	if len(rootPath[0].GetElem()) < 2 {
 		return []*leafref.LeafRef{}
 	}
+	dependencyPath := r.DeviceSchema.GetParentDependency(rootPath[0], rootPath[0], "")
 	// the dependency path is the rootPath except for the last element
-	dependencyPathElem := rootPath[0].GetElem()[:(len(rootPath[0].GetElem()) - 1)]
+	//dependencyPathElem := rootPath[0].GetElem()[:(len(rootPath[0].GetElem()) - 1)]
 	// check for keys present, if no keys present we return an empty list
 	keysPresent := false
-	for _, pathElem := range dependencyPathElem {
+	for _, pathElem := range dependencyPath.GetElem() {
 		if len(pathElem.GetKey()) != 0 {
 			keysPresent = true
 		}
@@ -159,7 +165,7 @@ func (r *NetworkinstanceStaticroutes) GetParentDependency(mg resource.Managed) [
 	// return the rootPath except the last entry
 	return []*leafref.LeafRef{
 		{
-			RemotePath: &gnmi.Path{Elem: dependencyPathElem},
+			RemotePath: dependencyPath,
 		},
 	}
 }
@@ -170,24 +176,18 @@ type validatorNetworkinstanceStaticroutes struct {
 	y            yresource.Handler
 }
 
-func (v *validatorNetworkinstanceStaticroutes) ValidateLocalleafRef(ctx context.Context, mg resource.Managed) (managed.ValidateLocalleafRefObservation, error) {
-	return managed.ValidateLocalleafRefObservation{
-		Success:          true,
-		ResolvedLeafRefs: []*leafref.ResolvedLeafRef{}}, nil
-}
-
-func (v *validatorNetworkinstanceStaticroutes) ValidateExternalleafRef(ctx context.Context, mg resource.Managed, cfg []byte) (managed.ValidateExternalleafRefObservation, error) {
+func (v *validatorNetworkinstanceStaticroutes) ValidateLeafRef(ctx context.Context, mg resource.Managed, cfg []byte) (managed.ValidateLeafRefObservation, error) {
 	log := v.log.WithValues("resource", mg.GetName())
-	log.Debug("ValidateExternalleafRef...")
+	log.Debug("ValidateLeafRef...")
 
 	// json unmarshal the resource
 	cr, ok := mg.(*srlv1alpha1.SrlNetworkinstanceStaticroutes)
 	if !ok {
-		return managed.ValidateExternalleafRefObservation{}, errors.New(errUnexpectedNetworkinstanceStaticroutes)
+		return managed.ValidateLeafRefObservation{}, errors.New(errUnexpectedNetworkinstanceStaticroutes)
 	}
 	d, err := json.Marshal(&cr.Spec.NetworkinstanceStaticroutes)
 	if err != nil {
-		return managed.ValidateExternalleafRefObservation{}, errors.Wrap(err, errJSONMarshal)
+		return managed.ValidateLeafRefObservation{}, errors.Wrap(err, errJSONMarshal)
 	}
 	var x1 interface{}
 	json.Unmarshal(d, &x1)
@@ -199,53 +199,61 @@ func (v *validatorNetworkinstanceStaticroutes) ValidateExternalleafRef(ctx conte
 	rootPath := v.y.GetRootPath(cr)
 
 	leafRefs := v.deviceSchema.GetLeafRefsLocal(true, rootPath[0], &gnmi.Path{}, make([]*leafref.LeafRef, 0))
-	log.Debug("Validate leafRefs ...", "Path", yparser.GnmiPath2XPath(rootPath[0], false), "leafRefs", leafRefs)
+	//log.Debug("Validate leafRefs ...", "Path", yparser.GnmiPath2XPath(rootPath[0], false), "leafRefs", leafRefs)
+	for _, leafRef := range leafRefs {
+		log.Debug("Validate leafRefs ...",
+			"rootPath", yparser.GnmiPath2XPath(rootPath[0], true),
+			"localPath", yparser.GnmiPath2XPath(leafRef.LocalPath, true),
+			"RemotePath", yparser.GnmiPath2XPath(leafRef.RemotePath, true))
+	}
 
 	// For local external leafref validation we need to supply the external
 	// data to validate the remote leafref, we use x2 for this
 	success, resultValidation, err := yparser.ValidateLeafRef(
 		rootPath[0], x1, x2, leafRefs, v.deviceSchema)
 	if err != nil {
-		return managed.ValidateExternalleafRefObservation{
+		return managed.ValidateLeafRefObservation{
 			Success: false,
 		}, nil
 	}
 	if !success {
 		for _, r := range resultValidation {
-			log.Debug("ValidateExternalleafRef failed",
+			log.Debug("ValidateLeafRef failed",
 				"localPath", yparser.GnmiPath2XPath(r.LeafRef.LocalPath, true),
 				"RemotePath", yparser.GnmiPath2XPath(r.LeafRef.RemotePath, true),
 				"Resolved", r.Resolved,
+				"External", r.External,
 				"Value", r.Value,
 			)
 		}
-		return managed.ValidateExternalleafRefObservation{
+		return managed.ValidateLeafRefObservation{
 			Success:          false,
 			ResolvedLeafRefs: resultValidation}, nil
 	}
 	for _, r := range resultValidation {
-		log.Debug("ValidateExternalleafRef success",
+		log.Debug("ValidateLeafRef success",
 			"localPath", yparser.GnmiPath2XPath(r.LeafRef.LocalPath, true),
 			"RemotePath", yparser.GnmiPath2XPath(r.LeafRef.RemotePath, true),
 			"Resolved", r.Resolved,
+			"External", r.External,
 			"Value", r.Value,
 		)
 	}
-	return managed.ValidateExternalleafRefObservation{
+	return managed.ValidateLeafRefObservation{
 		Success:          true,
 		ResolvedLeafRefs: resultValidation}, nil
+	/*
+		return managed.ValidateLeafRefObservation{
+			Success:          true,
+			ResolvedLeafRefs: []*leafref.ResolvedLeafRef{}}, nil
+	*/
 }
 
 func (v *validatorNetworkinstanceStaticroutes) ValidateParentDependency(ctx context.Context, mg resource.Managed, cfg []byte) (managed.ValidateParentDependencyObservation, error) {
 	log := v.log.WithValues("resource", mg.GetName())
 	log.Debug("ValidateParentDependency...")
 
-	cr, ok := mg.(*srlv1alpha1.SrlNetworkinstanceStaticroutes)
-	if !ok {
-		return managed.ValidateParentDependencyObservation{}, errors.New(errUnexpectedNetworkinstanceStaticroutes)
-	}
-
-	dependencyLeafRef := v.y.GetParentDependency(cr)
+	dependencyLeafRef := v.y.GetParentDependency(mg)
 
 	// unmarshal the config
 	var x1 interface{}
@@ -275,15 +283,20 @@ func (v *validatorNetworkinstanceStaticroutes) ValidateParentDependency(ctx cont
 // if so we need to delete the original resource, because it will be dangling if we dont delete it
 func (v *validatorNetworkinstanceStaticroutes) ValidateResourceIndexes(ctx context.Context, mg resource.Managed) (managed.ValidateResourceIndexesObservation, error) {
 	log := v.log.WithValues("resource", mg.GetName())
+	log.Debug("ValidateResourceIndexes ...")
 
-	cr, ok := mg.(*srlv1alpha1.SrlNetworkinstanceStaticroutes)
-	if !ok {
-		return managed.ValidateResourceIndexesObservation{}, errors.New(errUnexpectedNetworkinstanceStaticroutes)
+	rootPath := v.y.GetRootPath(mg)
+	origResourceIndex := mg.GetResourceIndexes()
+
+	// we call the CompareConfigPathsWithResourceKeys irrespective is the get resource index returns nil
+	changed, deletPaths, newResourceIndex := yparser.CompareGnmiPathsWithResourceKeys(rootPath[0], origResourceIndex)
+	if changed {
+		log.Debug("ValidateResourceIndexes changed", "indexes", newResourceIndex, "deletPaths", deletPaths[0])
+		return managed.ValidateResourceIndexesObservation{Changed: true, ResourceDeletes: deletPaths, ResourceIndexes: newResourceIndex}, nil
 	}
 
-	log.Debug("ValidateResourceIndexes", "Spec", cr.Spec)
-
-	return managed.ValidateResourceIndexesObservation{Changed: false, ResourceIndexes: map[string]string{}}, nil
+	log.Debug("ValidateResourceIndexes success", "indexes", newResourceIndex)
+	return managed.ValidateResourceIndexesObservation{Changed: false, ResourceIndexes: newResourceIndex}, nil
 }
 
 // A connector is expected to produce an ExternalClient when its Connect method
@@ -465,13 +478,13 @@ func (e *externalNetworkinstanceStaticroutes) Observe(ctx context.Context, mg re
 	}, nil
 }
 
-func (e *externalNetworkinstanceStaticroutes) Create(ctx context.Context, mg resource.Managed) (managed.ExternalCreation, error) {
+func (e *externalNetworkinstanceStaticroutes) Create(ctx context.Context, mg resource.Managed) error {
 	log := e.log.WithValues("Resource", mg.GetName())
 	log.Debug("Creating ...")
 
 	cr, ok := mg.(*srlv1alpha1.SrlNetworkinstanceStaticroutes)
 	if !ok {
-		return managed.ExternalCreation{}, errors.New(errUnexpectedNetworkinstanceStaticroutes)
+		return errors.New(errUnexpectedNetworkinstanceStaticroutes)
 	}
 
 	// get the rootpath of the resource
@@ -483,7 +496,7 @@ func (e *externalNetworkinstanceStaticroutes) Create(ctx context.Context, mg res
 	// 1. transform the spec data to gnmi updates
 	updates, err := processCreateK8s(mg, rootPath[0], &cr.Spec, e.deviceSchema, e.nddpSchema)
 	if err != nil {
-		return managed.ExternalCreation{}, errors.Wrap(err, errCreateObject)
+		return errors.Wrap(err, errCreateObject)
 	}
 	for _, update := range updates {
 		log.Debug("Create Fine Grane Updates", "Path", yparser.GnmiPath2XPath(update.Path, true), "Value", update.GetVal())
@@ -491,7 +504,7 @@ func (e *externalNetworkinstanceStaticroutes) Create(ctx context.Context, mg res
 
 	if len(updates) == 0 {
 		log.Debug("cannot create object since there are no updates present")
-		return managed.ExternalCreation{}, errors.Wrap(err, errCreateObject)
+		return errors.Wrap(err, errCreateObject)
 	}
 
 	crSystemDeviceName := shared.GetCrSystemDeviceName(shared.GetCrDeviceName(mg.GetNamespace(), mg.GetNetworkNodeReference().Name))
@@ -503,19 +516,19 @@ func (e *externalNetworkinstanceStaticroutes) Create(ctx context.Context, mg res
 
 	_, err = e.client.Set(ctx, req)
 	if err != nil {
-		return managed.ExternalCreation{}, errors.Wrap(err, errCreateInterfaceSubinterface)
+		return errors.Wrap(err, errCreateInterfaceSubinterface)
 	}
 
-	return managed.ExternalCreation{}, nil
+	return nil
 }
 
-func (e *externalNetworkinstanceStaticroutes) Update(ctx context.Context, mg resource.Managed, obs managed.ExternalObservation) (managed.ExternalUpdate, error) {
+func (e *externalNetworkinstanceStaticroutes) Update(ctx context.Context, mg resource.Managed, obs managed.ExternalObservation) error {
 	log := e.log.WithValues("Resource", mg.GetName())
 	log.Debug("Updating ...")
 
 	cr, ok := mg.(*srlv1alpha1.SrlNetworkinstanceStaticroutes)
 	if !ok {
-		return managed.ExternalUpdate{}, errors.New(errUnexpectedNetworkinstanceStaticroutes)
+		return errors.New(errUnexpectedNetworkinstanceStaticroutes)
 	}
 
 	// get the rootpath of the resource
@@ -523,7 +536,7 @@ func (e *externalNetworkinstanceStaticroutes) Update(ctx context.Context, mg res
 
 	updates, err := processUpdateK8s(mg, rootPath[0], &cr.Spec, e.deviceSchema, e.nddpSchema)
 	if err != nil {
-		return managed.ExternalUpdate{}, errors.Wrap(err, errUpdateInterfaceSubinterface)
+		return errors.Wrap(err, errUpdateInterfaceSubinterface)
 	}
 	for _, update := range updates {
 		log.Debug("Update Fine Grane Updates", "Path", yparser.GnmiPath2XPath(update.Path, true), "Value", update.GetVal())
@@ -538,10 +551,10 @@ func (e *externalNetworkinstanceStaticroutes) Update(ctx context.Context, mg res
 
 	_, err = e.client.Set(ctx, &req)
 	if err != nil {
-		return managed.ExternalUpdate{}, errors.Wrap(err, errUpdateInterfaceSubinterface)
+		return errors.Wrap(err, errUpdateInterfaceSubinterface)
 	}
 
-	return managed.ExternalUpdate{}, nil
+	return nil
 }
 
 func (e *externalNetworkinstanceStaticroutes) Delete(ctx context.Context, mg resource.Managed) error {
@@ -614,6 +627,43 @@ func (e *externalNetworkinstanceStaticroutes) GetConfig(ctx context.Context, mg 
 	return nil, nil
 }
 
-func (e *externalNetworkinstanceStaticroutes) GetResourceName(ctx context.Context, path []*gnmi.Path) (string, error) {
-	return "", nil
+func (e *externalNetworkinstanceStaticroutes) GetResourceName(ctx context.Context, mg resource.Managed, path *gnmi.Path) (string, error) {
+	e.log.Debug("Get GetResourceName ...", "remotePath", yparser.GnmiPath2XPath(path, true))
+	crSystemDeviceName := shared.GetCrSystemDeviceName(shared.GetCrDeviceName(mg.GetNamespace(), mg.GetNetworkNodeReference().Name))
+
+	// gnmi get request
+	req := &gnmi.GetRequest{
+		Prefix:   &gnmi.Path{Target: crSystemDeviceName},
+		Path:     []*gnmi.Path{path},
+		Encoding: gnmi.Encoding_JSON,
+		Extension: []*gnmi_ext.Extension{
+			{Ext: &gnmi_ext.Extension_RegisteredExt{
+				RegisteredExt: &gnmi_ext.RegisteredExtension{Id: gnmi_ext.ExtensionID_EID_EXPERIMENTAL, Msg: []byte(gvkresource.Operation_GetResourceNameFromPath)}}},
+		},
+	}
+
+	// gnmi get response
+	resp, err := e.client.Get(ctx, req)
+	if err != nil {
+		return "", errors.Wrap(err, errGetResourceName)
+	}
+
+	x2, err := yparser.GetValue(resp.GetNotification()[0].GetUpdate()[0].Val)
+	if err != nil {
+		return "", errors.Wrap(err, errJSONMarshal)
+	}
+
+	d, err := json.Marshal(x2)
+	if err != nil {
+		return "", errors.Wrap(err, errJSONMarshal)
+	}
+
+	var resourceName nddv1.ResourceName
+	if err := json.Unmarshal(d, &resourceName); err != nil {
+		return "", errors.Wrap(err, errJSONUnMarshal)
+	}
+
+	e.log.Debug("Get ResourceName Response", "ResourceName", resourceName)
+
+	return resourceName.Name, nil
 }
