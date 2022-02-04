@@ -122,7 +122,19 @@ func (x *networkinstanceprotocolsbgp) GetKey() []string {
 
 // NetworkinstanceProtocolsBgp group bgp Bgp []
 func (x *networkinstanceprotocolsbgp) AddNetworkinstanceProtocolsBgpGroup(ai *srlv1alpha1.NetworkinstanceProtocolsBgpGroup) {
-	x.NetworkinstanceProtocolsBgp.Group = append(x.NetworkinstanceProtocolsBgp.Group, ai)
+	if len(x.NetworkinstanceProtocolsBgp.Group) == 0 {
+		x.NetworkinstanceProtocolsBgp.Group = make([]*srlv1alpha1.NetworkinstanceProtocolsBgpGroup, 0)
+	}
+	found := false
+	for _, xx := range x.NetworkinstanceProtocolsBgp.Group {
+		if *xx.Groupname == *ai.Groupname {
+			found = true
+			xx = ai
+		}
+	}
+	if !found {
+		x.NetworkinstanceProtocolsBgp.Group = append(x.NetworkinstanceProtocolsBgp.Group, ai)
+	}
 }
 
 // NetworkinstanceProtocolsBgp neighbor bgp Bgp []
