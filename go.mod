@@ -11,7 +11,7 @@ require (
 	github.com/spf13/cobra v1.2.1
 	github.com/stoewer/go-strcase v1.2.0
 	github.com/yndd/ndd-core v0.1.7
-	github.com/yndd/ndd-runtime v0.2.3
+	github.com/yndd/ndd-runtime v0.2.4
 	github.com/yndd/ndd-yang v0.1.517
 	github.com/yndd/ndda-network v0.1.30
 	github.com/yndd/nddo-runtime v0.0.72

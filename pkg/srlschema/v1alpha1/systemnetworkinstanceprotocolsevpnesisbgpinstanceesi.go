@@ -164,10 +164,16 @@ func (x *systemnetworkinstanceprotocolsevpnesisbgpinstanceesi) buildCR(mg resour
 	labels[srlv1alpha1.LabelNddaOwner] = odns.GetOdnsResourceKindName(mg.GetName(), strings.ToLower(mg.GetObjectKind().GroupVersionKind().Kind))
 	labels[srlv1alpha1.LabelNddaDevice] = deviceName
 	//labels[srlv1alpha1.LabelNddaItfce] = itfceName
+
+	namespace := mg.GetNamespace()
+	if namespace == "" {
+		namespace = "default"
+	}
+
 	return &srlv1alpha1.SrlSystemNetworkinstanceProtocolsEvpnEsisBgpinstanceEsi{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:            resourceName,
-			Namespace:       mg.GetNamespace(),
+			Namespace:       namespace,
 			Labels:          labels,
 			OwnerReferences: []metav1.OwnerReference{meta.AsController(meta.TypedReferenceTo(mg, mg.GetObjectKind().GroupVersionKind()))},
 		},
