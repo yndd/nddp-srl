@@ -144,7 +144,7 @@ func (x *networkinstanceprotocolsbgp) AddNetworkinstanceProtocolsBgpNeighbor(ai 
 	}
 	found := false
 	for _, xx := range x.NetworkinstanceProtocolsBgp.Neighbor {
-		if *xx.Peergroup == *ai.Peergroup {
+		if *xx.Peeraddress == *ai.Peeraddress {
 			found = true
 			xx = ai
 		}
