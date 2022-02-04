@@ -84,7 +84,7 @@ func processObserve(rootPath *gnmi.Path, hierPaths []*gnmi.Path, specData interf
 		fmt.Printf("processObserve x1 data %v\n", x1)
 	}
 	// the gnmi response already comes without the last element in the return data
-	fmt.Printf("processObserve x2 data %v\n", x2)
+	//fmt.Printf("processObserve x2 data %v\n", x2)
 
 	// remove hierarchical resource elements from the data to be able to compare the gnmi response
 	// with the k8s Spec

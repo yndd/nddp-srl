@@ -134,10 +134,12 @@ func (r *reconciler) updateCandidate(resource *systemv1alpha1.Gvk) error {
 				Prefix:    &gnmi.Path{Target: crCandidateDeviceName},
 				Update:    []*gnmi.Update{update},
 			}
-			r.log.Debug("updateCandidate notification",
-				"path", yparser.GnmiPath2XPath(newNotification.GetUpdate()[0].GetPath(), true),
-				"val", newNotification.GetUpdate()[0].GetVal(),
-			)
+			/*
+				r.log.Debug("updateCandidate notification",
+					"path", yparser.GnmiPath2XPath(newNotification.GetUpdate()[0].GetPath(), true),
+					"val", newNotification.GetUpdate()[0].GetVal(),
+				)
+			*/
 			if err := r.cache.GnmiUpdate(crCandidateDeviceName, newNotification); err != nil {
 				return errors.Wrap(err, "cache update failed")
 			}
@@ -158,7 +160,9 @@ func (r *reconciler) getCandidateUpdate() ([]*gnmi.Update, bool, error) {
 		return nil, false, err
 	}
 
-	r.log.Debug("getCandidateUpdate", "config", candidatecacheData)
+	/*
+		r.log.Debug("getCandidateUpdate", "config", candidatecacheData)
+	*/
 
 	d, err := json.Marshal(candidatecacheData)
 	if err != nil {
