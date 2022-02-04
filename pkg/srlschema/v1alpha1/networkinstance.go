@@ -395,6 +395,8 @@ func (x *networkinstance) buildCR(mg resource.Managed, deviceName string, labels
 		namespace = "default"
 	}
 
+	fmt.Printf("networkinstance namespace : %s\n", namespace)
+
 	return &srlv1alpha1.SrlNetworkinstance{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:            resourceName,
