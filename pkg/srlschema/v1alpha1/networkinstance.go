@@ -42,23 +42,23 @@ const (
 type Networkinstance interface {
 	// methods children
 	NewNetworkinstanceStaticroutes(c resource.ClientApplicator, key string) NetworkinstanceStaticroutes
+	NewNetworkinstanceNexthopgroups(c resource.ClientApplicator, key string) NetworkinstanceNexthopgroups
 	NewNetworkinstanceProtocolsBgpvpn(c resource.ClientApplicator, key string) NetworkinstanceProtocolsBgpvpn
 	NewNetworkinstanceProtocolsBgp(c resource.ClientApplicator, key string) NetworkinstanceProtocolsBgp
-	NewNetworkinstanceProtocolsIsis(c resource.ClientApplicator, key string) NetworkinstanceProtocolsIsis
-	NewNetworkinstanceAggregateroutes(c resource.ClientApplicator, key string) NetworkinstanceAggregateroutes
-	NewNetworkinstanceNexthopgroups(c resource.ClientApplicator, key string) NetworkinstanceNexthopgroups
-	NewNetworkinstanceProtocolsBgpevpn(c resource.ClientApplicator, key string) NetworkinstanceProtocolsBgpevpn
-	NewNetworkinstanceProtocolsOspf(c resource.ClientApplicator, key string) NetworkinstanceProtocolsOspf
 	NewNetworkinstanceProtocolsLinux(c resource.ClientApplicator, key string) NetworkinstanceProtocolsLinux
+	NewNetworkinstanceAggregateroutes(c resource.ClientApplicator, key string) NetworkinstanceAggregateroutes
+	NewNetworkinstanceProtocolsBgpevpn(c resource.ClientApplicator, key string) NetworkinstanceProtocolsBgpevpn
+	NewNetworkinstanceProtocolsIsis(c resource.ClientApplicator, key string) NetworkinstanceProtocolsIsis
+	NewNetworkinstanceProtocolsOspf(c resource.ClientApplicator, key string) NetworkinstanceProtocolsOspf
 	GetNetworkinstanceStaticroutess() map[string]NetworkinstanceStaticroutes
+	GetNetworkinstanceNexthopgroupss() map[string]NetworkinstanceNexthopgroups
 	GetNetworkinstanceProtocolsBgpvpns() map[string]NetworkinstanceProtocolsBgpvpn
 	GetNetworkinstanceProtocolsBgps() map[string]NetworkinstanceProtocolsBgp
-	GetNetworkinstanceProtocolsIsiss() map[string]NetworkinstanceProtocolsIsis
-	GetNetworkinstanceAggregateroutess() map[string]NetworkinstanceAggregateroutes
-	GetNetworkinstanceNexthopgroupss() map[string]NetworkinstanceNexthopgroups
-	GetNetworkinstanceProtocolsBgpevpns() map[string]NetworkinstanceProtocolsBgpevpn
-	GetNetworkinstanceProtocolsOspfs() map[string]NetworkinstanceProtocolsOspf
 	GetNetworkinstanceProtocolsLinuxs() map[string]NetworkinstanceProtocolsLinux
+	GetNetworkinstanceAggregateroutess() map[string]NetworkinstanceAggregateroutes
+	GetNetworkinstanceProtocolsBgpevpns() map[string]NetworkinstanceProtocolsBgpevpn
+	GetNetworkinstanceProtocolsIsiss() map[string]NetworkinstanceProtocolsIsis
+	GetNetworkinstanceProtocolsOspfs() map[string]NetworkinstanceProtocolsOspf
 	// methods data
 	GetKey() []string
 	Get() *srlv1alpha1.Networkinstance
@@ -85,14 +85,14 @@ func NewNetworkinstance(c resource.ClientApplicator, p Device, key string) Netwo
 		parent: p,
 		// children
 		NetworkinstanceStaticroutes:     make(map[string]NetworkinstanceStaticroutes),
+		NetworkinstanceNexthopgroups:    make(map[string]NetworkinstanceNexthopgroups),
 		NetworkinstanceProtocolsBgpvpn:  make(map[string]NetworkinstanceProtocolsBgpvpn),
 		NetworkinstanceProtocolsBgp:     make(map[string]NetworkinstanceProtocolsBgp),
-		NetworkinstanceProtocolsIsis:    make(map[string]NetworkinstanceProtocolsIsis),
-		NetworkinstanceAggregateroutes:  make(map[string]NetworkinstanceAggregateroutes),
-		NetworkinstanceNexthopgroups:    make(map[string]NetworkinstanceNexthopgroups),
-		NetworkinstanceProtocolsBgpevpn: make(map[string]NetworkinstanceProtocolsBgpevpn),
-		NetworkinstanceProtocolsOspf:    make(map[string]NetworkinstanceProtocolsOspf),
 		NetworkinstanceProtocolsLinux:   make(map[string]NetworkinstanceProtocolsLinux),
+		NetworkinstanceAggregateroutes:  make(map[string]NetworkinstanceAggregateroutes),
+		NetworkinstanceProtocolsBgpevpn: make(map[string]NetworkinstanceProtocolsBgpevpn),
+		NetworkinstanceProtocolsIsis:    make(map[string]NetworkinstanceProtocolsIsis),
+		NetworkinstanceProtocolsOspf:    make(map[string]NetworkinstanceProtocolsOspf),
 		// data key
 		//Networkinstance: &srlv1alpha1.Networkinstance{
 		//	Name: &name,
@@ -110,14 +110,14 @@ type networkinstance struct {
 	parent Device
 	// children
 	NetworkinstanceStaticroutes     map[string]NetworkinstanceStaticroutes
+	NetworkinstanceNexthopgroups    map[string]NetworkinstanceNexthopgroups
 	NetworkinstanceProtocolsBgpvpn  map[string]NetworkinstanceProtocolsBgpvpn
 	NetworkinstanceProtocolsBgp     map[string]NetworkinstanceProtocolsBgp
-	NetworkinstanceProtocolsIsis    map[string]NetworkinstanceProtocolsIsis
-	NetworkinstanceAggregateroutes  map[string]NetworkinstanceAggregateroutes
-	NetworkinstanceNexthopgroups    map[string]NetworkinstanceNexthopgroups
-	NetworkinstanceProtocolsBgpevpn map[string]NetworkinstanceProtocolsBgpevpn
-	NetworkinstanceProtocolsOspf    map[string]NetworkinstanceProtocolsOspf
 	NetworkinstanceProtocolsLinux   map[string]NetworkinstanceProtocolsLinux
+	NetworkinstanceAggregateroutes  map[string]NetworkinstanceAggregateroutes
+	NetworkinstanceProtocolsBgpevpn map[string]NetworkinstanceProtocolsBgpevpn
+	NetworkinstanceProtocolsIsis    map[string]NetworkinstanceProtocolsIsis
+	NetworkinstanceProtocolsOspf    map[string]NetworkinstanceProtocolsOspf
 	// Data
 	Networkinstance        *srlv1alpha1.Networkinstance
 	newNetworkinstanceList func() srlv1alpha1.IFSrlNetworkinstanceList
@@ -147,6 +147,12 @@ func (x *networkinstance) NewNetworkinstanceStaticroutes(c resource.ClientApplic
 	}
 	return x.NetworkinstanceStaticroutes[key]
 }
+func (x *networkinstance) NewNetworkinstanceNexthopgroups(c resource.ClientApplicator, key string) NetworkinstanceNexthopgroups {
+	if _, ok := x.NetworkinstanceNexthopgroups[key]; !ok {
+		x.NetworkinstanceNexthopgroups[key] = NewNetworkinstanceNexthopgroups(c, x, key)
+	}
+	return x.NetworkinstanceNexthopgroups[key]
+}
 func (x *networkinstance) NewNetworkinstanceProtocolsBgpvpn(c resource.ClientApplicator, key string) NetworkinstanceProtocolsBgpvpn {
 	if _, ok := x.NetworkinstanceProtocolsBgpvpn[key]; !ok {
 		x.NetworkinstanceProtocolsBgpvpn[key] = NewNetworkinstanceProtocolsBgpvpn(c, x, key)
@@ -159,11 +165,11 @@ func (x *networkinstance) NewNetworkinstanceProtocolsBgp(c resource.ClientApplic
 	}
 	return x.NetworkinstanceProtocolsBgp[key]
 }
-func (x *networkinstance) NewNetworkinstanceProtocolsIsis(c resource.ClientApplicator, key string) NetworkinstanceProtocolsIsis {
-	if _, ok := x.NetworkinstanceProtocolsIsis[key]; !ok {
-		x.NetworkinstanceProtocolsIsis[key] = NewNetworkinstanceProtocolsIsis(c, x, key)
+func (x *networkinstance) NewNetworkinstanceProtocolsLinux(c resource.ClientApplicator, key string) NetworkinstanceProtocolsLinux {
+	if _, ok := x.NetworkinstanceProtocolsLinux[key]; !ok {
+		x.NetworkinstanceProtocolsLinux[key] = NewNetworkinstanceProtocolsLinux(c, x, key)
 	}
-	return x.NetworkinstanceProtocolsIsis[key]
+	return x.NetworkinstanceProtocolsLinux[key]
 }
 func (x *networkinstance) NewNetworkinstanceAggregateroutes(c resource.ClientApplicator, key string) NetworkinstanceAggregateroutes {
 	if _, ok := x.NetworkinstanceAggregateroutes[key]; !ok {
@@ -171,17 +177,17 @@ func (x *networkinstance) NewNetworkinstanceAggregateroutes(c resource.ClientApp
 	}
 	return x.NetworkinstanceAggregateroutes[key]
 }
-func (x *networkinstance) NewNetworkinstanceNexthopgroups(c resource.ClientApplicator, key string) NetworkinstanceNexthopgroups {
-	if _, ok := x.NetworkinstanceNexthopgroups[key]; !ok {
-		x.NetworkinstanceNexthopgroups[key] = NewNetworkinstanceNexthopgroups(c, x, key)
-	}
-	return x.NetworkinstanceNexthopgroups[key]
-}
 func (x *networkinstance) NewNetworkinstanceProtocolsBgpevpn(c resource.ClientApplicator, key string) NetworkinstanceProtocolsBgpevpn {
 	if _, ok := x.NetworkinstanceProtocolsBgpevpn[key]; !ok {
 		x.NetworkinstanceProtocolsBgpevpn[key] = NewNetworkinstanceProtocolsBgpevpn(c, x, key)
 	}
 	return x.NetworkinstanceProtocolsBgpevpn[key]
+}
+func (x *networkinstance) NewNetworkinstanceProtocolsIsis(c resource.ClientApplicator, key string) NetworkinstanceProtocolsIsis {
+	if _, ok := x.NetworkinstanceProtocolsIsis[key]; !ok {
+		x.NetworkinstanceProtocolsIsis[key] = NewNetworkinstanceProtocolsIsis(c, x, key)
+	}
+	return x.NetworkinstanceProtocolsIsis[key]
 }
 func (x *networkinstance) NewNetworkinstanceProtocolsOspf(c resource.ClientApplicator, key string) NetworkinstanceProtocolsOspf {
 	if _, ok := x.NetworkinstanceProtocolsOspf[key]; !ok {
@@ -189,14 +195,11 @@ func (x *networkinstance) NewNetworkinstanceProtocolsOspf(c resource.ClientAppli
 	}
 	return x.NetworkinstanceProtocolsOspf[key]
 }
-func (x *networkinstance) NewNetworkinstanceProtocolsLinux(c resource.ClientApplicator, key string) NetworkinstanceProtocolsLinux {
-	if _, ok := x.NetworkinstanceProtocolsLinux[key]; !ok {
-		x.NetworkinstanceProtocolsLinux[key] = NewNetworkinstanceProtocolsLinux(c, x, key)
-	}
-	return x.NetworkinstanceProtocolsLinux[key]
-}
 func (x *networkinstance) GetNetworkinstanceStaticroutess() map[string]NetworkinstanceStaticroutes {
 	return x.NetworkinstanceStaticroutes
+}
+func (x *networkinstance) GetNetworkinstanceNexthopgroupss() map[string]NetworkinstanceNexthopgroups {
+	return x.NetworkinstanceNexthopgroups
 }
 func (x *networkinstance) GetNetworkinstanceProtocolsBgpvpns() map[string]NetworkinstanceProtocolsBgpvpn {
 	return x.NetworkinstanceProtocolsBgpvpn
@@ -204,23 +207,20 @@ func (x *networkinstance) GetNetworkinstanceProtocolsBgpvpns() map[string]Networ
 func (x *networkinstance) GetNetworkinstanceProtocolsBgps() map[string]NetworkinstanceProtocolsBgp {
 	return x.NetworkinstanceProtocolsBgp
 }
-func (x *networkinstance) GetNetworkinstanceProtocolsIsiss() map[string]NetworkinstanceProtocolsIsis {
-	return x.NetworkinstanceProtocolsIsis
+func (x *networkinstance) GetNetworkinstanceProtocolsLinuxs() map[string]NetworkinstanceProtocolsLinux {
+	return x.NetworkinstanceProtocolsLinux
 }
 func (x *networkinstance) GetNetworkinstanceAggregateroutess() map[string]NetworkinstanceAggregateroutes {
 	return x.NetworkinstanceAggregateroutes
 }
-func (x *networkinstance) GetNetworkinstanceNexthopgroupss() map[string]NetworkinstanceNexthopgroups {
-	return x.NetworkinstanceNexthopgroups
-}
 func (x *networkinstance) GetNetworkinstanceProtocolsBgpevpns() map[string]NetworkinstanceProtocolsBgpevpn {
 	return x.NetworkinstanceProtocolsBgpevpn
 }
+func (x *networkinstance) GetNetworkinstanceProtocolsIsiss() map[string]NetworkinstanceProtocolsIsis {
+	return x.NetworkinstanceProtocolsIsis
+}
 func (x *networkinstance) GetNetworkinstanceProtocolsOspfs() map[string]NetworkinstanceProtocolsOspf {
 	return x.NetworkinstanceProtocolsOspf
-}
-func (x *networkinstance) GetNetworkinstanceProtocolsLinuxs() map[string]NetworkinstanceProtocolsLinux {
-	return x.NetworkinstanceProtocolsLinux
 }
 
 // Data methods
@@ -239,11 +239,14 @@ func (x *networkinstance) GetKey() []string {
 
 // Networkinstance interface networkinstance Networkinstance []
 func (x *networkinstance) AddNetworkinstanceInterface(ai *srlv1alpha1.NetworkinstanceInterface) {
+	//x.Networkinstance.Interface = append(x.Networkinstance.Interface, ai)
 	if len(x.Networkinstance.Interface) == 0 {
 		x.Networkinstance.Interface = make([]*srlv1alpha1.NetworkinstanceInterface, 0)
 	}
 	found := false
 	for _, xx := range x.Networkinstance.Interface {
+
+		// [name]
 		if *xx.Name == *ai.Name {
 			found = true
 			xx = ai
@@ -256,7 +259,22 @@ func (x *networkinstance) AddNetworkinstanceInterface(ai *srlv1alpha1.Networkins
 
 // Networkinstance vxlan-interface networkinstance Networkinstance []
 func (x *networkinstance) AddNetworkinstanceVxlaninterface(ai *srlv1alpha1.NetworkinstanceVxlaninterface) {
-	x.Networkinstance.Vxlaninterface = append(x.Networkinstance.Vxlaninterface, ai)
+	//x.Networkinstance.Vxlaninterface = append(x.Networkinstance.Vxlaninterface, ai)
+	if len(x.Networkinstance.Vxlaninterface) == 0 {
+		x.Networkinstance.Vxlaninterface = make([]*srlv1alpha1.NetworkinstanceVxlaninterface, 0)
+	}
+	found := false
+	for _, xx := range x.Networkinstance.Vxlaninterface {
+
+		// [name]
+		if *xx.Name == *ai.Name {
+			found = true
+			xx = ai
+		}
+	}
+	if !found {
+		x.Networkinstance.Vxlaninterface = append(x.Networkinstance.Vxlaninterface, ai)
+	}
 }
 
 // methods schema
@@ -278,28 +296,28 @@ func (x *networkinstance) Print(key string, n int) {
 	for key, i := range x.GetNetworkinstanceStaticroutess() {
 		i.Print(key, n)
 	}
+	for key, i := range x.GetNetworkinstanceNexthopgroupss() {
+		i.Print(key, n)
+	}
 	for key, i := range x.GetNetworkinstanceProtocolsBgpvpns() {
 		i.Print(key, n)
 	}
 	for key, i := range x.GetNetworkinstanceProtocolsBgps() {
 		i.Print(key, n)
 	}
-	for key, i := range x.GetNetworkinstanceProtocolsIsiss() {
+	for key, i := range x.GetNetworkinstanceProtocolsLinuxs() {
 		i.Print(key, n)
 	}
 	for key, i := range x.GetNetworkinstanceAggregateroutess() {
 		i.Print(key, n)
 	}
-	for key, i := range x.GetNetworkinstanceNexthopgroupss() {
-		i.Print(key, n)
-	}
 	for key, i := range x.GetNetworkinstanceProtocolsBgpevpns() {
 		i.Print(key, n)
 	}
-	for key, i := range x.GetNetworkinstanceProtocolsOspfs() {
+	for key, i := range x.GetNetworkinstanceProtocolsIsiss() {
 		i.Print(key, n)
 	}
-	for key, i := range x.GetNetworkinstanceProtocolsLinuxs() {
+	for key, i := range x.GetNetworkinstanceProtocolsOspfs() {
 		i.Print(key, n)
 	}
 }
@@ -316,6 +334,11 @@ func (x *networkinstance) DeploySchema(ctx context.Context, mg resource.Managed,
 			return err
 		}
 	}
+	for _, r := range x.GetNetworkinstanceNexthopgroupss() {
+		if err := r.DeploySchema(ctx, mg, deviceName, labels); err != nil {
+			return err
+		}
+	}
 	for _, r := range x.GetNetworkinstanceProtocolsBgpvpns() {
 		if err := r.DeploySchema(ctx, mg, deviceName, labels); err != nil {
 			return err
@@ -326,7 +349,7 @@ func (x *networkinstance) DeploySchema(ctx context.Context, mg resource.Managed,
 			return err
 		}
 	}
-	for _, r := range x.GetNetworkinstanceProtocolsIsiss() {
+	for _, r := range x.GetNetworkinstanceProtocolsLinuxs() {
 		if err := r.DeploySchema(ctx, mg, deviceName, labels); err != nil {
 			return err
 		}
@@ -336,22 +359,17 @@ func (x *networkinstance) DeploySchema(ctx context.Context, mg resource.Managed,
 			return err
 		}
 	}
-	for _, r := range x.GetNetworkinstanceNexthopgroupss() {
-		if err := r.DeploySchema(ctx, mg, deviceName, labels); err != nil {
-			return err
-		}
-	}
 	for _, r := range x.GetNetworkinstanceProtocolsBgpevpns() {
 		if err := r.DeploySchema(ctx, mg, deviceName, labels); err != nil {
 			return err
 		}
 	}
-	for _, r := range x.GetNetworkinstanceProtocolsOspfs() {
+	for _, r := range x.GetNetworkinstanceProtocolsIsiss() {
 		if err := r.DeploySchema(ctx, mg, deviceName, labels); err != nil {
 			return err
 		}
 	}
-	for _, r := range x.GetNetworkinstanceProtocolsLinuxs() {
+	for _, r := range x.GetNetworkinstanceProtocolsOspfs() {
 		if err := r.DeploySchema(ctx, mg, deviceName, labels); err != nil {
 			return err
 		}
@@ -398,21 +416,21 @@ func (x *networkinstance) buildCR(mg resource.Managed, deviceName string, labels
 func (x *networkinstance) InitializeDummySchema() {
 	c0 := x.NewNetworkinstanceStaticroutes(x.client, "dummy")
 	c0.InitializeDummySchema()
-	c1 := x.NewNetworkinstanceProtocolsBgpvpn(x.client, "dummy")
+	c1 := x.NewNetworkinstanceNexthopgroups(x.client, "dummy")
 	c1.InitializeDummySchema()
-	c2 := x.NewNetworkinstanceProtocolsBgp(x.client, "dummy")
+	c2 := x.NewNetworkinstanceProtocolsBgpvpn(x.client, "dummy")
 	c2.InitializeDummySchema()
-	c3 := x.NewNetworkinstanceProtocolsIsis(x.client, "dummy")
+	c3 := x.NewNetworkinstanceProtocolsBgp(x.client, "dummy")
 	c3.InitializeDummySchema()
-	c4 := x.NewNetworkinstanceAggregateroutes(x.client, "dummy")
+	c4 := x.NewNetworkinstanceProtocolsLinux(x.client, "dummy")
 	c4.InitializeDummySchema()
-	c5 := x.NewNetworkinstanceNexthopgroups(x.client, "dummy")
+	c5 := x.NewNetworkinstanceAggregateroutes(x.client, "dummy")
 	c5.InitializeDummySchema()
 	c6 := x.NewNetworkinstanceProtocolsBgpevpn(x.client, "dummy")
 	c6.InitializeDummySchema()
-	c7 := x.NewNetworkinstanceProtocolsOspf(x.client, "dummy")
+	c7 := x.NewNetworkinstanceProtocolsIsis(x.client, "dummy")
 	c7.InitializeDummySchema()
-	c8 := x.NewNetworkinstanceProtocolsLinux(x.client, "dummy")
+	c8 := x.NewNetworkinstanceProtocolsOspf(x.client, "dummy")
 	c8.InitializeDummySchema()
 }
 
@@ -440,6 +458,11 @@ func (x *networkinstance) ListResources(ctx context.Context, mg resource.Managed
 			return err
 		}
 	}
+	for _, i := range x.GetNetworkinstanceNexthopgroupss() {
+		if err := i.ListResources(ctx, mg, resources); err != nil {
+			return err
+		}
+	}
 	for _, i := range x.GetNetworkinstanceProtocolsBgpvpns() {
 		if err := i.ListResources(ctx, mg, resources); err != nil {
 			return err
@@ -450,7 +473,7 @@ func (x *networkinstance) ListResources(ctx context.Context, mg resource.Managed
 			return err
 		}
 	}
-	for _, i := range x.GetNetworkinstanceProtocolsIsiss() {
+	for _, i := range x.GetNetworkinstanceProtocolsLinuxs() {
 		if err := i.ListResources(ctx, mg, resources); err != nil {
 			return err
 		}
@@ -460,22 +483,17 @@ func (x *networkinstance) ListResources(ctx context.Context, mg resource.Managed
 			return err
 		}
 	}
-	for _, i := range x.GetNetworkinstanceNexthopgroupss() {
-		if err := i.ListResources(ctx, mg, resources); err != nil {
-			return err
-		}
-	}
 	for _, i := range x.GetNetworkinstanceProtocolsBgpevpns() {
 		if err := i.ListResources(ctx, mg, resources); err != nil {
 			return err
 		}
 	}
-	for _, i := range x.GetNetworkinstanceProtocolsOspfs() {
+	for _, i := range x.GetNetworkinstanceProtocolsIsiss() {
 		if err := i.ListResources(ctx, mg, resources); err != nil {
 			return err
 		}
 	}
-	for _, i := range x.GetNetworkinstanceProtocolsLinuxs() {
+	for _, i := range x.GetNetworkinstanceProtocolsOspfs() {
 		if err := i.ListResources(ctx, mg, resources); err != nil {
 			return err
 		}
@@ -504,6 +522,11 @@ func (x *networkinstance) ValidateResources(ctx context.Context, mg resource.Man
 			return err
 		}
 	}
+	for _, i := range x.GetNetworkinstanceNexthopgroupss() {
+		if err := i.ValidateResources(ctx, mg, deviceName, resources); err != nil {
+			return err
+		}
+	}
 	for _, i := range x.GetNetworkinstanceProtocolsBgpvpns() {
 		if err := i.ValidateResources(ctx, mg, deviceName, resources); err != nil {
 			return err
@@ -514,7 +537,7 @@ func (x *networkinstance) ValidateResources(ctx context.Context, mg resource.Man
 			return err
 		}
 	}
-	for _, i := range x.GetNetworkinstanceProtocolsIsiss() {
+	for _, i := range x.GetNetworkinstanceProtocolsLinuxs() {
 		if err := i.ValidateResources(ctx, mg, deviceName, resources); err != nil {
 			return err
 		}
@@ -524,22 +547,17 @@ func (x *networkinstance) ValidateResources(ctx context.Context, mg resource.Man
 			return err
 		}
 	}
-	for _, i := range x.GetNetworkinstanceNexthopgroupss() {
-		if err := i.ValidateResources(ctx, mg, deviceName, resources); err != nil {
-			return err
-		}
-	}
 	for _, i := range x.GetNetworkinstanceProtocolsBgpevpns() {
 		if err := i.ValidateResources(ctx, mg, deviceName, resources); err != nil {
 			return err
 		}
 	}
-	for _, i := range x.GetNetworkinstanceProtocolsOspfs() {
+	for _, i := range x.GetNetworkinstanceProtocolsIsiss() {
 		if err := i.ValidateResources(ctx, mg, deviceName, resources); err != nil {
 			return err
 		}
 	}
-	for _, i := range x.GetNetworkinstanceProtocolsLinuxs() {
+	for _, i := range x.GetNetworkinstanceProtocolsOspfs() {
 		if err := i.ValidateResources(ctx, mg, deviceName, resources); err != nil {
 			return err
 		}
@@ -569,6 +587,11 @@ func (x *networkinstance) DeleteResources(ctx context.Context, mg resource.Manag
 			return err
 		}
 	}
+	for _, i := range x.GetNetworkinstanceNexthopgroupss() {
+		if err := i.DeleteResources(ctx, mg, resources); err != nil {
+			return err
+		}
+	}
 	for _, i := range x.GetNetworkinstanceProtocolsBgpvpns() {
 		if err := i.DeleteResources(ctx, mg, resources); err != nil {
 			return err
@@ -579,7 +602,7 @@ func (x *networkinstance) DeleteResources(ctx context.Context, mg resource.Manag
 			return err
 		}
 	}
-	for _, i := range x.GetNetworkinstanceProtocolsIsiss() {
+	for _, i := range x.GetNetworkinstanceProtocolsLinuxs() {
 		if err := i.DeleteResources(ctx, mg, resources); err != nil {
 			return err
 		}
@@ -589,22 +612,17 @@ func (x *networkinstance) DeleteResources(ctx context.Context, mg resource.Manag
 			return err
 		}
 	}
-	for _, i := range x.GetNetworkinstanceNexthopgroupss() {
-		if err := i.DeleteResources(ctx, mg, resources); err != nil {
-			return err
-		}
-	}
 	for _, i := range x.GetNetworkinstanceProtocolsBgpevpns() {
 		if err := i.DeleteResources(ctx, mg, resources); err != nil {
 			return err
 		}
 	}
-	for _, i := range x.GetNetworkinstanceProtocolsOspfs() {
+	for _, i := range x.GetNetworkinstanceProtocolsIsiss() {
 		if err := i.DeleteResources(ctx, mg, resources); err != nil {
 			return err
 		}
 	}
-	for _, i := range x.GetNetworkinstanceProtocolsLinuxs() {
+	for _, i := range x.GetNetworkinstanceProtocolsOspfs() {
 		if err := i.DeleteResources(ctx, mg, resources); err != nil {
 			return err
 		}

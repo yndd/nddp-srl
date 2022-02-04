@@ -119,7 +119,22 @@ func (x *systemntp) GetKey() []string {
 
 // SystemNtp server ntp Ntp []
 func (x *systemntp) AddSystemNtpServer(ai *srlv1alpha1.SystemNtpServer) {
-	x.SystemNtp.Server = append(x.SystemNtp.Server, ai)
+	//x.SystemNtp.Server = append(x.SystemNtp.Server, ai)
+	if len(x.SystemNtp.Server) == 0 {
+		x.SystemNtp.Server = make([]*srlv1alpha1.SystemNtpServer, 0)
+	}
+	found := false
+	for _, xx := range x.SystemNtp.Server {
+
+		// [address]
+		if *xx.Address == *ai.Address {
+			found = true
+			xx = ai
+		}
+	}
+	if !found {
+		x.SystemNtp.Server = append(x.SystemNtp.Server, ai)
+	}
 }
 
 // methods schema

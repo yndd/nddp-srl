@@ -120,7 +120,22 @@ func (x *routingpolicypolicy) GetKey() []string {
 
 // RoutingpolicyPolicy statement policy Policy []
 func (x *routingpolicypolicy) AddRoutingpolicyPolicyStatement(ai *srlv1alpha1.RoutingpolicyPolicyStatement) {
-	x.RoutingpolicyPolicy.Statement = append(x.RoutingpolicyPolicy.Statement, ai)
+	//x.RoutingpolicyPolicy.Statement = append(x.RoutingpolicyPolicy.Statement, ai)
+	if len(x.RoutingpolicyPolicy.Statement) == 0 {
+		x.RoutingpolicyPolicy.Statement = make([]*srlv1alpha1.RoutingpolicyPolicyStatement, 0)
+	}
+	found := false
+	for _, xx := range x.RoutingpolicyPolicy.Statement {
+
+		// [sequence-id]
+		if *xx.Sequenceid == *ai.Sequenceid {
+			found = true
+			xx = ai
+		}
+	}
+	if !found {
+		x.RoutingpolicyPolicy.Statement = append(x.RoutingpolicyPolicy.Statement, ai)
+	}
 }
 
 // methods schema

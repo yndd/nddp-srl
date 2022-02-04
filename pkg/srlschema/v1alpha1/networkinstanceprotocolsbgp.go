@@ -122,11 +122,14 @@ func (x *networkinstanceprotocolsbgp) GetKey() []string {
 
 // NetworkinstanceProtocolsBgp group bgp Bgp []
 func (x *networkinstanceprotocolsbgp) AddNetworkinstanceProtocolsBgpGroup(ai *srlv1alpha1.NetworkinstanceProtocolsBgpGroup) {
+	//x.NetworkinstanceProtocolsBgp.Group = append(x.NetworkinstanceProtocolsBgp.Group, ai)
 	if len(x.NetworkinstanceProtocolsBgp.Group) == 0 {
 		x.NetworkinstanceProtocolsBgp.Group = make([]*srlv1alpha1.NetworkinstanceProtocolsBgpGroup, 0)
 	}
 	found := false
 	for _, xx := range x.NetworkinstanceProtocolsBgp.Group {
+
+		// [group-name]
 		if *xx.Groupname == *ai.Groupname {
 			found = true
 			xx = ai
@@ -139,11 +142,14 @@ func (x *networkinstanceprotocolsbgp) AddNetworkinstanceProtocolsBgpGroup(ai *sr
 
 // NetworkinstanceProtocolsBgp neighbor bgp Bgp []
 func (x *networkinstanceprotocolsbgp) AddNetworkinstanceProtocolsBgpNeighbor(ai *srlv1alpha1.NetworkinstanceProtocolsBgpNeighbor) {
+	//x.NetworkinstanceProtocolsBgp.Neighbor = append(x.NetworkinstanceProtocolsBgp.Neighbor, ai)
 	if len(x.NetworkinstanceProtocolsBgp.Neighbor) == 0 {
 		x.NetworkinstanceProtocolsBgp.Neighbor = make([]*srlv1alpha1.NetworkinstanceProtocolsBgpNeighbor, 0)
 	}
 	found := false
 	for _, xx := range x.NetworkinstanceProtocolsBgp.Neighbor {
+
+		// [peer-address]
 		if *xx.Peeraddress == *ai.Peeraddress {
 			found = true
 			xx = ai

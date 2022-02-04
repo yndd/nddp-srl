@@ -243,33 +243,8 @@ func (x *SrlNetworkinstance) GetNetworkinstanceVxlanInterface() []*Networkinstan
 	return x.Spec.Networkinstance.Vxlaninterface
 }
 func (x *SrlNetworkinstance) AddNetworkinstanceInterface(a *NetworkinstanceInterface) {
-	if len(x.Spec.Networkinstance.Interface) == 0 {
-		x.Spec.Networkinstance.Interface = make([]*NetworkinstanceInterface, 0)
-	}
-	found := false
-	for _, xx := range x.Spec.Networkinstance.Interface {
-		if *xx.Name == *a.Name {
-			found = true
-			xx = a
-		}
-	}
-	if !found {
-		x.Spec.Networkinstance.Interface = append(x.Spec.Networkinstance.Interface, a)
-	}
+	x.Spec.Networkinstance.Interface = append(x.Spec.Networkinstance.Interface, a)
 }
 func (x *SrlNetworkinstance) AddNetworkinstanceVxlanInterface(a *NetworkinstanceVxlaninterface) {
-	if len(x.Spec.Networkinstance.Vxlaninterface) == 0 {
-		x.Spec.Networkinstance.Vxlaninterface = make([]*NetworkinstanceVxlaninterface, 0)
-	}
-	found := false
-	for _, xx := range x.Spec.Networkinstance.Vxlaninterface {
-		if *xx.Name == *a.Name {
-			found = true
-			xx = a
-		}
-	}
-	if !found {
-		x.Spec.Networkinstance.Vxlaninterface = append(x.Spec.Networkinstance.Vxlaninterface, a)
-	}
-
+	x.Spec.Networkinstance.Vxlaninterface = append(x.Spec.Networkinstance.Vxlaninterface, a)
 }

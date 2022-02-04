@@ -121,7 +121,22 @@ func (x *networkinstanceprotocolsospf) GetKey() []string {
 
 // NetworkinstanceProtocolsOspf instance ospf Ospf []
 func (x *networkinstanceprotocolsospf) AddNetworkinstanceProtocolsOspfInstance(ai *srlv1alpha1.NetworkinstanceProtocolsOspfInstance) {
-	x.NetworkinstanceProtocolsOspf.Instance = append(x.NetworkinstanceProtocolsOspf.Instance, ai)
+	//x.NetworkinstanceProtocolsOspf.Instance = append(x.NetworkinstanceProtocolsOspf.Instance, ai)
+	if len(x.NetworkinstanceProtocolsOspf.Instance) == 0 {
+		x.NetworkinstanceProtocolsOspf.Instance = make([]*srlv1alpha1.NetworkinstanceProtocolsOspfInstance, 0)
+	}
+	found := false
+	for _, xx := range x.NetworkinstanceProtocolsOspf.Instance {
+
+		// [name]
+		if *xx.Name == *ai.Name {
+			found = true
+			xx = ai
+		}
+	}
+	if !found {
+		x.NetworkinstanceProtocolsOspf.Instance = append(x.NetworkinstanceProtocolsOspf.Instance, ai)
+	}
 }
 
 // methods schema

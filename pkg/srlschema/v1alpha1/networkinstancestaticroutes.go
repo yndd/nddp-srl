@@ -121,7 +121,22 @@ func (x *networkinstancestaticroutes) GetKey() []string {
 
 // NetworkinstanceStaticroutes route staticroutes Staticroutes []
 func (x *networkinstancestaticroutes) AddNetworkinstanceStaticroutesRoute(ai *srlv1alpha1.NetworkinstanceStaticroutesRoute) {
-	x.NetworkinstanceStaticroutes.Route = append(x.NetworkinstanceStaticroutes.Route, ai)
+	//x.NetworkinstanceStaticroutes.Route = append(x.NetworkinstanceStaticroutes.Route, ai)
+	if len(x.NetworkinstanceStaticroutes.Route) == 0 {
+		x.NetworkinstanceStaticroutes.Route = make([]*srlv1alpha1.NetworkinstanceStaticroutesRoute, 0)
+	}
+	found := false
+	for _, xx := range x.NetworkinstanceStaticroutes.Route {
+
+		// [prefix]
+		if *xx.Prefix == *ai.Prefix {
+			found = true
+			xx = ai
+		}
+	}
+	if !found {
+		x.NetworkinstanceStaticroutes.Route = append(x.NetworkinstanceStaticroutes.Route, ai)
+	}
 }
 
 // methods schema

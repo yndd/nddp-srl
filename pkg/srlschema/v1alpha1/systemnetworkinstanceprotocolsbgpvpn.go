@@ -121,7 +121,22 @@ func (x *systemnetworkinstanceprotocolsbgpvpn) GetKey() []string {
 
 // SystemNetworkinstanceProtocolsBgpvpn bgp-instance bgpvpn Bgpvpn []
 func (x *systemnetworkinstanceprotocolsbgpvpn) AddSystemNetworkinstanceProtocolsBgpvpnBgpinstance(ai *srlv1alpha1.SystemNetworkinstanceProtocolsBgpvpnBgpinstance) {
-	x.SystemNetworkinstanceProtocolsBgpvpn.Bgpinstance = append(x.SystemNetworkinstanceProtocolsBgpvpn.Bgpinstance, ai)
+	//x.SystemNetworkinstanceProtocolsBgpvpn.Bgpinstance = append(x.SystemNetworkinstanceProtocolsBgpvpn.Bgpinstance, ai)
+	if len(x.SystemNetworkinstanceProtocolsBgpvpn.Bgpinstance) == 0 {
+		x.SystemNetworkinstanceProtocolsBgpvpn.Bgpinstance = make([]*srlv1alpha1.SystemNetworkinstanceProtocolsBgpvpnBgpinstance, 0)
+	}
+	found := false
+	for _, xx := range x.SystemNetworkinstanceProtocolsBgpvpn.Bgpinstance {
+
+		// [id]
+		if *xx.Id == *ai.Id {
+			found = true
+			xx = ai
+		}
+	}
+	if !found {
+		x.SystemNetworkinstanceProtocolsBgpvpn.Bgpinstance = append(x.SystemNetworkinstanceProtocolsBgpvpn.Bgpinstance, ai)
+	}
 }
 
 // methods schema

@@ -119,7 +119,22 @@ func (x *bfd) GetKey() []string {
 
 // Bfd subinterface bfd Bfd []
 func (x *bfd) AddBfdSubinterface(ai *srlv1alpha1.BfdSubinterface) {
-	x.Bfd.Subinterface = append(x.Bfd.Subinterface, ai)
+	//x.Bfd.Subinterface = append(x.Bfd.Subinterface, ai)
+	if len(x.Bfd.Subinterface) == 0 {
+		x.Bfd.Subinterface = make([]*srlv1alpha1.BfdSubinterface, 0)
+	}
+	found := false
+	for _, xx := range x.Bfd.Subinterface {
+
+		// [id]
+		if *xx.Id == *ai.Id {
+			found = true
+			xx = ai
+		}
+	}
+	if !found {
+		x.Bfd.Subinterface = append(x.Bfd.Subinterface, ai)
+	}
 }
 
 // methods schema

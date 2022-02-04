@@ -121,7 +121,22 @@ func (x *networkinstanceprotocolsisis) GetKey() []string {
 
 // NetworkinstanceProtocolsIsis instance isis Isis []
 func (x *networkinstanceprotocolsisis) AddNetworkinstanceProtocolsIsisInstance(ai *srlv1alpha1.NetworkinstanceProtocolsIsisInstance) {
-	x.NetworkinstanceProtocolsIsis.Instance = append(x.NetworkinstanceProtocolsIsis.Instance, ai)
+	//x.NetworkinstanceProtocolsIsis.Instance = append(x.NetworkinstanceProtocolsIsis.Instance, ai)
+	if len(x.NetworkinstanceProtocolsIsis.Instance) == 0 {
+		x.NetworkinstanceProtocolsIsis.Instance = make([]*srlv1alpha1.NetworkinstanceProtocolsIsisInstance, 0)
+	}
+	found := false
+	for _, xx := range x.NetworkinstanceProtocolsIsis.Instance {
+
+		// [name]
+		if *xx.Name == *ai.Name {
+			found = true
+			xx = ai
+		}
+	}
+	if !found {
+		x.NetworkinstanceProtocolsIsis.Instance = append(x.NetworkinstanceProtocolsIsis.Instance, ai)
+	}
 }
 
 // methods schema

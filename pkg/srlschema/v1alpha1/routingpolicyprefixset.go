@@ -122,7 +122,23 @@ func (x *routingpolicyprefixset) GetKey() []string {
 
 // RoutingpolicyPrefixset prefix prefixset Prefixset []
 func (x *routingpolicyprefixset) AddRoutingpolicyPrefixsetPrefix(ai *srlv1alpha1.RoutingpolicyPrefixsetPrefix) {
-	x.RoutingpolicyPrefixset.Prefix = append(x.RoutingpolicyPrefixset.Prefix, ai)
+	//x.RoutingpolicyPrefixset.Prefix = append(x.RoutingpolicyPrefixset.Prefix, ai)
+	if len(x.RoutingpolicyPrefixset.Prefix) == 0 {
+		x.RoutingpolicyPrefixset.Prefix = make([]*srlv1alpha1.RoutingpolicyPrefixsetPrefix, 0)
+	}
+	found := false
+	for _, xx := range x.RoutingpolicyPrefixset.Prefix {
+
+		// [ip-prefix mask-length-range]
+		if *xx.Ipprefix == *ai.Ipprefix &&
+			*xx.Masklengthrange == *ai.Masklengthrange {
+			found = true
+			xx = ai
+		}
+	}
+	if !found {
+		x.RoutingpolicyPrefixset.Prefix = append(x.RoutingpolicyPrefixset.Prefix, ai)
+	}
 }
 
 // methods schema

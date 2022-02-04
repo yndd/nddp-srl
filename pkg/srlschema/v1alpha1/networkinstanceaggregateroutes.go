@@ -121,7 +121,22 @@ func (x *networkinstanceaggregateroutes) GetKey() []string {
 
 // NetworkinstanceAggregateroutes route aggregateroutes Aggregateroutes []
 func (x *networkinstanceaggregateroutes) AddNetworkinstanceAggregateroutesRoute(ai *srlv1alpha1.NetworkinstanceAggregateroutesRoute) {
-	x.NetworkinstanceAggregateroutes.Route = append(x.NetworkinstanceAggregateroutes.Route, ai)
+	//x.NetworkinstanceAggregateroutes.Route = append(x.NetworkinstanceAggregateroutes.Route, ai)
+	if len(x.NetworkinstanceAggregateroutes.Route) == 0 {
+		x.NetworkinstanceAggregateroutes.Route = make([]*srlv1alpha1.NetworkinstanceAggregateroutesRoute, 0)
+	}
+	found := false
+	for _, xx := range x.NetworkinstanceAggregateroutes.Route {
+
+		// [prefix]
+		if *xx.Prefix == *ai.Prefix {
+			found = true
+			xx = ai
+		}
+	}
+	if !found {
+		x.NetworkinstanceAggregateroutes.Route = append(x.NetworkinstanceAggregateroutes.Route, ai)
+	}
 }
 
 // methods schema

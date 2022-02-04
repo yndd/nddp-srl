@@ -121,7 +121,22 @@ func (x *networkinstancenexthopgroups) GetKey() []string {
 
 // NetworkinstanceNexthopgroups group nexthopgroups Nexthopgroups []
 func (x *networkinstancenexthopgroups) AddNetworkinstanceNexthopgroupsGroup(ai *srlv1alpha1.NetworkinstanceNexthopgroupsGroup) {
-	x.NetworkinstanceNexthopgroups.Group = append(x.NetworkinstanceNexthopgroups.Group, ai)
+	//x.NetworkinstanceNexthopgroups.Group = append(x.NetworkinstanceNexthopgroups.Group, ai)
+	if len(x.NetworkinstanceNexthopgroups.Group) == 0 {
+		x.NetworkinstanceNexthopgroups.Group = make([]*srlv1alpha1.NetworkinstanceNexthopgroupsGroup, 0)
+	}
+	found := false
+	for _, xx := range x.NetworkinstanceNexthopgroups.Group {
+
+		// [name]
+		if *xx.Name == *ai.Name {
+			found = true
+			xx = ai
+		}
+	}
+	if !found {
+		x.NetworkinstanceNexthopgroups.Group = append(x.NetworkinstanceNexthopgroups.Group, ai)
+	}
 }
 
 // methods schema
