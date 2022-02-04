@@ -248,7 +248,7 @@ func (x *SrlNetworkinstance) AddNetworkinstanceInterface(a *NetworkinstanceInter
 	}
 	found := false
 	for _, xx := range x.Spec.Networkinstance.Interface {
-		if xx.Name == a.Name {
+		if *xx.Name == *a.Name {
 			found = true
 			xx = a
 		}
@@ -263,7 +263,7 @@ func (x *SrlNetworkinstance) AddNetworkinstanceVxlanInterface(a *Networkinstance
 	}
 	found := false
 	for _, xx := range x.Spec.Networkinstance.Vxlaninterface {
-		if xx.Name == a.Name {
+		if *xx.Name == *a.Name {
 			found = true
 			xx = a
 		}
