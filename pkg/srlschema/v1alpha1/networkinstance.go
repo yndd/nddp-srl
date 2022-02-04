@@ -240,6 +240,19 @@ func (x *networkinstance) GetKey() []string {
 // Networkinstance interface networkinstance Networkinstance []
 func (x *networkinstance) AddNetworkinstanceInterface(ai *srlv1alpha1.NetworkinstanceInterface) {
 	x.Networkinstance.Interface = append(x.Networkinstance.Interface, ai)
+	if len(x.Networkinstance.Interface) == 0 {
+		x.Networkinstance.Interface = make([]*srlv1alpha1.NetworkinstanceInterface, 0)
+	}
+	found := false
+	for _, xx := range x.Networkinstance.Interface {
+		if *xx.Name == *ai.Name {
+			found = true
+			xx = ai
+		}
+	}
+	if !found {
+		x.Networkinstance.Interface = append(x.Networkinstance.Interface, ai)
+	}
 }
 
 // Networkinstance vxlan-interface networkinstance Networkinstance []
