@@ -239,7 +239,6 @@ func (x *networkinstance) GetKey() []string {
 
 // Networkinstance interface networkinstance Networkinstance []
 func (x *networkinstance) AddNetworkinstanceInterface(ai *srlv1alpha1.NetworkinstanceInterface) {
-	x.Networkinstance.Interface = append(x.Networkinstance.Interface, ai)
 	if len(x.Networkinstance.Interface) == 0 {
 		x.Networkinstance.Interface = make([]*srlv1alpha1.NetworkinstanceInterface, 0)
 	}
