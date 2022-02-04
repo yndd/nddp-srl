@@ -1,5 +1,5 @@
 
----
+
 apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
@@ -17,7 +17,7 @@ spec:
     listKind: SrlNetworkinstanceAggregateroutesList
     plural: srlnetworkinstanceaggregateroutes
     singular: srlnetworkinstanceaggregateroutes
-  scope: Cluster
+  scope: Namespaced
   versions:
   - additionalPrinterColumns:
     - jsonPath: .status.conditions[?(@.kind=='TargetFound')].status

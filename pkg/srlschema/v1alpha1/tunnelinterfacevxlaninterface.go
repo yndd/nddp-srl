@@ -171,8 +171,6 @@ func (x *tunnelinterfacevxlaninterface) buildCR(mg resource.Managed, deviceName 
 		namespace = "default"
 	}
 
-	fmt.Printf("tunnelinterfacevxlaninterface namespace : %s\n", namespace)
-
 	return &srlv1alpha1.SrlTunnelinterfaceVxlaninterface{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:            resourceName,
