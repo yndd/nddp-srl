@@ -139,7 +139,19 @@ func (x *networkinstanceprotocolsbgp) AddNetworkinstanceProtocolsBgpGroup(ai *sr
 
 // NetworkinstanceProtocolsBgp neighbor bgp Bgp []
 func (x *networkinstanceprotocolsbgp) AddNetworkinstanceProtocolsBgpNeighbor(ai *srlv1alpha1.NetworkinstanceProtocolsBgpNeighbor) {
-	x.NetworkinstanceProtocolsBgp.Neighbor = append(x.NetworkinstanceProtocolsBgp.Neighbor, ai)
+	if len(x.NetworkinstanceProtocolsBgp.Neighbor) == 0 {
+		x.NetworkinstanceProtocolsBgp.Neighbor = make([]*srlv1alpha1.NetworkinstanceProtocolsBgpNeighbor, 0)
+	}
+	found := false
+	for _, xx := range x.NetworkinstanceProtocolsBgp.Neighbor {
+		if *xx.Peergroup == *ai.Peergroup {
+			found = true
+			xx = ai
+		}
+	}
+	if !found {
+		x.NetworkinstanceProtocolsBgp.Neighbor = append(x.NetworkinstanceProtocolsBgp.Neighbor, ai)
+	}
 }
 
 // methods schema
