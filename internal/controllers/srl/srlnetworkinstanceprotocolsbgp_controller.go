@@ -196,6 +196,7 @@ func (v *validatorNetworkinstanceProtocolsBgp) ValidateLeafRef(ctx context.Conte
 	// json unmarshal the external data
 	var x2 interface{}
 	json.Unmarshal(cfg, &x2)
+	log.Debug("Latest Config", "data", x2)
 
 	rootPath := v.y.GetRootPath(cr)
 

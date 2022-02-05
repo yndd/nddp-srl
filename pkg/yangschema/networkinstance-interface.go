@@ -16,6 +16,7 @@ limitations under the License.
 package yangschema
 
 import (
+	"github.com/openconfig/gnmi/proto/gnmi"
 	"github.com/yndd/ndd-yang/pkg/leafref"
 	"github.com/yndd/ndd-yang/pkg/yentry"
 )
@@ -30,7 +31,36 @@ func initNetworkinstanceInterface(p *yentry.Entry, opts ...yentry.EntryOption) *
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
-		LeafRefs:         []*leafref.LeafRef{},
+		LeafRefs: []*leafref.LeafRef{
+			{
+				LocalPath: &gnmi.Path{
+					Elem: []*gnmi.PathElem{
+						{Name: "network-instance"},
+						{Name: "interface", Key: map[string]string{"name": ""}},
+					},
+				},
+				RemotePath: &gnmi.Path{
+					Elem: []*gnmi.PathElem{
+						{Name: "interface", Key: map[string]string{"name": ""}},
+						{Name: "subinterface", Key: map[string]string{"index": ""}},
+					},
+				},
+			},
+			{
+				LocalPath: &gnmi.Path{
+					Elem: []*gnmi.PathElem{
+						{Name: "network-instance"},
+						{Name: "vxlan-interface", Key: map[string]string{"name": ""}},
+					},
+				},
+				RemotePath: &gnmi.Path{
+					Elem: []*gnmi.PathElem{
+						{Name: "tunnel-interface", Key: map[string]string{"name": ""}},
+						{Name: "vxlan-interface", Key: map[string]string{"index": ""}},
+					},
+				},
+			},
+		},
 	}
 
 	for _, opt := range opts {
