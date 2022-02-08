@@ -29,10 +29,17 @@ func initNetworkinstanceProtocolsLdpDiscoveryInterfacesInterface(p *yentry.Entry
 		Key: []string{
 			"name",
 		},
+		Module:           "",
+		Namespace:        "",
+		Prefix:           "srl_nokia-ldp",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
 		LeafRefs:         []*leafref.LeafRef{},
+		Defaults: map[string]string{
+			"hello-holdtime": "15",
+			"hello-interval": "5",
+		},
 	}
 
 	for _, opt := range opts {

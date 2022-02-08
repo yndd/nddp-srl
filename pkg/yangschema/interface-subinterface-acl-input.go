@@ -26,6 +26,9 @@ func initInterfaceSubinterfaceAclInput(p *yentry.Entry, opts ...yentry.EntryOpti
 	e := &yentry.Entry{
 		Name:             "input",
 		Key:              []string{},
+		Module:           "",
+		Namespace:        "",
+		Prefix:           "srl_nokia-acl",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
@@ -57,6 +60,7 @@ func initInterfaceSubinterfaceAclInput(p *yentry.Entry, opts ...yentry.EntryOpti
 				},
 			},
 		},
+		Defaults: map[string]string{},
 	}
 
 	for _, opt := range opts {

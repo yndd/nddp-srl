@@ -25,10 +25,16 @@ func initNetworkinstanceProtocolsLdpMultipath(p *yentry.Entry, opts ...yentry.En
 	e := &yentry.Entry{
 		Name:             "multipath",
 		Key:              []string{},
+		Module:           "",
+		Namespace:        "",
+		Prefix:           "srl_nokia-ldp",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
 		LeafRefs:         []*leafref.LeafRef{},
+		Defaults: map[string]string{
+			"max-paths": "32",
+		},
 	}
 
 	for _, opt := range opts {

@@ -29,10 +29,16 @@ func initAclIpv6filter(p *yentry.Entry, opts ...yentry.EntryOption) *yentry.Entr
 		Key: []string{
 			"name",
 		},
+		Module:           "",
+		Namespace:        "",
+		Prefix:           "srl_nokia-acl",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
 		LeafRefs:         []*leafref.LeafRef{},
+		Defaults: map[string]string{
+			"subinterface-specific": "disabled",
+		},
 	}
 
 	for _, opt := range opts {

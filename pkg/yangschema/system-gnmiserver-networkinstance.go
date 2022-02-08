@@ -30,6 +30,9 @@ func initSystemGnmiserverNetworkinstance(p *yentry.Entry, opts ...yentry.EntryOp
 		Key: []string{
 			"name",
 		},
+		Module:           "",
+		Namespace:        "",
+		Prefix:           "srl-gnmi-server",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
@@ -60,6 +63,11 @@ func initSystemGnmiserverNetworkinstance(p *yentry.Entry, opts ...yentry.EntryOp
 					},
 				},
 			},
+		},
+		Defaults: map[string]string{
+			"admin-state":        "disable",
+			"port":               "57400",
+			"use-authentication": "true",
 		},
 	}
 

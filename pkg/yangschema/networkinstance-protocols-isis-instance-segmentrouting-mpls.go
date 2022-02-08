@@ -26,6 +26,9 @@ func initNetworkinstanceProtocolsIsisInstanceSegmentroutingMpls(p *yentry.Entry,
 	e := &yentry.Entry{
 		Name:             "mpls",
 		Key:              []string{},
+		Module:           "",
+		Namespace:        "",
+		Prefix:           "srl_nokia-isis",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
@@ -45,6 +48,9 @@ func initNetworkinstanceProtocolsIsisInstanceSegmentroutingMpls(p *yentry.Entry,
 					},
 				},
 			},
+		},
+		Defaults: map[string]string{
+			"adjacency-sid-hold-time": "15",
 		},
 	}
 

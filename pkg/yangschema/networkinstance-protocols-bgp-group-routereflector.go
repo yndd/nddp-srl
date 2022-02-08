@@ -25,10 +25,14 @@ func initNetworkinstanceProtocolsBgpGroupRoutereflector(p *yentry.Entry, opts ..
 	e := &yentry.Entry{
 		Name:             "route-reflector",
 		Key:              []string{},
+		Module:           "",
+		Namespace:        "",
+		Prefix:           "srl_nokia-bgp",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
 		LeafRefs:         []*leafref.LeafRef{},
+		Defaults:         map[string]string{},
 	}
 
 	for _, opt := range opts {

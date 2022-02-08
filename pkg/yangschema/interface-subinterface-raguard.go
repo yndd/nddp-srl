@@ -28,6 +28,9 @@ func initInterfaceSubinterfaceRaguard(p *yentry.Entry, opts ...yentry.EntryOptio
 	e := &yentry.Entry{
 		Name:             "ra-guard",
 		Key:              []string{},
+		Module:           "srl_nokia-ra_guard",
+		Namespace:        "urn:srl_nokia/ra_guard",
+		Prefix:           "srl_nokia-ra_guard",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
@@ -46,6 +49,7 @@ func initInterfaceSubinterfaceRaguard(p *yentry.Entry, opts ...yentry.EntryOptio
 				},
 			},
 		},
+		Defaults: map[string]string{},
 	}
 
 	for _, opt := range opts {

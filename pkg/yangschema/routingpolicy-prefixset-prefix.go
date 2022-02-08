@@ -28,10 +28,14 @@ func initRoutingpolicyPrefixsetPrefix(p *yentry.Entry, opts ...yentry.EntryOptio
 			"ip-prefix",
 			"mask-length-range",
 		},
+		Module:           "",
+		Namespace:        "",
+		Prefix:           "srl_rpol",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
 		LeafRefs:         []*leafref.LeafRef{},
+		Defaults:         map[string]string{},
 	}
 
 	for _, opt := range opts {

@@ -30,6 +30,9 @@ func initSystemLldpInterface(p *yentry.Entry, opts ...yentry.EntryOption) *yentr
 		Key: []string{
 			"name",
 		},
+		Module:           "",
+		Namespace:        "",
+		Prefix:           "srl_nokia-lldp",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
@@ -46,6 +49,9 @@ func initSystemLldpInterface(p *yentry.Entry, opts ...yentry.EntryOption) *yentr
 					},
 				},
 			},
+		},
+		Defaults: map[string]string{
+			"admin-state": "enable",
 		},
 	}
 

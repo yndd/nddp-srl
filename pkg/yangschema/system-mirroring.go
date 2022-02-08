@@ -27,10 +27,14 @@ func initSystemMirroring(p *yentry.Entry, opts ...yentry.EntryOption) *yentry.En
 	e := &yentry.Entry{
 		Name:             "mirroring",
 		Key:              []string{},
+		Module:           "srl_nokia-mirroring",
+		Namespace:        "urn:srl_nokia/system/mirroring",
+		Prefix:           "srl_nokia-mirroring",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
 		LeafRefs:         []*leafref.LeafRef{},
+		Defaults:         map[string]string{},
 	}
 
 	for _, opt := range opts {

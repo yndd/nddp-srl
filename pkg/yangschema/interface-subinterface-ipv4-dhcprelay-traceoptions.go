@@ -27,10 +27,14 @@ func initInterfaceSubinterfaceIpv4DhcprelayTraceoptions(p *yentry.Entry, opts ..
 	e := &yentry.Entry{
 		Name:             "trace-options",
 		Key:              []string{},
+		Module:           "",
+		Namespace:        "",
+		Prefix:           "srl_nokia-if-ip-dhcp-relay",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
 		LeafRefs:         []*leafref.LeafRef{},
+		Defaults:         map[string]string{},
 	}
 
 	for _, opt := range opts {

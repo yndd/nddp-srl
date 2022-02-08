@@ -25,10 +25,14 @@ func initSystemBridgetableMaclearning(p *yentry.Entry, opts ...yentry.EntryOptio
 	e := &yentry.Entry{
 		Name:             "mac-learning",
 		Key:              []string{},
+		Module:           "",
+		Namespace:        "",
+		Prefix:           "srl_nokia-system-bridge-table",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
 		LeafRefs:         []*leafref.LeafRef{},
+		Defaults:         map[string]string{},
 	}
 
 	for _, opt := range opts {

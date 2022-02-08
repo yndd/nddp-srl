@@ -28,10 +28,19 @@ func initNetworkinstanceProtocolsOspfInstanceTimers(p *yentry.Entry, opts ...yen
 	e := &yentry.Entry{
 		Name:             "timers",
 		Key:              []string{},
+		Module:           "",
+		Namespace:        "",
+		Prefix:           "srl_nokia-ospf",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
 		LeafRefs:         []*leafref.LeafRef{},
+		Defaults: map[string]string{
+			"incremental-spf-wait": "1000",
+			"lsa-accumulate":       "1000",
+			"lsa-arrival":          "1000",
+			"redistribute-delay":   "1000",
+		},
 	}
 
 	for _, opt := range opts {

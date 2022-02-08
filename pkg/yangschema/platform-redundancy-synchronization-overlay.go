@@ -25,10 +25,16 @@ func initPlatformRedundancySynchronizationOverlay(p *yentry.Entry, opts ...yentr
 	e := &yentry.Entry{
 		Name:             "overlay",
 		Key:              []string{},
+		Module:           "",
+		Namespace:        "",
+		Prefix:           "srl_nokia-platform-redundancy",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
 		LeafRefs:         []*leafref.LeafRef{},
+		Defaults: map[string]string{
+			"synchronization-frequency": "60",
+		},
 	}
 
 	for _, opt := range opts {

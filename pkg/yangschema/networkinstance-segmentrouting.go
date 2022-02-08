@@ -27,10 +27,14 @@ func initNetworkinstanceSegmentrouting(p *yentry.Entry, opts ...yentry.EntryOpti
 	e := &yentry.Entry{
 		Name:             "segment-routing",
 		Key:              []string{},
+		Module:           "srl_nokia-segment-routing",
+		Namespace:        "urn:srl_nokia/segment-routing",
+		Prefix:           "srl_nokia-sr",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
 		LeafRefs:         []*leafref.LeafRef{},
+		Defaults:         map[string]string{},
 	}
 
 	for _, opt := range opts {

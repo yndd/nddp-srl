@@ -28,10 +28,18 @@ func initQosQueuetemplatesQueuetemplateActivequeuemanagementWredslope(p *yentry.
 			"drop-probability",
 			"traffic-type",
 		},
+		Module:           "",
+		Namespace:        "",
+		Prefix:           "srl_nokia-qos",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
 		LeafRefs:         []*leafref.LeafRef{},
+		Defaults: map[string]string{
+			"max-probability":       "0",
+			"max-threshold-percent": "100",
+			"min-threshold-percent": "100",
+		},
 	}
 
 	for _, opt := range opts {

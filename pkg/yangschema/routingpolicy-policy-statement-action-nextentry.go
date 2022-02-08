@@ -25,10 +25,14 @@ func initRoutingpolicyPolicyStatementActionNextentry(p *yentry.Entry, opts ...ye
 	e := &yentry.Entry{
 		Name:             "next-entry",
 		Key:              []string{},
+		Module:           "",
+		Namespace:        "",
+		Prefix:           "srl_rpol",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
 		LeafRefs:         []*leafref.LeafRef{},
+		Defaults:         map[string]string{},
 	}
 
 	for _, opt := range opts {

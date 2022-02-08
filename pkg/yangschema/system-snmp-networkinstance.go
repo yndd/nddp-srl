@@ -30,6 +30,9 @@ func initSystemSnmpNetworkinstance(p *yentry.Entry, opts ...yentry.EntryOption) 
 		Key: []string{
 			"name",
 		},
+		Module:           "",
+		Namespace:        "",
+		Prefix:           "srl_nokia-snmp",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
@@ -47,6 +50,7 @@ func initSystemSnmpNetworkinstance(p *yentry.Entry, opts ...yentry.EntryOption) 
 				},
 			},
 		},
+		Defaults: map[string]string{},
 	}
 
 	for _, opt := range opts {

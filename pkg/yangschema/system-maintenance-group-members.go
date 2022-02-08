@@ -28,10 +28,14 @@ func initSystemMaintenanceGroupMembers(p *yentry.Entry, opts ...yentry.EntryOpti
 	e := &yentry.Entry{
 		Name:             "members",
 		Key:              []string{},
+		Module:           "",
+		Namespace:        "",
+		Prefix:           "srl-m-mode",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
 		LeafRefs:         []*leafref.LeafRef{},
+		Defaults:         map[string]string{},
 	}
 
 	for _, opt := range opts {

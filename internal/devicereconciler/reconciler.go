@@ -18,6 +18,7 @@ package devicereconciler
 
 import (
 	"context"
+	"fmt"
 	"sort"
 	"strings"
 	"time"
@@ -201,13 +202,6 @@ func (r *reconciler) Reconcile(ctx context.Context) error {
 	if err != nil {
 		return err
 	}
-	/*
-		resourceListRaw, err := r.getResourceListRaw()
-		if err != nil {
-			return err
-		}
-		log.Debug("resourceList1", "raw", resourceListRaw)
-	*/
 
 	// sort the MR list based on the pathElements
 	sort.SliceStable(resourceList, func(i, j int) bool {
@@ -217,8 +211,8 @@ func (r *reconciler) Reconcile(ctx context.Context) error {
 	})
 
 	// process updates
-	// we go straight to the device, a repalce is dangerous as it can affect traffic
-	// deletes needs to be handled directly to the cache and the device
+	// we go straight to the device -> the cache is updated using the notifications
+	// the updates are handled per resource and are NOT aggregated accross all resources
 	for _, resource := range resourceList {
 		if resource.Status == systemv1alpha1.E_GvkStatus_Updatepending {
 			// check deletes, updates
@@ -246,14 +240,11 @@ func (r *reconciler) Reconcile(ctx context.Context) error {
 			if err := r.updateResourceStatus(*resource.Name, systemv1alpha1.E_GvkStatus_Success); err != nil {
 				return err
 			}
-			// TBD, could we use the on change notification to update the cache ???
-			// Avoids updating the cache
-
 		}
 	}
 
 	// initialize the candidate cache; delete/recreate if it exists
-	r.initializeCandidateCache()
+	//r.initializeCandidateCache()
 
 	// process deletes first,
 	// create a list of resources and paths to be deletes
@@ -273,8 +264,8 @@ func (r *reconciler) Reconcile(ctx context.Context) error {
 		}
 	}
 
-	// delete the paths if there are present in a single transaction
-	// if there is a path which is /, it would kill the ox; we protect this
+	// we delete all the paths on the device in a single transaction
+	// we use the chnage notification to update the cache
 	murder := false
 	for _, delPath := range delPaths {
 		log.Debug("Delete", "Path", delPath)
@@ -287,15 +278,17 @@ func (r *reconciler) Reconcile(ctx context.Context) error {
 		// apply deletes on the device
 		_, err := r.device.DeleteGnmi(ctx, delPaths)
 		if err != nil {
-			// TODO we should fail in certain consitions
-			// we keep the status in DeletePending to retry
 			log.Debug("gnmi delete failed", "Paths", delPaths, "Error", err)
+			// update the status in the system cache
+			for _, resource := range delResources {
+				if err := r.updateResourceStatus(*resource.Name, systemv1alpha1.E_GvkStatus_Failed); err != nil {
+					return err
+				}
+			}
 		} else {
 			log.Debug("gnmi delete success", "Paths", delPaths)
-			// delete the paths from the device cache
-			r.deletePathsFromCache(delPaths)
 
-			// delete resources
+			// delete resources from the system cache
 			for _, resource := range delResources {
 				r.deleteResource(*resource.Name)
 			}
@@ -303,113 +296,66 @@ func (r *reconciler) Reconcile(ctx context.Context) error {
 	}
 
 	// get copy from cache
-	if err := r.copyRunning2Candidate(); err != nil {
-		return err
-	}
-
-	// debug
 	/*
-		resourceListRaw, err = r.getResourceListRaw()
-		if err != nil {
+		if err := r.copyRunning2Candidate(); err != nil {
 			return err
 		}
-		log.Debug("resourceList2a", "raw", resourceListRaw)
 	*/
 
-	doUpdate := false
 	// create a list of resources to be updated
 	updResources := make([]*systemv1alpha1.Gvk, 0)
+	updates := make([]*gnmi.Update, 0)
 	for _, resource := range resourceList {
 		// only merge the resources that are NOT in failed and delete pending state
-		if resource.Status != systemv1alpha1.E_GvkStatus_Deletepending && resource.Status != systemv1alpha1.E_GvkStatus_Failed {
+		if resource.Status == systemv1alpha1.E_GvkStatus_Createpending {
 			// append to the resource list of resources needed an update
 			updResources = append(updResources, resource)
 			// update the candidate cache with the resource data
-			if err := r.updateCandidate(resource); err != nil {
+			resUpdate, err := r.getUpdates(resource)
+			if err != nil {
 				return err
 			}
-			doUpdate = true
+			updates = append(updates, resUpdate)
 		}
 	}
 
-	// debug
-	/*
-		resourceListRaw, err = r.getResourceListRaw()
-		if err != nil {
-			return err
+	if len(updates) > 0 {
+		// debug
+		for _, upd := range updates {
+			fmt.Printf("Updates: path: %s, data: %v\n", yparser.GnmiPath2XPath(upd.GetPath(), true), upd.GetVal())
 		}
-		log.Debug("resourceList2b", "raw", resourceListRaw)
-	*/
-
-	if doUpdate {
 		// retrieve the config that will be applied to the device
-		updates, ok, err := r.getCandidateUpdate()
-		if err != nil {
-			return err
-		}
-		if ok {
-			if _, err := r.device.UpdateGnmi(ctx, updates); err != nil {
-				// get candidate config to show which configuration failed
-				candidateConfig, err := r.getCandidateConfig()
-				if err != nil {
-					// TODO set status to failed and stop reconciliation ???
-					return err
-				}
-				// print failed candidate config
-				log.Debug("candidate config failed", "config", candidateConfig)
-				// set resource status to failed
-				for _, resource := range updResources {
-					if err := r.updateResourceStatus(*resource.Name, systemv1alpha1.E_GvkStatus_Failed); err != nil {
-						return err
-					}
-				}
-			}
-			// debug
-			/*
-				resourceListRaw, err := r.getResourceListRaw()
-				if err != nil {
-					return err
-				}
-				log.Debug("resourceList3", "raw", resourceListRaw)
-			*/
+		if _, err := r.device.UpdateGnmi(ctx, updates); err != nil {
+			log.Debug("gnmi update failed", "Paths", updates, "Error", err)
 
-			// set resource status to success
+			// set resource status to failed
 			for _, resource := range updResources {
-				if err := r.updateResourceStatus(*resource.Name, systemv1alpha1.E_GvkStatus_Success); err != nil {
+				if err := r.updateResourceStatus(*resource.Name, systemv1alpha1.E_GvkStatus_Failed); err != nil {
 					return err
 				}
 			}
+		}
 
-			// debug
-			/*
-				resourceListRaw, err = r.getResourceListRaw()
-				if err != nil {
-					return err
-				}
-				log.Debug("resourceList4", "raw", resourceListRaw)
-			*/
-
-			if err := r.copyCandidate2Running(); err != nil {
+		// set resource status to success
+		for _, resource := range updResources {
+			if err := r.updateResourceStatus(*resource.Name, systemv1alpha1.E_GvkStatus_Success); err != nil {
 				return err
 			}
-
-		} else {
-			log.Debug("gnmi update empty")
 		}
 	}
-
-	// debug
-	/*
-		resourceListRaw, err = r.getResourceListRaw()
-		if err != nil {
-			return err
-		}
-		log.Debug("resourceList5", "raw", resourceListRaw)
-	*/
 
 	// set reconcile flag to false to avoid a new reconciliation if there is no new work
 	if err := r.setUpdateStatus(false); err != nil {
 		return err
 	}
+	return nil
+}
+
+func (r *reconciler) PrintResourceList(idx int) error {
+	resourceListRaw, err := r.getResourceListRaw()
+	if err != nil {
+		return err
+	}
+	r.log.Debug("resourceList", "idx", idx, "raw", resourceListRaw)
 	return nil
 }

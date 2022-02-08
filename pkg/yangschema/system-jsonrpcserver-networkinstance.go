@@ -31,6 +31,9 @@ func initSystemJsonrpcserverNetworkinstance(p *yentry.Entry, opts ...yentry.Entr
 		Key: []string{
 			"name",
 		},
+		Module:           "",
+		Namespace:        "",
+		Prefix:           "srl-json-rpc",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
@@ -48,6 +51,7 @@ func initSystemJsonrpcserverNetworkinstance(p *yentry.Entry, opts ...yentry.Entr
 				},
 			},
 		},
+		Defaults: map[string]string{},
 	}
 
 	for _, opt := range opts {

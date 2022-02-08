@@ -27,10 +27,14 @@ func initBfdMicrobfdsessions(p *yentry.Entry, opts ...yentry.EntryOption) *yentr
 	e := &yentry.Entry{
 		Name:             "micro-bfd-sessions",
 		Key:              []string{},
+		Module:           "srl_nokia-micro-bfd",
+		Namespace:        "urn:srl_nokia/micro-bfd",
+		Prefix:           "srl_nokia-micro-bfd",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
 		LeafRefs:         []*leafref.LeafRef{},
+		Defaults:         map[string]string{},
 	}
 
 	for _, opt := range opts {

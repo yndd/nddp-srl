@@ -27,10 +27,14 @@ func initNetworkinstanceStaticroutes(p *yentry.Entry, opts ...yentry.EntryOption
 	e := &yentry.Entry{
 		Name:             "static-routes",
 		Key:              []string{},
+		Module:           "srl_nokia-static-routes",
+		Namespace:        "urn:srl_nokia/static-routes",
+		Prefix:           "srl_nokia-static-routes",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: true,
 		LeafRefs:         []*leafref.LeafRef{},
+		Defaults:         map[string]string{},
 	}
 
 	for _, opt := range opts {

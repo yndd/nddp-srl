@@ -25,10 +25,17 @@ func initNetworkinstanceProtocolsIsisInstanceLdpsynchronization(p *yentry.Entry,
 	e := &yentry.Entry{
 		Name:             "ldp-synchronization",
 		Key:              []string{},
+		Module:           "",
+		Namespace:        "",
+		Prefix:           "srl_nokia-ldp",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
 		LeafRefs:         []*leafref.LeafRef{},
+		Defaults: map[string]string{
+			"end-of-lib":      "false",
+			"hold-down-timer": "60",
+		},
 	}
 
 	for _, opt := range opts {

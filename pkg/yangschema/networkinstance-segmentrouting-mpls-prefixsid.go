@@ -28,6 +28,9 @@ func initNetworkinstanceSegmentroutingMplsPrefixsid(p *yentry.Entry, opts ...yen
 		Key: []string{
 			"prefix-sid-index",
 		},
+		Module:           "",
+		Namespace:        "",
+		Prefix:           "srl_nokia-sr",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
@@ -47,6 +50,9 @@ func initNetworkinstanceSegmentroutingMplsPrefixsid(p *yentry.Entry, opts ...yen
 					},
 				},
 			},
+		},
+		Defaults: map[string]string{
+			"node-sid": "true",
 		},
 	}
 

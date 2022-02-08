@@ -27,10 +27,14 @@ func initNetworkinstanceNexthopgroups(p *yentry.Entry, opts ...yentry.EntryOptio
 	e := &yentry.Entry{
 		Name:             "next-hop-groups",
 		Key:              []string{},
+		Module:           "srl_nokia-next-hop-groups",
+		Namespace:        "urn:srl_nokia/next-hop-groups",
+		Prefix:           "srl_nokia-next-hop-groups",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: true,
 		LeafRefs:         []*leafref.LeafRef{},
+		Defaults:         map[string]string{},
 	}
 
 	for _, opt := range opts {

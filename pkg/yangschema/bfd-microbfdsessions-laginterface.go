@@ -28,6 +28,9 @@ func initBfdMicrobfdsessionsLaginterface(p *yentry.Entry, opts ...yentry.EntryOp
 		Key: []string{
 			"name",
 		},
+		Module:           "",
+		Namespace:        "",
+		Prefix:           "srl_nokia-micro-bfd",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
@@ -44,6 +47,12 @@ func initBfdMicrobfdsessionsLaginterface(p *yentry.Entry, opts ...yentry.EntryOp
 					},
 				},
 			},
+		},
+		Defaults: map[string]string{
+			"admin-state":                       "disable",
+			"desired-minimum-transmit-interval": "1000000",
+			"detection-multiplier":              "3",
+			"required-minimum-receive":          "1000000",
 		},
 	}
 

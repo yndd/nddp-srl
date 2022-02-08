@@ -25,10 +25,14 @@ func initTunnelVxlantunnel(p *yentry.Entry, opts ...yentry.EntryOption) *yentry.
 	e := &yentry.Entry{
 		Name:             "vxlan-tunnel",
 		Key:              []string{},
+		Module:           "srl_nokia-vxlan-tunnel-vtep",
+		Namespace:        "urn:srl_nokia/tunnel/vxlan-tunnel",
+		Prefix:           "srl_nokia-vxlan-tunnel",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
 		LeafRefs:         []*leafref.LeafRef{},
+		Defaults:         map[string]string{},
 	}
 
 	for _, opt := range opts {

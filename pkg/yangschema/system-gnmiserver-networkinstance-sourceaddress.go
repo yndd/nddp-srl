@@ -25,10 +25,14 @@ func initSystemGnmiserverNetworkinstanceSourceaddress(p *yentry.Entry, opts ...y
 	e := &yentry.Entry{
 		Name:             "source-address",
 		Key:              []string{},
+		Module:           "",
+		Namespace:        "",
+		Prefix:           "srl-gnmi-server",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
 		LeafRefs:         []*leafref.LeafRef{},
+		Defaults:         map[string]string{},
 	}
 
 	for _, opt := range opts {

@@ -28,10 +28,14 @@ func initPlatformResourcemonitoringDatapath(p *yentry.Entry, opts ...yentry.Entr
 	e := &yentry.Entry{
 		Name:             "datapath",
 		Key:              []string{},
+		Module:           "srl_nokia-platform-datapath-resources",
+		Namespace:        "urn:srl_nokia/platform-datapath-resources",
+		Prefix:           "srl_nokia-platform-datapath-resources",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
 		LeafRefs:         []*leafref.LeafRef{},
+		Defaults:         map[string]string{},
 	}
 
 	for _, opt := range opts {

@@ -25,10 +25,18 @@ func initNetworkinstanceProtocolsLdpGracefulrestart(p *yentry.Entry, opts ...yen
 	e := &yentry.Entry{
 		Name:             "graceful-restart",
 		Key:              []string{},
+		Module:           "",
+		Namespace:        "",
+		Prefix:           "srl_nokia-ldp",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
 		LeafRefs:         []*leafref.LeafRef{},
+		Defaults: map[string]string{
+			"helper-enable":      "false",
+			"max-reconnect-time": "120",
+			"max-recovery-time":  "120",
+		},
 	}
 
 	for _, opt := range opts {

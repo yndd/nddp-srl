@@ -30,10 +30,14 @@ func initRoutingpolicy(p *yentry.Entry, opts ...yentry.EntryOption) *yentry.Entr
 	e := &yentry.Entry{
 		Name:             "routing-policy",
 		Key:              []string{},
+		Module:           "srl_nokia-routing-policy",
+		Namespace:        "urn:srl_nokia/routing-policy",
+		Prefix:           "srl_rpol",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
 		LeafRefs:         []*leafref.LeafRef{},
+		Defaults:         map[string]string{},
 	}
 
 	for _, opt := range opts {

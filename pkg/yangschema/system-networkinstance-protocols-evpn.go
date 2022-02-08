@@ -27,10 +27,14 @@ func initSystemNetworkinstanceProtocolsEvpn(p *yentry.Entry, opts ...yentry.Entr
 	e := &yentry.Entry{
 		Name:             "evpn",
 		Key:              []string{},
+		Module:           "",
+		Namespace:        "",
+		Prefix:           "srl_nokia-system-netinst",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: true,
 		LeafRefs:         []*leafref.LeafRef{},
+		Defaults:         map[string]string{},
 	}
 
 	for _, opt := range opts {

@@ -25,10 +25,14 @@ func initAclIpv6filterEntryMatchIcmp6Code(p *yentry.Entry, opts ...yentry.EntryO
 	e := &yentry.Entry{
 		Name:             "code",
 		Key:              []string{},
+		Module:           "",
+		Namespace:        "",
+		Prefix:           "srl_nokia-acl",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
 		LeafRefs:         []*leafref.LeafRef{},
+		Defaults:         map[string]string{},
 	}
 
 	for _, opt := range opts {

@@ -26,6 +26,9 @@ func initNetworkinstanceProtocolsBgpAuthentication(p *yentry.Entry, opts ...yent
 	e := &yentry.Entry{
 		Name:             "authentication",
 		Key:              []string{},
+		Module:           "",
+		Namespace:        "",
+		Prefix:           "srl_nokia-bgp",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
@@ -45,6 +48,7 @@ func initNetworkinstanceProtocolsBgpAuthentication(p *yentry.Entry, opts ...yent
 				},
 			},
 		},
+		Defaults: map[string]string{},
 	}
 
 	for _, opt := range opts {

@@ -27,10 +27,14 @@ func initSystemDhcpserverNetworkinstanceDhcpv6Options(p *yentry.Entry, opts ...y
 	e := &yentry.Entry{
 		Name:             "options",
 		Key:              []string{},
+		Module:           "",
+		Namespace:        "",
+		Prefix:           "srl-dhcp-server",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
 		LeafRefs:         []*leafref.LeafRef{},
+		Defaults:         map[string]string{},
 	}
 
 	for _, opt := range opts {

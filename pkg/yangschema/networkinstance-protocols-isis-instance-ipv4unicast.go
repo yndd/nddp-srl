@@ -25,10 +25,16 @@ func initNetworkinstanceProtocolsIsisInstanceIpv4unicast(p *yentry.Entry, opts .
 	e := &yentry.Entry{
 		Name:             "ipv4-unicast",
 		Key:              []string{},
+		Module:           "",
+		Namespace:        "",
+		Prefix:           "srl_nokia-isis",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
 		LeafRefs:         []*leafref.LeafRef{},
+		Defaults: map[string]string{
+			"admin-state": "enable",
+		},
 	}
 
 	for _, opt := range opts {

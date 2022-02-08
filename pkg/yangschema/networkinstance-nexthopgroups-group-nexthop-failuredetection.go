@@ -27,10 +27,14 @@ func initNetworkinstanceNexthopgroupsGroupNexthopFailuredetection(p *yentry.Entr
 	e := &yentry.Entry{
 		Name:             "failure-detection",
 		Key:              []string{},
+		Module:           "",
+		Namespace:        "",
+		Prefix:           "srl_nokia-next-hop-groups",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
 		LeafRefs:         []*leafref.LeafRef{},
+		Defaults:         map[string]string{},
 	}
 
 	for _, opt := range opts {

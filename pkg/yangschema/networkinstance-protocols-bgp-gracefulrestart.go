@@ -25,10 +25,17 @@ func initNetworkinstanceProtocolsBgpGracefulrestart(p *yentry.Entry, opts ...yen
 	e := &yentry.Entry{
 		Name:             "graceful-restart",
 		Key:              []string{},
+		Module:           "",
+		Namespace:        "",
+		Prefix:           "srl_nokia-bgp",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
 		LeafRefs:         []*leafref.LeafRef{},
+		Defaults: map[string]string{
+			"admin-state":       "disable",
+			"stale-routes-time": "360",
+		},
 	}
 
 	for _, opt := range opts {

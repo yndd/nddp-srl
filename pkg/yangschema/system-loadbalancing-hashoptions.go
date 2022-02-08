@@ -25,10 +25,24 @@ func initSystemLoadbalancingHashoptions(p *yentry.Entry, opts ...yentry.EntryOpt
 	e := &yentry.Entry{
 		Name:             "hash-options",
 		Key:              []string{},
+		Module:           "",
+		Namespace:        "",
+		Prefix:           "srl_nokia-lb",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
 		LeafRefs:         []*leafref.LeafRef{},
+		Defaults: map[string]string{
+			"destination-address": "true",
+			"destination-port":    "true",
+			"hash-seed":           "0",
+			"ipv6-flow-label":     "false",
+			"mpls-label-stack":    "false",
+			"protocol":            "true",
+			"source-address":      "true",
+			"source-port":         "true",
+			"vlan":                "true",
+		},
 	}
 
 	for _, opt := range opts {

@@ -46,7 +46,8 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/controller"
 	cevent "sigs.k8s.io/controller-runtime/pkg/event"
-	"sigs.k8s.io/controller-runtime/pkg/handler"
+
+	//"sigs.k8s.io/controller-runtime/pkg/handler"
 	"sigs.k8s.io/controller-runtime/pkg/source"
 
 	srlv1alpha1 "github.com/yndd/nddp-srl/apis/srl/v1alpha1"
@@ -64,8 +65,8 @@ const (
 )
 
 // SetupNetworkinstanceProtocolsIsis adds a controller that reconciles NetworkinstanceProtocolsIsiss.
-//func SetupInterface(mgr ctrl.Manager, o controller.Options, nddcopts *shared.NddControllerOptions) (string, chan cevent.GenericEvent, error) {
-func SetupNetworkinstanceProtocolsIsis(mgr ctrl.Manager, o controller.Options, nddcopts *shared.NddControllerOptions) error {
+func SetupNetworkinstanceProtocolsIsis(mgr ctrl.Manager, o controller.Options, nddcopts *shared.NddControllerOptions) (string, chan cevent.GenericEvent, error) {
+	//func SetupNetworkinstanceProtocolsIsis(mgr ctrl.Manager, o controller.Options, nddcopts *shared.NddControllerOptions) error {
 
 	name := managed.ControllerName(srlv1alpha1.NetworkinstanceProtocolsIsisGroupKind)
 
@@ -95,17 +96,27 @@ func SetupNetworkinstanceProtocolsIsis(mgr ctrl.Manager, o controller.Options, n
 		managed.WithLogger(nddcopts.Logger.WithValues("NetworkinstanceProtocolsIsis-controller", name)),
 		managed.WithRecorder(event.NewAPIRecorder(mgr.GetEventRecorderFor(name))))
 
-	//return srlv1alpha1.NetworkinstanceProtocolsIsisGroupKind, events, ctrl.NewControllerManagedBy(mgr).
-	return ctrl.NewControllerManagedBy(mgr).
+	NetworkinstanceProtocolsIsisHandler := &EnqueueRequestForAllNetworkinstanceProtocolsIsis{
+		client: mgr.GetClient(),
+		log:    nddcopts.Logger,
+		ctx:    context.Background(),
+	}
+
+	//return ctrl.NewControllerManagedBy(mgr).
+	return srlv1alpha1.NetworkinstanceProtocolsIsisGroupKind, events, ctrl.NewControllerManagedBy(mgr).
 		Named(name).
 		WithOptions(o).
 		For(&srlv1alpha1.SrlNetworkinstanceProtocolsIsis{}).
 		Owns(&srlv1alpha1.SrlNetworkinstanceProtocolsIsis{}).
 		WithEventFilter(resource.IgnoreUpdateWithoutGenerationChangePredicate()).
-		Watches(
-			&source.Channel{Source: events},
-			&handler.EnqueueRequestForObject{},
-		).
+		/*
+			Watches(
+				&source.Channel{Source: events},
+				&handler.EnqueueRequestForObject{},
+			).
+		*/
+		Watches(&source.Kind{Type: &srlv1alpha1.SrlNetworkinstanceProtocolsIsis{}}, NetworkinstanceProtocolsIsisHandler).
+		Watches(&source.Channel{Source: events}, NetworkinstanceProtocolsIsisHandler).
 		Complete(r)
 }
 
@@ -227,6 +238,9 @@ func (v *validatorNetworkinstanceProtocolsIsis) ValidateLeafRef(ctx context.Cont
 				"Value", r.Value,
 			)
 		}
+		log.Debug("Input  Spec  ", "data", x1)
+		log.Debug("Latest Config", "data", x2)
+
 		return managed.ValidateLeafRefObservation{
 			Success:          false,
 			ResolvedLeafRefs: resultValidation}, nil
@@ -388,13 +402,14 @@ func (e *externalNetworkinstanceProtocolsIsis) Observe(ctx context.Context, mg r
 	exists := true
 	resp, err := e.client.Get(ctx, req)
 	if err != nil {
-		if e, ok := status.FromError(err); ok {
-			switch e.Code() {
+		if er, ok := status.FromError(err); ok {
+			switch er.Code() {
 			case codes.Unavailable, codes.ResourceExhausted:
 				// we use this to signal not ready
 				return managed.ExternalObservation{
 					Ready:            false,
 					ResourceExists:   false,
+					ResourceSuccess:  false,
 					ResourceHasData:  false,
 					ResourceUpToDate: false,
 				}, nil
@@ -403,6 +418,35 @@ func (e *externalNetworkinstanceProtocolsIsis) Observe(ctx context.Context, mg r
 				// if data exists it means we go from UMR -> MR
 				log.Debug("observing when using gnmic: resource does not exist")
 				exists = false
+			case codes.FailedPrecondition:
+				// the k8s resource exists but is in failed status, compare the response spec with current spec
+				// if the specs are equal return observation.ResponseSuccess -> False
+				// if the specs are not equal follow the regular procedure
+				log.Debug("observing when using gnmic: resource failed")
+				failedObserve, err := processObserve(rootPath[0], hierElements, &cr.Spec, resp, e.deviceSchema)
+				if err != nil {
+					return managed.ExternalObservation{}, err
+				}
+				if !failedObserve.delta {
+					// there is no difference between the previous spec and the current spec, so we dont retry
+					// given the previous attempt failed
+					return managed.ExternalObservation{
+						Ready:            true,
+						ResourceExists:   true,
+						ResourceSuccess:  false,
+						ResourceHasData:  false,
+						ResourceUpToDate: false,
+					}, nil
+				} else {
+					// this should trigger an update
+					return managed.ExternalObservation{
+						Ready:            true,
+						ResourceExists:   true,
+						ResourceSuccess:  true,
+						ResourceHasData:  true,
+						ResourceUpToDate: false,
+					}, nil
+				}
 			}
 		} else {
 			// WORKAROUND WAITING FOR KARIM TO REMOVE THE ERROR WRAP In GNMIC
@@ -412,12 +456,42 @@ func (e *externalNetworkinstanceProtocolsIsis) Observe(ctx context.Context, mg r
 				return managed.ExternalObservation{
 					Ready:            false,
 					ResourceExists:   false,
+					ResourceSuccess:  false,
 					ResourceHasData:  false,
 					ResourceUpToDate: false,
 				}, nil
 			case strings.Contains(err.Error(), "NotFound"):
 				log.Debug("observing: resource does not exist")
 				exists = false
+			case strings.Contains(err.Error(), "Failed"):
+				log.Debug("observing: resource failed")
+				// the k8s resource exists but is in failed status, compare the response spec with current spec
+				// if the specs are equal return observation.ResponseSuccess -> False
+				// if the specs are not equal follow the regular procedure
+				failedObserve, err := processObserve(rootPath[0], hierElements, &cr.Spec, resp, e.deviceSchema)
+				if err != nil {
+					return managed.ExternalObservation{}, err
+				}
+				if !failedObserve.delta {
+					// there is no difference between the previous spec and the current spec, so we dont retry
+					// given the previous attempt failed
+					return managed.ExternalObservation{
+						Ready:            true,
+						ResourceExists:   true,
+						ResourceSuccess:  false,
+						ResourceHasData:  false,
+						ResourceUpToDate: false,
+					}, nil
+				} else {
+					// this should trigger an update
+					return managed.ExternalObservation{
+						Ready:            true,
+						ResourceExists:   true,
+						ResourceSuccess:  true,
+						ResourceHasData:  true,
+						ResourceUpToDate: false,
+					}, nil
+				}
 			default:
 				return managed.ExternalObservation{}, errors.Wrap(err, errReadInterfaceSubinterface)
 			}
@@ -444,29 +518,24 @@ func (e *externalNetworkinstanceProtocolsIsis) Observe(ctx context.Context, mg r
 		return managed.ExternalObservation{
 			Ready:            true,
 			ResourceExists:   exists,
+			ResourceSuccess:  true,
 			ResourceHasData:  false,
 			ResourceUpToDate: false,
 		}, nil
 	}
 	// Data exists
 
-	if len(observe.deletes) != 0 || len(observe.updates) != 0 {
+	if observe.delta {
 		// resource is NOT up to date
 		log.Debug("Observing Response: resource NOT up to date", "Observe", observe, "exists", exists, "Response", resp)
-		for _, del := range observe.deletes {
-			log.Debug("Observing Response: resource NOT up to date, deletes", "path", yparser.GnmiPath2XPath(del, true))
-		}
-		for _, upd := range observe.updates {
-			val, _ := yparser.GetValue(upd.GetVal())
-			log.Debug("Observing Response: resource NOT up to date, updates", "path", yparser.GnmiPath2XPath(upd.GetPath(), true), "data", val)
-		}
 		return managed.ExternalObservation{
 			Ready:            true,
 			ResourceExists:   exists,
+			ResourceSuccess:  true,
 			ResourceHasData:  true,
 			ResourceUpToDate: false,
-			ResourceDeletes:  observe.deletes,
-			ResourceUpdates:  observe.updates,
+			//ResourceDeletes:  observe.deletes,
+			//ResourceUpdates:  observe.updates,
 		}, nil
 	}
 	// resource is up to date
@@ -474,6 +543,7 @@ func (e *externalNetworkinstanceProtocolsIsis) Observe(ctx context.Context, mg r
 	return managed.ExternalObservation{
 		Ready:            true,
 		ResourceExists:   exists,
+		ResourceSuccess:  true,
 		ResourceHasData:  true,
 		ResourceUpToDate: true,
 	}, nil

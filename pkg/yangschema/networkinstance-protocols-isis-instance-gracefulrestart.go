@@ -25,10 +25,16 @@ func initNetworkinstanceProtocolsIsisInstanceGracefulrestart(p *yentry.Entry, op
 	e := &yentry.Entry{
 		Name:             "graceful-restart",
 		Key:              []string{},
+		Module:           "",
+		Namespace:        "",
+		Prefix:           "srl_nokia-isis",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
 		LeafRefs:         []*leafref.LeafRef{},
+		Defaults: map[string]string{
+			"helper-mode": "false",
+		},
 	}
 
 	for _, opt := range opts {

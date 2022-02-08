@@ -30,10 +30,18 @@ func initInterfaceSubinterfaceIpv4Arp(p *yentry.Entry, opts ...yentry.EntryOptio
 	e := &yentry.Entry{
 		Name:             "arp",
 		Key:              []string{},
+		Module:           "srl_nokia-interfaces-nbr",
+		Namespace:        "urn:srl_nokia/interfaces/ip/nbr",
+		Prefix:           "srl_nokia-if-ip-nbr",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
 		LeafRefs:         []*leafref.LeafRef{},
+		Defaults: map[string]string{
+			"duplicate-address-detection": "true",
+			"learn-unsolicited":           "false",
+			"timeout":                     "14400",
+		},
 	}
 
 	for _, opt := range opts {

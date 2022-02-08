@@ -27,10 +27,14 @@ func initSystemAuthentication(p *yentry.Entry, opts ...yentry.EntryOption) *yent
 	e := &yentry.Entry{
 		Name:             "authentication",
 		Key:              []string{},
+		Module:           "srl_nokia-keychains",
+		Namespace:        "urn:srl_nokia/keychains",
+		Prefix:           "srl_nokia-keychains",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
 		LeafRefs:         []*leafref.LeafRef{},
+		Defaults:         map[string]string{},
 	}
 
 	for _, opt := range opts {

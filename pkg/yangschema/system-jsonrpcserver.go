@@ -29,10 +29,17 @@ func initSystemJsonrpcserver(p *yentry.Entry, opts ...yentry.EntryOption) *yentr
 	e := &yentry.Entry{
 		Name:             "json-rpc-server",
 		Key:              []string{},
+		Module:           "srl_nokia-json-rpc",
+		Namespace:        "urn:srl_nokia/json-rpc",
+		Prefix:           "srl-json-rpc",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
 		LeafRefs:         []*leafref.LeafRef{},
+		Defaults: map[string]string{
+			"admin-state":              "disable",
+			"commit-confirmed-timeout": "0",
+		},
 	}
 
 	for _, opt := range opts {

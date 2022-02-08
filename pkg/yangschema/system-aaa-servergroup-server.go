@@ -30,6 +30,9 @@ func initSystemAaaServergroupServer(p *yentry.Entry, opts ...yentry.EntryOption)
 		Key: []string{
 			"address",
 		},
+		Module:           "",
+		Namespace:        "",
+		Prefix:           "srl-aaa",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
@@ -47,6 +50,7 @@ func initSystemAaaServergroupServer(p *yentry.Entry, opts ...yentry.EntryOption)
 				},
 			},
 		},
+		Defaults: map[string]string{},
 	}
 
 	for _, opt := range opts {

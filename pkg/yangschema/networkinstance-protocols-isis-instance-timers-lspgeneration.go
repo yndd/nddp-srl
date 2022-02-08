@@ -25,10 +25,18 @@ func initNetworkinstanceProtocolsIsisInstanceTimersLspgeneration(p *yentry.Entry
 	e := &yentry.Entry{
 		Name:             "lsp-generation",
 		Key:              []string{},
+		Module:           "",
+		Namespace:        "",
+		Prefix:           "srl_nokia-isis",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
 		LeafRefs:         []*leafref.LeafRef{},
+		Defaults: map[string]string{
+			"initial-wait": "10",
+			"max-wait":     "5000",
+			"second-wait":  "1000",
+		},
 	}
 
 	for _, opt := range opts {

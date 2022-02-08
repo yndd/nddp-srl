@@ -25,10 +25,14 @@ func initPlatformLinecardForwardingcomplexBuffermemory(p *yentry.Entry, opts ...
 	e := &yentry.Entry{
 		Name:             "buffer-memory",
 		Key:              []string{},
+		Module:           "srl_nokia-platform-qos",
+		Namespace:        "urn:srl_nokia/platform-qos",
+		Prefix:           "srl_nokia-platform-qos",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
 		LeafRefs:         []*leafref.LeafRef{},
+		Defaults:         map[string]string{},
 	}
 
 	for _, opt := range opts {

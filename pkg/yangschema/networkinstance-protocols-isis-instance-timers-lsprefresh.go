@@ -25,10 +25,17 @@ func initNetworkinstanceProtocolsIsisInstanceTimersLsprefresh(p *yentry.Entry, o
 	e := &yentry.Entry{
 		Name:             "lsp-refresh",
 		Key:              []string{},
+		Module:           "",
+		Namespace:        "",
+		Prefix:           "srl_nokia-isis",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
 		LeafRefs:         []*leafref.LeafRef{},
+		Defaults: map[string]string{
+			"half-lifetime": "true",
+			"interval":      "600",
+		},
 	}
 
 	for _, opt := range opts {

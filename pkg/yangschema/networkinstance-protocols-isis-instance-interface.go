@@ -37,6 +37,9 @@ func initNetworkinstanceProtocolsIsisInstanceInterface(p *yentry.Entry, opts ...
 		Key: []string{
 			"interface-name",
 		},
+		Module:           "",
+		Namespace:        "",
+		Prefix:           "srl_nokia-isis",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
@@ -56,6 +59,11 @@ func initNetworkinstanceProtocolsIsisInstanceInterface(p *yentry.Entry, opts ...
 					},
 				},
 			},
+		},
+		Defaults: map[string]string{
+			"admin-state":   "enable",
+			"hello-padding": "disable",
+			"passive":       "false",
 		},
 	}
 

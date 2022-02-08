@@ -25,10 +25,18 @@ func initNetworkinstanceProtocolsBgpIpv6unicastMultipath(p *yentry.Entry, opts .
 	e := &yentry.Entry{
 		Name:             "multipath",
 		Key:              []string{},
+		Module:           "",
+		Namespace:        "",
+		Prefix:           "srl_nokia-bgp",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
 		LeafRefs:         []*leafref.LeafRef{},
+		Defaults: map[string]string{
+			"allow-multiple-as": "true",
+			"max-paths-level-1": "1",
+			"max-paths-level-2": "1",
+		},
 	}
 
 	for _, opt := range opts {

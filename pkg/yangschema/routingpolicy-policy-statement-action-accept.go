@@ -27,10 +27,14 @@ func initRoutingpolicyPolicyStatementActionAccept(p *yentry.Entry, opts ...yentr
 	e := &yentry.Entry{
 		Name:             "accept",
 		Key:              []string{},
+		Module:           "",
+		Namespace:        "",
+		Prefix:           "srl_rpol",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
 		LeafRefs:         []*leafref.LeafRef{},
+		Defaults:         map[string]string{},
 	}
 
 	for _, opt := range opts {

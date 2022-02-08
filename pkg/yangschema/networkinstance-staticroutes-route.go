@@ -28,6 +28,9 @@ func initNetworkinstanceStaticroutesRoute(p *yentry.Entry, opts ...yentry.EntryO
 		Key: []string{
 			"prefix",
 		},
+		Module:           "",
+		Namespace:        "",
+		Prefix:           "srl_nokia-static-routes",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
@@ -46,6 +49,11 @@ func initNetworkinstanceStaticroutesRoute(p *yentry.Entry, opts ...yentry.EntryO
 					},
 				},
 			},
+		},
+		Defaults: map[string]string{
+			"admin-state": "enable",
+			"metric":      "1",
+			"preference":  "5",
 		},
 	}
 

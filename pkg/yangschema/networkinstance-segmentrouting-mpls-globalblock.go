@@ -26,6 +26,9 @@ func initNetworkinstanceSegmentroutingMplsGlobalblock(p *yentry.Entry, opts ...y
 	e := &yentry.Entry{
 		Name:             "global-block",
 		Key:              []string{},
+		Module:           "",
+		Namespace:        "",
+		Prefix:           "srl_nokia-sr",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
@@ -46,6 +49,7 @@ func initNetworkinstanceSegmentroutingMplsGlobalblock(p *yentry.Entry, opts ...y
 				},
 			},
 		},
+		Defaults: map[string]string{},
 	}
 
 	for _, opt := range opts {

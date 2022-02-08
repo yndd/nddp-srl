@@ -30,10 +30,14 @@ func initQos(p *yentry.Entry, opts ...yentry.EntryOption) *yentry.Entry {
 	e := &yentry.Entry{
 		Name:             "qos",
 		Key:              []string{},
+		Module:           "srl_nokia-qos",
+		Namespace:        "urn:srl_nokia/qos",
+		Prefix:           "srl_nokia-qos",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
 		LeafRefs:         []*leafref.LeafRef{},
+		Defaults:         map[string]string{},
 	}
 
 	for _, opt := range opts {

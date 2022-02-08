@@ -27,10 +27,14 @@ func initSystemAaaAccountingEvent(p *yentry.Entry, opts ...yentry.EntryOption) *
 		Key: []string{
 			"event-type",
 		},
+		Module:           "",
+		Namespace:        "",
+		Prefix:           "srl-aaa",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
 		LeafRefs:         []*leafref.LeafRef{},
+		Defaults:         map[string]string{},
 	}
 
 	for _, opt := range opts {

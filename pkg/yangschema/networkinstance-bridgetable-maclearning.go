@@ -27,10 +27,16 @@ func initNetworkinstanceBridgetableMaclearning(p *yentry.Entry, opts ...yentry.E
 	e := &yentry.Entry{
 		Name:             "mac-learning",
 		Key:              []string{},
+		Module:           "",
+		Namespace:        "",
+		Prefix:           "srl_nokia-bridge-table-mac-learning",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
 		LeafRefs:         []*leafref.LeafRef{},
+		Defaults: map[string]string{
+			"admin-state": "enable",
+		},
 	}
 
 	for _, opt := range opts {

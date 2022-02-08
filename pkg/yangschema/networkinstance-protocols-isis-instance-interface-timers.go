@@ -25,10 +25,17 @@ func initNetworkinstanceProtocolsIsisInstanceInterfaceTimers(p *yentry.Entry, op
 	e := &yentry.Entry{
 		Name:             "timers",
 		Key:              []string{},
+		Module:           "",
+		Namespace:        "",
+		Prefix:           "srl_nokia-isis",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
 		LeafRefs:         []*leafref.LeafRef{},
+		Defaults: map[string]string{
+			"csnp-interval":       "10",
+			"lsp-pacing-interval": "100",
+		},
 	}
 
 	for _, opt := range opts {

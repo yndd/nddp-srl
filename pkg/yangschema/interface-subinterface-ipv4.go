@@ -32,10 +32,16 @@ func initInterfaceSubinterfaceIpv4(p *yentry.Entry, opts ...yentry.EntryOption) 
 	e := &yentry.Entry{
 		Name:             "ipv4",
 		Key:              []string{},
+		Module:           "",
+		Namespace:        "",
+		Prefix:           "srl_nokia-if-ip",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
 		LeafRefs:         []*leafref.LeafRef{},
+		Defaults: map[string]string{
+			"allow-directed-broadcast": "false",
+		},
 	}
 
 	for _, opt := range opts {

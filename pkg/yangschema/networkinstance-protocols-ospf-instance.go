@@ -40,6 +40,9 @@ func initNetworkinstanceProtocolsOspfInstance(p *yentry.Entry, opts ...yentry.En
 		Key: []string{
 			"name",
 		},
+		Module:           "",
+		Namespace:        "",
+		Prefix:           "srl_nokia-ospf",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
@@ -57,6 +60,13 @@ func initNetworkinstanceProtocolsOspfInstance(p *yentry.Entry, opts ...yentry.En
 					},
 				},
 			},
+		},
+		Defaults: map[string]string{
+			"admin-state":         "disable",
+			"external-preference": "150",
+			"max-ecmp-paths":      "1",
+			"preference":          "10",
+			"reference-bandwidth": "400000000",
 		},
 	}
 

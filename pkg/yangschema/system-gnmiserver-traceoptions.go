@@ -25,10 +25,14 @@ func initSystemGnmiserverTraceoptions(p *yentry.Entry, opts ...yentry.EntryOptio
 	e := &yentry.Entry{
 		Name:             "trace-options",
 		Key:              []string{},
+		Module:           "",
+		Namespace:        "",
+		Prefix:           "srl-gnmi-server",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
 		LeafRefs:         []*leafref.LeafRef{},
+		Defaults:         map[string]string{},
 	}
 
 	for _, opt := range opts {

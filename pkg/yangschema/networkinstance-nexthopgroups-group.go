@@ -30,10 +30,16 @@ func initNetworkinstanceNexthopgroupsGroup(p *yentry.Entry, opts ...yentry.Entry
 		Key: []string{
 			"name",
 		},
+		Module:           "",
+		Namespace:        "",
+		Prefix:           "srl_nokia-next-hop-groups",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
 		LeafRefs:         []*leafref.LeafRef{},
+		Defaults: map[string]string{
+			"admin-state": "enable",
+		},
 	}
 
 	for _, opt := range opts {

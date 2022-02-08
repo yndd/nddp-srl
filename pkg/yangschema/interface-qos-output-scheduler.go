@@ -27,10 +27,14 @@ func initInterfaceQosOutputScheduler(p *yentry.Entry, opts ...yentry.EntryOption
 	e := &yentry.Entry{
 		Name:             "scheduler",
 		Key:              []string{},
+		Module:           "",
+		Namespace:        "",
+		Prefix:           "srl_nokia-qos",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
 		LeafRefs:         []*leafref.LeafRef{},
+		Defaults:         map[string]string{},
 	}
 
 	for _, opt := range opts {

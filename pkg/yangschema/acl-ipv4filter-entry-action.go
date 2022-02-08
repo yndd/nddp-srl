@@ -28,10 +28,14 @@ func initAclIpv4filterEntryAction(p *yentry.Entry, opts ...yentry.EntryOption) *
 	e := &yentry.Entry{
 		Name:             "action",
 		Key:              []string{},
+		Module:           "",
+		Namespace:        "",
+		Prefix:           "srl_nokia-acl",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
 		LeafRefs:         []*leafref.LeafRef{},
+		Defaults:         map[string]string{},
 	}
 
 	for _, opt := range opts {

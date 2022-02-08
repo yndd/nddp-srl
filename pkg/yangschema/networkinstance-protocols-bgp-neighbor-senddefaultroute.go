@@ -26,6 +26,9 @@ func initNetworkinstanceProtocolsBgpNeighborSenddefaultroute(p *yentry.Entry, op
 	e := &yentry.Entry{
 		Name:             "send-default-route",
 		Key:              []string{},
+		Module:           "",
+		Namespace:        "",
+		Prefix:           "srl_nokia-bgp",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
@@ -44,6 +47,7 @@ func initNetworkinstanceProtocolsBgpNeighborSenddefaultroute(p *yentry.Entry, op
 				},
 			},
 		},
+		Defaults: map[string]string{},
 	}
 
 	for _, opt := range opts {

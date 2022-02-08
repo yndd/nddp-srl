@@ -28,10 +28,14 @@ func initSystemNetworkinstanceProtocolsEvpnEthernetsegments(p *yentry.Entry, opt
 	e := &yentry.Entry{
 		Name:             "ethernet-segments",
 		Key:              []string{},
+		Module:           "srl_nokia-system-network-instance-bgp-evpn-ethernet-segments",
+		Namespace:        "urn:srl_nokia/system-bgp-evpn-ethernet-segments",
+		Prefix:           "srl_nokia-system-bgp-evpn-ethernet-segments",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
 		LeafRefs:         []*leafref.LeafRef{},
+		Defaults:         map[string]string{},
 	}
 
 	for _, opt := range opts {

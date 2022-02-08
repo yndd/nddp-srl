@@ -47,6 +47,9 @@ func initNetworkinstanceProtocolsIsisInstance(p *yentry.Entry, opts ...yentry.En
 		Key: []string{
 			"name",
 		},
+		Module:           "",
+		Namespace:        "",
+		Prefix:           "srl_nokia-isis",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
@@ -64,6 +67,12 @@ func initNetworkinstanceProtocolsIsisInstance(p *yentry.Entry, opts ...yentry.En
 					},
 				},
 			},
+		},
+		Defaults: map[string]string{
+			"admin-state":      "disable",
+			"level-capability": "L2",
+			"max-ecmp-paths":   "1",
+			"poi-tlv":          "false",
 		},
 	}
 

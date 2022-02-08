@@ -31,6 +31,9 @@ func initSystemMaintenanceGroup(p *yentry.Entry, opts ...yentry.EntryOption) *ye
 		Key: []string{
 			"name",
 		},
+		Module:           "",
+		Namespace:        "",
+		Prefix:           "srl-m-mode",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
@@ -50,6 +53,7 @@ func initSystemMaintenanceGroup(p *yentry.Entry, opts ...yentry.EntryOption) *ye
 				},
 			},
 		},
+		Defaults: map[string]string{},
 	}
 
 	for _, opt := range opts {

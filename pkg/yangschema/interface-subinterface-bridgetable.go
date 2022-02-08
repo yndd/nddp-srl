@@ -29,10 +29,16 @@ func initInterfaceSubinterfaceBridgetable(p *yentry.Entry, opts ...yentry.EntryO
 	e := &yentry.Entry{
 		Name:             "bridge-table",
 		Key:              []string{},
+		Module:           "",
+		Namespace:        "",
+		Prefix:           "srl_nokia-if-bt",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
 		LeafRefs:         []*leafref.LeafRef{},
+		Defaults: map[string]string{
+			"discard-unknown-src-mac": "false",
+		},
 	}
 
 	for _, opt := range opts {

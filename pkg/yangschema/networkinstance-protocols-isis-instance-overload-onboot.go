@@ -25,10 +25,14 @@ func initNetworkinstanceProtocolsIsisInstanceOverloadOnboot(p *yentry.Entry, opt
 	e := &yentry.Entry{
 		Name:             "on-boot",
 		Key:              []string{},
+		Module:           "",
+		Namespace:        "",
+		Prefix:           "srl_nokia-isis",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
 		LeafRefs:         []*leafref.LeafRef{},
+		Defaults:         map[string]string{},
 	}
 
 	for _, opt := range opts {

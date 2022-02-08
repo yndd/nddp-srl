@@ -27,10 +27,17 @@ func initAclPolicersSystemcpupolicer(p *yentry.Entry, opts ...yentry.EntryOption
 		Key: []string{
 			"name",
 		},
+		Module:           "",
+		Namespace:        "",
+		Prefix:           "srl_nokia-acl",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
 		LeafRefs:         []*leafref.LeafRef{},
+		Defaults: map[string]string{
+			"entry-specific":   "false",
+			"max-packet-burst": "16",
+		},
 	}
 
 	for _, opt := range opts {

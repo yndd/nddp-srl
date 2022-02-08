@@ -27,10 +27,14 @@ func initPlatformChassis(p *yentry.Entry, opts ...yentry.EntryOption) *yentry.En
 	e := &yentry.Entry{
 		Name:             "chassis",
 		Key:              []string{},
+		Module:           "srl_nokia-platform-chassis",
+		Namespace:        "urn:srl_nokia/platform-chassis",
+		Prefix:           "srl_nokia-platform-chassis",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
 		LeafRefs:         []*leafref.LeafRef{},
+		Defaults:         map[string]string{},
 	}
 
 	for _, opt := range opts {

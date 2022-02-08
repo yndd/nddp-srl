@@ -25,10 +25,20 @@ func initSystemMtu(p *yentry.Entry, opts ...yentry.EntryOption) *yentry.Entry {
 	e := &yentry.Entry{
 		Name:             "mtu",
 		Key:              []string{},
+		Module:           "srl_nokia-mtu",
+		Namespace:        "urn:srl_nokia/mtu",
+		Prefix:           "srl-mtu",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
 		LeafRefs:         []*leafref.LeafRef{},
+		Defaults: map[string]string{
+			"default-ip-mtu":   "1500",
+			"default-l2-mtu":   "9232",
+			"default-mpls-mtu": "1508",
+			"default-port-mtu": "9232",
+			"min-path-mtu":     "552",
+		},
 	}
 
 	for _, opt := range opts {

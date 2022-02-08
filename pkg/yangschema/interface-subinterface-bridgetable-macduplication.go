@@ -25,10 +25,16 @@ func initInterfaceSubinterfaceBridgetableMacduplication(p *yentry.Entry, opts ..
 	e := &yentry.Entry{
 		Name:             "mac-duplication",
 		Key:              []string{},
+		Module:           "",
+		Namespace:        "",
+		Prefix:           "srl_nokia-if-bt",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
 		LeafRefs:         []*leafref.LeafRef{},
+		Defaults: map[string]string{
+			"action": "use-net-instance-action",
+		},
 	}
 
 	for _, opt := range opts {

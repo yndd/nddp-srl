@@ -25,10 +25,16 @@ func initNetworkinstanceProtocolsLdpIpv4Fecresolution(p *yentry.Entry, opts ...y
 	e := &yentry.Entry{
 		Name:             "fec-resolution",
 		Key:              []string{},
+		Module:           "",
+		Namespace:        "",
+		Prefix:           "srl_nokia-ldp",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
 		LeafRefs:         []*leafref.LeafRef{},
+		Defaults: map[string]string{
+			"longest-prefix": "false",
+		},
 	}
 
 	for _, opt := range opts {

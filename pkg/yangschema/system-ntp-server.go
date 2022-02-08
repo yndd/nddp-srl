@@ -27,10 +27,17 @@ func initSystemNtpServer(p *yentry.Entry, opts ...yentry.EntryOption) *yentry.En
 		Key: []string{
 			"address",
 		},
+		Module:           "",
+		Namespace:        "",
+		Prefix:           "srl_nokia-ntp",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
 		LeafRefs:         []*leafref.LeafRef{},
+		Defaults: map[string]string{
+			"iburst": "false",
+			"prefer": "false",
+		},
 	}
 
 	for _, opt := range opts {

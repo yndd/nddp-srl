@@ -28,6 +28,9 @@ func initSystemJsonrpcserverNetworkinstanceHttps(p *yentry.Entry, opts ...yentry
 	e := &yentry.Entry{
 		Name:             "https",
 		Key:              []string{},
+		Module:           "",
+		Namespace:        "",
+		Prefix:           "srl-json-rpc",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
@@ -46,6 +49,12 @@ func initSystemJsonrpcserverNetworkinstanceHttps(p *yentry.Entry, opts ...yentry
 					},
 				},
 			},
+		},
+		Defaults: map[string]string{
+			"admin-state":        "disable",
+			"port":               "443",
+			"session-limit":      "10",
+			"use-authentication": "true",
 		},
 	}
 

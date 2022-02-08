@@ -25,10 +25,17 @@ func initNetworkinstanceProtocolsBgpGroupIpv4unicastPrefixlimit(p *yentry.Entry,
 	e := &yentry.Entry{
 		Name:             "prefix-limit",
 		Key:              []string{},
+		Module:           "",
+		Namespace:        "",
+		Prefix:           "srl_nokia-bgp",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
 		LeafRefs:         []*leafref.LeafRef{},
+		Defaults: map[string]string{
+			"max-received-routes":   "4294967295",
+			"warning-threshold-pct": "90",
+		},
 	}
 
 	for _, opt := range opts {

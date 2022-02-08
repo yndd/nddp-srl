@@ -27,10 +27,14 @@ func initNetworkinstanceProtocolsDirectlyconnectedTedatabaseinstall(p *yentry.En
 	e := &yentry.Entry{
 		Name:             "te-database-install",
 		Key:              []string{},
+		Module:           "srl_nokia-traffic-engineering",
+		Namespace:        "urn:srl_nokia/te",
+		Prefix:           "srl_nokia-te",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
 		LeafRefs:         []*leafref.LeafRef{},
+		Defaults:         map[string]string{},
 	}
 
 	for _, opt := range opts {

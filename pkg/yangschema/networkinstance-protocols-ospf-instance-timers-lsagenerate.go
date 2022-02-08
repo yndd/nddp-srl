@@ -25,10 +25,18 @@ func initNetworkinstanceProtocolsOspfInstanceTimersLsagenerate(p *yentry.Entry, 
 	e := &yentry.Entry{
 		Name:             "lsa-generate",
 		Key:              []string{},
+		Module:           "",
+		Namespace:        "",
+		Prefix:           "srl_nokia-ospf",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
 		LeafRefs:         []*leafref.LeafRef{},
+		Defaults: map[string]string{
+			"lsa-initial-wait": "5000",
+			"lsa-second-wait":  "5000",
+			"max-lsa-wait":     "5000",
+		},
 	}
 
 	for _, opt := range opts {

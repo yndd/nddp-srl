@@ -27,10 +27,14 @@ func initNetworkinstanceBridgetableStaticmac(p *yentry.Entry, opts ...yentry.Ent
 	e := &yentry.Entry{
 		Name:             "static-mac",
 		Key:              []string{},
+		Module:           "srl_nokia-bridge-table-static-mac",
+		Namespace:        "urn:srl_nokia/network-instance/bridge-table/static-mac",
+		Prefix:           "srl_nokia-bridge-table-static-mac",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
 		LeafRefs:         []*leafref.LeafRef{},
+		Defaults:         map[string]string{},
 	}
 
 	for _, opt := range opts {

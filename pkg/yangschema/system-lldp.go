@@ -30,10 +30,18 @@ func initSystemLldp(p *yentry.Entry, opts ...yentry.EntryOption) *yentry.Entry {
 	e := &yentry.Entry{
 		Name:             "lldp",
 		Key:              []string{},
+		Module:           "srl_nokia-lldp",
+		Namespace:        "urn:srl_nokia/lldp",
+		Prefix:           "srl_nokia-lldp",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
 		LeafRefs:         []*leafref.LeafRef{},
+		Defaults: map[string]string{
+			"admin-state":     "enable",
+			"hello-timer":     "30",
+			"hold-multiplier": "4",
+		},
 	}
 
 	for _, opt := range opts {

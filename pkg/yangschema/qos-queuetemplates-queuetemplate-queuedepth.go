@@ -25,10 +25,17 @@ func initQosQueuetemplatesQueuetemplateQueuedepth(p *yentry.Entry, opts ...yentr
 	e := &yentry.Entry{
 		Name:             "queue-depth",
 		Key:              []string{},
+		Module:           "",
+		Namespace:        "",
+		Prefix:           "srl_nokia-qos",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
 		LeafRefs:         []*leafref.LeafRef{},
+		Defaults: map[string]string{
+			"high-threshold-bytes": "0",
+			"maximum-burst-size":   "0",
+		},
 	}
 
 	for _, opt := range opts {

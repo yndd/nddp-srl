@@ -27,10 +27,14 @@ func initPlatformResourcemonitoringMtu(p *yentry.Entry, opts ...yentry.EntryOpti
 	e := &yentry.Entry{
 		Name:             "mtu",
 		Key:              []string{},
+		Module:           "srl_nokia-platform-mtu",
+		Namespace:        "urn:srl_nokia/platform-mtu",
+		Prefix:           "srl_nokia-platform-mtu",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
 		LeafRefs:         []*leafref.LeafRef{},
+		Defaults:         map[string]string{},
 	}
 
 	for _, opt := range opts {

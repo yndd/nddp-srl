@@ -31,6 +31,9 @@ func initSystemMaintenanceGroupMembersBgpNetworkinstance(p *yentry.Entry, opts .
 		Key: []string{
 			"name",
 		},
+		Module:           "",
+		Namespace:        "",
+		Prefix:           "srl-m-mode",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
@@ -48,6 +51,7 @@ func initSystemMaintenanceGroupMembersBgpNetworkinstance(p *yentry.Entry, opts .
 				},
 			},
 		},
+		Defaults: map[string]string{},
 	}
 
 	for _, opt := range opts {

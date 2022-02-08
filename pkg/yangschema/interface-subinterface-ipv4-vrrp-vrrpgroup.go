@@ -32,10 +32,20 @@ func initInterfaceSubinterfaceIpv4VrrpVrrpgroup(p *yentry.Entry, opts ...yentry.
 		Key: []string{
 			"virtual-router-id",
 		},
+		Module:           "",
+		Namespace:        "",
+		Prefix:           "srl_nokia-if-ip-vrrp",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
 		LeafRefs:         []*leafref.LeafRef{},
+		Defaults: map[string]string{
+			"admin-state":             "enable",
+			"advertise-interval":      "1000",
+			"master-inherit-interval": "false",
+			"priority":                "100",
+			"version":                 "2",
+		},
 	}
 
 	for _, opt := range opts {

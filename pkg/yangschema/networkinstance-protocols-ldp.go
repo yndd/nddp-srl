@@ -33,6 +33,9 @@ func initNetworkinstanceProtocolsLdp(p *yentry.Entry, opts ...yentry.EntryOption
 	e := &yentry.Entry{
 		Name:             "ldp",
 		Key:              []string{},
+		Module:           "srl_nokia-ldp",
+		Namespace:        "urn:srl_nokia/ldp",
+		Prefix:           "srl_nokia-ldp",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
@@ -52,6 +55,9 @@ func initNetworkinstanceProtocolsLdp(p *yentry.Entry, opts ...yentry.EntryOption
 					},
 				},
 			},
+		},
+		Defaults: map[string]string{
+			"admin-state": "disable",
 		},
 	}
 

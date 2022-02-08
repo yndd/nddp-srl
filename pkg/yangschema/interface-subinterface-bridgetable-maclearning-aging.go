@@ -25,10 +25,16 @@ func initInterfaceSubinterfaceBridgetableMaclearningAging(p *yentry.Entry, opts 
 	e := &yentry.Entry{
 		Name:             "aging",
 		Key:              []string{},
+		Module:           "",
+		Namespace:        "",
+		Prefix:           "srl_nokia-if-bt",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
 		LeafRefs:         []*leafref.LeafRef{},
+		Defaults: map[string]string{
+			"admin-state": "enable",
+		},
 	}
 
 	for _, opt := range opts {

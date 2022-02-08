@@ -25,10 +25,17 @@ func initSystemMaintenanceProfileIsisOverload(p *yentry.Entry, opts ...yentry.En
 	e := &yentry.Entry{
 		Name:             "overload",
 		Key:              []string{},
+		Module:           "",
+		Namespace:        "",
+		Prefix:           "srl-m-mode",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
 		LeafRefs:         []*leafref.LeafRef{},
+		Defaults: map[string]string{
+			"max-metric": "false",
+			"set-bit":    "false",
+		},
 	}
 
 	for _, opt := range opts {

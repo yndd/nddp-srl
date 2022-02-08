@@ -35,10 +35,16 @@ func initInterface(p *yentry.Entry, opts ...yentry.EntryOption) *yentry.Entry {
 		Key: []string{
 			"name",
 		},
+		Module:           "srl_nokia-interfaces",
+		Namespace:        "urn:srl_nokia/interfaces",
+		Prefix:           "srl_nokia-if",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: true,
 		LeafRefs:         []*leafref.LeafRef{},
+		Defaults: map[string]string{
+			"admin-state": "enable",
+		},
 	}
 
 	for _, opt := range opts {

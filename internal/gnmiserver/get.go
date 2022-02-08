@@ -19,9 +19,11 @@ package gnmiserver
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"strings"
 	"time"
 
+	"github.com/google/gnxi/utils/xpath"
 	"github.com/openconfig/gnmi/proto/gnmi"
 	nddv1 "github.com/yndd/ndd-runtime/apis/common/v1"
 	"github.com/yndd/ndd-yang/pkg/yentry"
@@ -95,7 +97,6 @@ func (s *server) HandleGet(req *gnmi.GetRequest) ([]*gnmi.Update, error) {
 				return nil, err
 			}
 			return updates, nil
-
 		} else {
 			// this is a regular get but we need to check in the systemDevice cache
 			// if a managed resource exists or not. The outcome determines if the managed resource will be created
@@ -106,8 +107,18 @@ func (s *server) HandleGet(req *gnmi.GetRequest) ([]*gnmi.Update, error) {
 			if gvk == nil {
 				exists = false
 			}
+			if gvk != nil && gvk.Status == systemv1alpha1.E_GvkStatus_Failed {
+				// resource exists, but failed, return the spec data
+				x, err := s.getSpecdata(crSystemDeviceName, gvk)
+				if err != nil {
+					return nil, status.Error(codes.Internal, err.Error())
+				}
+				if updates, err = appendUpdateResponse(x, req.GetPath()[0], updates); err != nil {
+					return nil, status.Error(codes.Internal, err.Error())
+				}
+				return updates, status.Error(codes.FailedPrecondition, "resource exist, but failed")
+			}
 		}
-
 	}
 
 	for _, path := range req.GetPath() {
@@ -115,7 +126,6 @@ func (s *server) HandleGet(req *gnmi.GetRequest) ([]*gnmi.Update, error) {
 		if err != nil {
 			return nil, status.Error(codes.Internal, err.Error())
 		}
-
 		if updates, err = appendUpdateResponse(x, path, updates); err != nil {
 			return nil, status.Error(codes.Internal, err.Error())
 		}
@@ -211,4 +221,62 @@ func (s *server) getResourceName(crSystemDeviceName string, reqpath *gnmi.Path) 
 	}
 	updates = append(updates, upd)
 	return updates, nil
+}
+
+func (s *server) getSpecdata(crSystemDeviceName string, resource *systemv1alpha1.Gvk) (interface{}, error) {
+	x1, err := s.cache.GetJson(
+		crSystemDeviceName,
+		&gnmi.Path{Target: crSystemDeviceName},
+		&gnmi.Path{
+			Elem: []*gnmi.PathElem{
+				{Name: "gvk", Key: map[string]string{"name": *resource.Name}},
+			},
+		},
+		s.nddpSchema)
+	if err != nil {
+		return nil, err
+	}
+	// remove the rootPath data
+	rootPath, err := xpath.ToGNMIPath(*resource.Rootpath)
+	if err != nil {
+		return nil, err
+	}
+	switch x := x1.(type) {
+	case map[string]interface{}:
+		x1 = x["data"]
+		x1 = getDataFromRootPath(rootPath, x1)
+	}
+	return x1, nil
+}
+
+func getDataFromRootPath(path *gnmi.Path, x1 interface{}) interface{} {
+	fmt.Printf("gnmiserver getDataFromRootPath: %s, data: %v\n", yparser.GnmiPath2XPath(path, true), x1)
+	p := yparser.DeepCopyGnmiPath(path)
+	if len(p.GetElem()) > 0 {
+		hasKey := false
+		if len(p.GetElem()[0].GetKey()) > 0 {
+			hasKey = true
+		}
+		switch x := x1.(type) {
+		case map[string]interface{}:
+			for k, v := range x {
+				if k == p.GetElem()[0].GetName() {
+					// when the spec data rootpath last element has a key
+					// we need to return the first element of the list
+					if hasKey {
+						switch x := v.(type) {
+						case []interface{}:
+							x1 = x[0]
+						}
+					} else {
+						x1 = x[p.GetElem()[0].GetName()]
+					}
+				}
+			}
+
+		}
+		p.Elem = p.Elem[1:]
+		x1 = getDataFromRootPath(p, x1)
+	}
+	return x1
 }

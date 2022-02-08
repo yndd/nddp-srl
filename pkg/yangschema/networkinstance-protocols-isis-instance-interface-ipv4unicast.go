@@ -25,10 +25,18 @@ func initNetworkinstanceProtocolsIsisInstanceInterfaceIpv4unicast(p *yentry.Entr
 	e := &yentry.Entry{
 		Name:             "ipv4-unicast",
 		Key:              []string{},
+		Module:           "",
+		Namespace:        "",
+		Prefix:           "srl_nokia-isis",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
 		LeafRefs:         []*leafref.LeafRef{},
+		Defaults: map[string]string{
+			"admin-state":     "enable",
+			"enable-bfd":      "false",
+			"include-bfd-tlv": "false",
+		},
 	}
 
 	for _, opt := range opts {

@@ -25,10 +25,18 @@ func initNetworkinstanceProtocolsIsisInstanceTimersSpf(p *yentry.Entry, opts ...
 	e := &yentry.Entry{
 		Name:             "spf",
 		Key:              []string{},
+		Module:           "",
+		Namespace:        "",
+		Prefix:           "srl_nokia-isis",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
 		LeafRefs:         []*leafref.LeafRef{},
+		Defaults: map[string]string{
+			"initial-wait": "1000",
+			"max-wait":     "10000",
+			"second-wait":  "1000",
+		},
 	}
 
 	for _, opt := range opts {

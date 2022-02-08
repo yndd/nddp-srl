@@ -25,10 +25,17 @@ func initNetworkinstanceProtocolsOspfInstanceExternaldboverflow(p *yentry.Entry,
 	e := &yentry.Entry{
 		Name:             "external-db-overflow",
 		Key:              []string{},
+		Module:           "",
+		Namespace:        "",
+		Prefix:           "srl_nokia-ospf",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
 		LeafRefs:         []*leafref.LeafRef{},
+		Defaults: map[string]string{
+			"interval": "0",
+			"limit":    "0",
+		},
 	}
 
 	for _, opt := range opts {

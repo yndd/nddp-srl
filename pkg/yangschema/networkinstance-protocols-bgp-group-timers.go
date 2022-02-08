@@ -25,10 +25,18 @@ func initNetworkinstanceProtocolsBgpGroupTimers(p *yentry.Entry, opts ...yentry.
 	e := &yentry.Entry{
 		Name:             "timers",
 		Key:              []string{},
+		Module:           "",
+		Namespace:        "",
+		Prefix:           "srl_nokia-bgp",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
 		LeafRefs:         []*leafref.LeafRef{},
+		Defaults: map[string]string{
+			"connect-retry":                  "120",
+			"hold-time":                      "90",
+			"minimum-advertisement-interval": "5",
+		},
 	}
 
 	for _, opt := range opts {

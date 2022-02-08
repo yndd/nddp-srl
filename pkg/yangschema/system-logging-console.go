@@ -29,10 +29,16 @@ func initSystemLoggingConsole(p *yentry.Entry, opts ...yentry.EntryOption) *yent
 	e := &yentry.Entry{
 		Name:             "console",
 		Key:              []string{},
+		Module:           "",
+		Namespace:        "",
+		Prefix:           "srl_nokia-logging",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
 		LeafRefs:         []*leafref.LeafRef{},
+		Defaults: map[string]string{
+			"format": "%TIMEGENERATED:::date-rfc3339% %HOSTNAME% %SYSLOGTAG%%MSG:::sp-if-no-1st-sp%%MSG:::drop-last-lf%\n",
+		},
 	}
 
 	for _, opt := range opts {

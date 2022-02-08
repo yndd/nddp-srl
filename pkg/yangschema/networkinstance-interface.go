@@ -28,6 +28,9 @@ func initNetworkinstanceInterface(p *yentry.Entry, opts ...yentry.EntryOption) *
 		Key: []string{
 			"name",
 		},
+		Module:           "",
+		Namespace:        "",
+		Prefix:           "srl_nokia-netinst",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
@@ -35,8 +38,7 @@ func initNetworkinstanceInterface(p *yentry.Entry, opts ...yentry.EntryOption) *
 			{
 				LocalPath: &gnmi.Path{
 					Elem: []*gnmi.PathElem{
-						{Name: "network-instance"},
-						{Name: "interface", Key: map[string]string{"name": ""}},
+						{Name: "name"},
 					},
 				},
 				RemotePath: &gnmi.Path{
@@ -46,21 +48,8 @@ func initNetworkinstanceInterface(p *yentry.Entry, opts ...yentry.EntryOption) *
 					},
 				},
 			},
-			{
-				LocalPath: &gnmi.Path{
-					Elem: []*gnmi.PathElem{
-						{Name: "network-instance"},
-						{Name: "vxlan-interface", Key: map[string]string{"name": ""}},
-					},
-				},
-				RemotePath: &gnmi.Path{
-					Elem: []*gnmi.PathElem{
-						{Name: "tunnel-interface", Key: map[string]string{"name": ""}},
-						{Name: "vxlan-interface", Key: map[string]string{"index": ""}},
-					},
-				},
-			},
 		},
+		Defaults: map[string]string{},
 	}
 
 	for _, opt := range opts {

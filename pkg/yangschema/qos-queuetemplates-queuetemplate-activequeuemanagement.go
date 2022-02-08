@@ -28,10 +28,16 @@ func initQosQueuetemplatesQueuetemplateActivequeuemanagement(p *yentry.Entry, op
 	e := &yentry.Entry{
 		Name:             "active-queue-management",
 		Key:              []string{},
+		Module:           "",
+		Namespace:        "",
+		Prefix:           "srl_nokia-qos",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
 		LeafRefs:         []*leafref.LeafRef{},
+		Defaults: map[string]string{
+			"weight-factor": "0",
+		},
 	}
 
 	for _, opt := range opts {

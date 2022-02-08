@@ -25,10 +25,16 @@ func initNetworkinstanceProtocolsBgpGroupTransport(p *yentry.Entry, opts ...yent
 	e := &yentry.Entry{
 		Name:             "transport",
 		Key:              []string{},
+		Module:           "",
+		Namespace:        "",
+		Prefix:           "srl_nokia-bgp",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
 		LeafRefs:         []*leafref.LeafRef{},
+		Defaults: map[string]string{
+			"passive-mode": "false",
+		},
 	}
 
 	for _, opt := range opts {

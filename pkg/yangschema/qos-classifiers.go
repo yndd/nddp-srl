@@ -29,6 +29,9 @@ func initQosClassifiers(p *yentry.Entry, opts ...yentry.EntryOption) *yentry.Ent
 	e := &yentry.Entry{
 		Name:             "classifiers",
 		Key:              []string{},
+		Module:           "",
+		Namespace:        "",
+		Prefix:           "srl_nokia-qos",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
@@ -48,6 +51,7 @@ func initQosClassifiers(p *yentry.Entry, opts ...yentry.EntryOption) *yentry.Ent
 				},
 			},
 		},
+		Defaults: map[string]string{},
 	}
 
 	for _, opt := range opts {

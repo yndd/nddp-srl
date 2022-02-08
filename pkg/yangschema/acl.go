@@ -32,10 +32,14 @@ func initAcl(p *yentry.Entry, opts ...yentry.EntryOption) *yentry.Entry {
 	e := &yentry.Entry{
 		Name:             "acl",
 		Key:              []string{},
+		Module:           "srl_nokia-acl",
+		Namespace:        "urn:srl_nokia/acl",
+		Prefix:           "srl_nokia-acl",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
 		LeafRefs:         []*leafref.LeafRef{},
+		Defaults:         map[string]string{},
 	}
 
 	for _, opt := range opts {

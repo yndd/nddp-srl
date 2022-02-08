@@ -25,10 +25,16 @@ func initInterfaceEthernetStormcontrol(p *yentry.Entry, opts ...yentry.EntryOpti
 	e := &yentry.Entry{
 		Name:             "storm-control",
 		Key:              []string{},
+		Module:           "",
+		Namespace:        "",
+		Prefix:           "srl_nokia-if",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
 		LeafRefs:         []*leafref.LeafRef{},
+		Defaults: map[string]string{
+			"units": "percentage",
+		},
 	}
 
 	for _, opt := range opts {

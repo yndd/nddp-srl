@@ -25,10 +25,17 @@ func initNetworkinstanceProtocolsOspfInstanceAreaNssaOriginatedefaultroute(p *ye
 	e := &yentry.Entry{
 		Name:             "originate-default-route",
 		Key:              []string{},
+		Module:           "",
+		Namespace:        "",
+		Prefix:           "srl_nokia-ospf",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
 		LeafRefs:         []*leafref.LeafRef{},
+		Defaults: map[string]string{
+			"adjacency-check": "true",
+			"type-nssa":       "false",
+		},
 	}
 
 	for _, opt := range opts {

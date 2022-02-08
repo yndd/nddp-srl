@@ -27,10 +27,14 @@ func initPlatformResourcemonitoringTcam(p *yentry.Entry, opts ...yentry.EntryOpt
 	e := &yentry.Entry{
 		Name:             "tcam",
 		Key:              []string{},
+		Module:           "srl_nokia-platform-acl",
+		Namespace:        "urn:srl_nokia/platform-acl",
+		Prefix:           "srl_nokia-platform-acl",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
 		LeafRefs:         []*leafref.LeafRef{},
+		Defaults:         map[string]string{},
 	}
 
 	for _, opt := range opts {

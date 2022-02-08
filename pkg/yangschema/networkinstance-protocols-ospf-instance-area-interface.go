@@ -33,6 +33,9 @@ func initNetworkinstanceProtocolsOspfInstanceAreaInterface(p *yentry.Entry, opts
 		Key: []string{
 			"interface-name",
 		},
+		Module:           "",
+		Namespace:        "",
+		Prefix:           "srl_nokia-ospf",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
@@ -50,6 +53,17 @@ func initNetworkinstanceProtocolsOspfInstanceAreaInterface(p *yentry.Entry, opts
 					},
 				},
 			},
+		},
+		Defaults: map[string]string{
+			"admin-state":                 "enable",
+			"advertise-router-capability": "true",
+			"advertise-subnet":            "true",
+			"dead-interval":               "40",
+			"hello-interval":              "10",
+			"lsa-filter-out":              "none",
+			"priority":                    "1",
+			"retransmit-interval":         "5",
+			"transit-delay":               "1",
 		},
 	}
 

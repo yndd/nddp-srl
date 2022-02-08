@@ -29,10 +29,14 @@ func initSystemLoggingFileFacility(p *yentry.Entry, opts ...yentry.EntryOption) 
 		Key: []string{
 			"facility-name",
 		},
+		Module:           "",
+		Namespace:        "",
+		Prefix:           "srl_nokia-logging",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
 		LeafRefs:         []*leafref.LeafRef{},
+		Defaults:         map[string]string{},
 	}
 
 	for _, opt := range opts {

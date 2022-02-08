@@ -27,10 +27,14 @@ func initNetworkinstanceProtocolsIsisInstanceInterlevelpropagationpolicies(p *ye
 	e := &yentry.Entry{
 		Name:             "inter-level-propagation-policies",
 		Key:              []string{},
+		Module:           "",
+		Namespace:        "",
+		Prefix:           "srl_nokia-isis",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
 		LeafRefs:         []*leafref.LeafRef{},
+		Defaults:         map[string]string{},
 	}
 
 	for _, opt := range opts {

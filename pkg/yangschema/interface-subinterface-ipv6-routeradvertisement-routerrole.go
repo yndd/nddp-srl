@@ -27,10 +27,23 @@ func initInterfaceSubinterfaceIpv6RouteradvertisementRouterrole(p *yentry.Entry,
 	e := &yentry.Entry{
 		Name:             "router-role",
 		Key:              []string{},
+		Module:           "",
+		Namespace:        "",
+		Prefix:           "srl_nokia-if-ip-ra",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
 		LeafRefs:         []*leafref.LeafRef{},
+		Defaults: map[string]string{
+			"current-hop-limit":          "64",
+			"managed-configuration-flag": "false",
+			"max-advertisement-interval": "600",
+			"min-advertisement-interval": "200",
+			"other-configuration-flag":   "false",
+			"reachable-time":             "0",
+			"retransmit-time":            "0",
+			"router-lifetime":            "1800",
+		},
 	}
 
 	for _, opt := range opts {

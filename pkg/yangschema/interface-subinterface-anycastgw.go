@@ -25,10 +25,16 @@ func initInterfaceSubinterfaceAnycastgw(p *yentry.Entry, opts ...yentry.EntryOpt
 	e := &yentry.Entry{
 		Name:             "anycast-gw",
 		Key:              []string{},
+		Module:           "",
+		Namespace:        "",
+		Prefix:           "srl_nokia-if-ip",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
 		LeafRefs:         []*leafref.LeafRef{},
+		Defaults: map[string]string{
+			"virtual-router-id": "1",
+		},
 	}
 
 	for _, opt := range opts {

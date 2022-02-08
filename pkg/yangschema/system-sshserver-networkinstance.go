@@ -30,6 +30,9 @@ func initSystemSshserverNetworkinstance(p *yentry.Entry, opts ...yentry.EntryOpt
 		Key: []string{
 			"name",
 		},
+		Module:           "",
+		Namespace:        "",
+		Prefix:           "srl_nokia-ssh",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
@@ -46,6 +49,10 @@ func initSystemSshserverNetworkinstance(p *yentry.Entry, opts ...yentry.EntryOpt
 					},
 				},
 			},
+		},
+		Defaults: map[string]string{
+			"rate-limit": "20",
+			"timeout":    "0",
 		},
 	}
 

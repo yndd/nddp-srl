@@ -28,6 +28,9 @@ func initSystemSflowCollector(p *yentry.Entry, opts ...yentry.EntryOption) *yent
 		Key: []string{
 			"collector-id",
 		},
+		Module:           "",
+		Namespace:        "",
+		Prefix:           "srl_nokia-sflow",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
@@ -44,6 +47,9 @@ func initSystemSflowCollector(p *yentry.Entry, opts ...yentry.EntryOption) *yent
 					},
 				},
 			},
+		},
+		Defaults: map[string]string{
+			"port": "6343",
 		},
 	}
 

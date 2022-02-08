@@ -42,10 +42,17 @@ func initNetworkinstance(p *yentry.Entry, opts ...yentry.EntryOption) *yentry.En
 		Key: []string{
 			"name",
 		},
+		Module:           "srl_nokia-network-instance",
+		Namespace:        "urn:srl_nokia/network-instance",
+		Prefix:           "srl_nokia-netinst",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: true,
 		LeafRefs:         []*leafref.LeafRef{},
+		Defaults: map[string]string{
+			"admin-state": "enable",
+			"type":        "default",
+		},
 	}
 
 	for _, opt := range opts {

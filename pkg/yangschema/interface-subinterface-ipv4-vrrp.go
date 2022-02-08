@@ -27,10 +27,14 @@ func initInterfaceSubinterfaceIpv4Vrrp(p *yentry.Entry, opts ...yentry.EntryOpti
 	e := &yentry.Entry{
 		Name:             "vrrp",
 		Key:              []string{},
+		Module:           "srl_nokia-interfaces-ip-vrrp",
+		Namespace:        "urn:srl_nokia/interfaces/ip/vrrp",
+		Prefix:           "srl_nokia-if-ip-vrrp",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
 		LeafRefs:         []*leafref.LeafRef{},
+		Defaults:         map[string]string{},
 	}
 
 	for _, opt := range opts {

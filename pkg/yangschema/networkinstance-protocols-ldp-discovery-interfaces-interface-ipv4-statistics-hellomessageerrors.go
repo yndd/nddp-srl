@@ -25,10 +25,14 @@ func initNetworkinstanceProtocolsLdpDiscoveryInterfacesInterfaceIpv4StatisticsHe
 	e := &yentry.Entry{
 		Name:             "hello-message-errors",
 		Key:              []string{},
+		Module:           "",
+		Namespace:        "",
+		Prefix:           "srl_nokia-ldp",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
 		LeafRefs:         []*leafref.LeafRef{},
+		Defaults:         map[string]string{},
 	}
 
 	for _, opt := range opts {

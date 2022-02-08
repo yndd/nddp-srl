@@ -27,10 +27,16 @@ func initSystemDhcpserver(p *yentry.Entry, opts ...yentry.EntryOption) *yentry.E
 	e := &yentry.Entry{
 		Name:             "dhcp-server",
 		Key:              []string{},
+		Module:           "srl_nokia-dhcp-server",
+		Namespace:        "urn:srl_nokia/dhcp-server",
+		Prefix:           "srl-dhcp-server",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
 		LeafRefs:         []*leafref.LeafRef{},
+		Defaults: map[string]string{
+			"admin-state": "disable",
+		},
 	}
 
 	for _, opt := range opts {

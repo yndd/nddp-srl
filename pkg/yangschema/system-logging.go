@@ -32,6 +32,9 @@ func initSystemLogging(p *yentry.Entry, opts ...yentry.EntryOption) *yentry.Entr
 	e := &yentry.Entry{
 		Name:             "logging",
 		Key:              []string{},
+		Module:           "srl_nokia-logging",
+		Namespace:        "urn:srl_nokia-logging",
+		Prefix:           "srl_nokia-logging",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
@@ -48,6 +51,9 @@ func initSystemLogging(p *yentry.Entry, opts ...yentry.EntryOption) *yentry.Entr
 					},
 				},
 			},
+		},
+		Defaults: map[string]string{
+			"subsystem-facility": "local6",
 		},
 	}
 

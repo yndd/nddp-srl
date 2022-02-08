@@ -16,6 +16,7 @@ limitations under the License.
 package yangschema
 
 import (
+	"github.com/openconfig/gnmi/proto/gnmi"
 	"github.com/yndd/ndd-yang/pkg/leafref"
 	"github.com/yndd/ndd-yang/pkg/yentry"
 )
@@ -27,10 +28,28 @@ func initNetworkinstanceVxlaninterface(p *yentry.Entry, opts ...yentry.EntryOpti
 		Key: []string{
 			"name",
 		},
+		Module:           "",
+		Namespace:        "",
+		Prefix:           "srl_nokia-netinst",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
-		LeafRefs:         []*leafref.LeafRef{},
+		LeafRefs: []*leafref.LeafRef{
+			{
+				LocalPath: &gnmi.Path{
+					Elem: []*gnmi.PathElem{
+						{Name: "name"},
+					},
+				},
+				RemotePath: &gnmi.Path{
+					Elem: []*gnmi.PathElem{
+						{Name: "tunnel-interface", Key: map[string]string{"name": ""}},
+						{Name: "vxlan-interface", Key: map[string]string{"index": ""}},
+					},
+				},
+			},
+		},
+		Defaults: map[string]string{},
 	}
 
 	for _, opt := range opts {

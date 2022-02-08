@@ -43,6 +43,9 @@ func initNetworkinstanceProtocolsBgpNeighbor(p *yentry.Entry, opts ...yentry.Ent
 		Key: []string{
 			"peer-address",
 		},
+		Module:           "",
+		Namespace:        "",
+		Prefix:           "srl_nokia-bgp",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
@@ -88,6 +91,9 @@ func initNetworkinstanceProtocolsBgpNeighbor(p *yentry.Entry, opts ...yentry.Ent
 					},
 				},
 			},
+		},
+		Defaults: map[string]string{
+			"admin-state": "enable",
 		},
 	}
 

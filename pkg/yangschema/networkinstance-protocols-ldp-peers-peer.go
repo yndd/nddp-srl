@@ -32,10 +32,16 @@ func initNetworkinstanceProtocolsLdpPeersPeer(p *yentry.Entry, opts ...yentry.En
 			"label-space-id",
 			"lsr-id",
 		},
+		Module:           "",
+		Namespace:        "",
+		Prefix:           "srl_nokia-ldp",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
 		LeafRefs:         []*leafref.LeafRef{},
+		Defaults: map[string]string{
+			"fec-limit": "0",
+		},
 	}
 
 	for _, opt := range opts {

@@ -28,6 +28,9 @@ func initSystemFtpserverNetworkinstance(p *yentry.Entry, opts ...yentry.EntryOpt
 		Key: []string{
 			"name",
 		},
+		Module:           "",
+		Namespace:        "",
+		Prefix:           "srl_nokia-ftp",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
@@ -44,6 +47,12 @@ func initSystemFtpserverNetworkinstance(p *yentry.Entry, opts ...yentry.EntryOpt
 					},
 				},
 			},
+		},
+		Defaults: map[string]string{
+			"admin-state":    "disable",
+			"session-limit":  "20",
+			"source-address": "::",
+			"timeout":        "300",
 		},
 	}
 

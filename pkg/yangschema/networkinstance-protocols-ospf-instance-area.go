@@ -33,6 +33,9 @@ func initNetworkinstanceProtocolsOspfInstanceArea(p *yentry.Entry, opts ...yentr
 		Key: []string{
 			"area-id",
 		},
+		Module:           "",
+		Namespace:        "",
+		Prefix:           "srl_nokia-ospf",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
@@ -50,6 +53,11 @@ func initNetworkinstanceProtocolsOspfInstanceArea(p *yentry.Entry, opts ...yentr
 					},
 				},
 			},
+		},
+		Defaults: map[string]string{
+			"advertise-router-capability": "true",
+			"bgp-ls-exclude":              "false",
+			"blackhole-aggregate":         "true",
 		},
 	}
 

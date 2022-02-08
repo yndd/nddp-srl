@@ -27,10 +27,19 @@ func initInterfaceSubinterfaceIpv6RouteradvertisementRouterrolePrefix(p *yentry.
 		Key: []string{
 			"ipv6-prefix",
 		},
+		Module:           "",
+		Namespace:        "",
+		Prefix:           "srl_nokia-if-ip-ra",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
 		LeafRefs:         []*leafref.LeafRef{},
+		Defaults: map[string]string{
+			"autonomous-flag":    "true",
+			"on-link-flag":       "true",
+			"preferred-lifetime": "604800",
+			"valid-lifetime":     "2592000",
+		},
 	}
 
 	for _, opt := range opts {

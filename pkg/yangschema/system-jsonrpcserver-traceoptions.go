@@ -25,10 +25,14 @@ func initSystemJsonrpcserverTraceoptions(p *yentry.Entry, opts ...yentry.EntryOp
 	e := &yentry.Entry{
 		Name:             "trace-options",
 		Key:              []string{},
+		Module:           "",
+		Namespace:        "",
+		Prefix:           "srl-json-rpc",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
 		LeafRefs:         []*leafref.LeafRef{},
+		Defaults:         map[string]string{},
 	}
 
 	for _, opt := range opts {

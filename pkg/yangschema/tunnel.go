@@ -27,10 +27,14 @@ func initTunnel(p *yentry.Entry, opts ...yentry.EntryOption) *yentry.Entry {
 	e := &yentry.Entry{
 		Name:             "tunnel",
 		Key:              []string{},
+		Module:           "srl_nokia-tunnel",
+		Namespace:        "urn:srl_nokia/tunnel",
+		Prefix:           "srl_nokia-tunnel",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
 		LeafRefs:         []*leafref.LeafRef{},
+		Defaults:         map[string]string{},
 	}
 
 	for _, opt := range opts {

@@ -25,10 +25,16 @@ func initSystemMaintenanceGroupMaintenancemode(p *yentry.Entry, opts ...yentry.E
 	e := &yentry.Entry{
 		Name:             "maintenance-mode",
 		Key:              []string{},
+		Module:           "",
+		Namespace:        "",
+		Prefix:           "srl-m-mode",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
 		LeafRefs:         []*leafref.LeafRef{},
+		Defaults: map[string]string{
+			"admin-state": "disable",
+		},
 	}
 
 	for _, opt := range opts {

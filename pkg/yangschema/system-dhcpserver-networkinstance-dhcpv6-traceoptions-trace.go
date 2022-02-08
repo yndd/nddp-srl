@@ -25,10 +25,14 @@ func initSystemDhcpserverNetworkinstanceDhcpv6TraceoptionsTrace(p *yentry.Entry,
 	e := &yentry.Entry{
 		Name:             "trace",
 		Key:              []string{},
+		Module:           "",
+		Namespace:        "",
+		Prefix:           "srl-dhcp-server",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
 		LeafRefs:         []*leafref.LeafRef{},
+		Defaults:         map[string]string{},
 	}
 
 	for _, opt := range opts {

@@ -25,10 +25,14 @@ func initInterfaceBreakoutmode(p *yentry.Entry, opts ...yentry.EntryOption) *yen
 	e := &yentry.Entry{
 		Name:             "breakout-mode",
 		Key:              []string{},
+		Module:           "",
+		Namespace:        "",
+		Prefix:           "srl_nokia-if",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
 		LeafRefs:         []*leafref.LeafRef{},
+		Defaults:         map[string]string{},
 	}
 
 	for _, opt := range opts {

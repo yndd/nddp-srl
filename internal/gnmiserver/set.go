@@ -49,6 +49,11 @@ func (s *server) Set(ctx context.Context, req *gnmi.SetRequest) (*gnmi.SetRespon
 	log.Debug("Set", "prefix", prefix)
 
 	if numReplaces > 0 {
+		// delete the cache first and after update it, since the gvk entry comes first
+		if err := s.DeleteCache(prefix, req.GetReplace()[0].GetPath()); err != nil {
+			return nil, status.Errorf(codes.Internal, err.Error())
+		}
+		// if the cache was deleted we can easily update without history
 		for _, u := range req.GetReplace() {
 			if err := s.UpdateCache(prefix, u); err != nil {
 				return nil, status.Errorf(codes.Internal, err.Error())

@@ -26,6 +26,9 @@ func initNetworkinstanceProtocolsBgpGroupSenddefaultroute(p *yentry.Entry, opts 
 	e := &yentry.Entry{
 		Name:             "send-default-route",
 		Key:              []string{},
+		Module:           "",
+		Namespace:        "",
+		Prefix:           "srl_nokia-bgp",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
@@ -43,6 +46,10 @@ func initNetworkinstanceProtocolsBgpGroupSenddefaultroute(p *yentry.Entry, opts 
 					},
 				},
 			},
+		},
+		Defaults: map[string]string{
+			"ipv4-unicast": "false",
+			"ipv6-unicast": "false",
 		},
 	}
 

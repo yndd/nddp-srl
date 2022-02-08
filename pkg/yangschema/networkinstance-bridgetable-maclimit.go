@@ -25,10 +25,17 @@ func initNetworkinstanceBridgetableMaclimit(p *yentry.Entry, opts ...yentry.Entr
 	e := &yentry.Entry{
 		Name:             "mac-limit",
 		Key:              []string{},
+		Module:           "",
+		Namespace:        "",
+		Prefix:           "srl_nokia-bridge-table-mac-limit",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
 		LeafRefs:         []*leafref.LeafRef{},
+		Defaults: map[string]string{
+			"maximum-entries":       "250",
+			"warning-threshold-pct": "95",
+		},
 	}
 
 	for _, opt := range opts {

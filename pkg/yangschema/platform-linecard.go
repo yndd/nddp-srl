@@ -29,10 +29,16 @@ func initPlatformLinecard(p *yentry.Entry, opts ...yentry.EntryOption) *yentry.E
 		Key: []string{
 			"slot",
 		},
+		Module:           "srl_nokia-platform-lc",
+		Namespace:        "urn:srl_nokia/platform-lc",
+		Prefix:           "srl_nokia-platform-lc",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
 		LeafRefs:         []*leafref.LeafRef{},
+		Defaults: map[string]string{
+			"admin-state": "enable",
+		},
 	}
 
 	for _, opt := range opts {

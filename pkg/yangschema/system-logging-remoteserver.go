@@ -31,10 +31,17 @@ func initSystemLoggingRemoteserver(p *yentry.Entry, opts ...yentry.EntryOption) 
 		Key: []string{
 			"host",
 		},
+		Module:           "",
+		Namespace:        "",
+		Prefix:           "srl_nokia-logging",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
 		LeafRefs:         []*leafref.LeafRef{},
+		Defaults: map[string]string{
+			"remote-port": "514",
+			"transport":   "udp",
+		},
 	}
 
 	for _, opt := range opts {

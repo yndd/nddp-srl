@@ -25,10 +25,16 @@ func initInterfaceSubinterfaceLocalmirrordestination(p *yentry.Entry, opts ...ye
 	e := &yentry.Entry{
 		Name:             "local-mirror-destination",
 		Key:              []string{},
+		Module:           "srl_nokia-interfaces-local-mirror-destination",
+		Namespace:        "urn:srl_nokia/interfaces/local-mirror-destination",
+		Prefix:           "srl_nokia-if-local-mirror-dest",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
 		LeafRefs:         []*leafref.LeafRef{},
+		Defaults: map[string]string{
+			"admin-state": "enable",
+		},
 	}
 
 	for _, opt := range opts {

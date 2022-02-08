@@ -26,6 +26,9 @@ func initSystemJsonrpcserverUnixsocket(p *yentry.Entry, opts ...yentry.EntryOpti
 	e := &yentry.Entry{
 		Name:             "unix-socket",
 		Key:              []string{},
+		Module:           "",
+		Namespace:        "",
+		Prefix:           "srl-json-rpc",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
@@ -44,6 +47,10 @@ func initSystemJsonrpcserverUnixsocket(p *yentry.Entry, opts ...yentry.EntryOpti
 					},
 				},
 			},
+		},
+		Defaults: map[string]string{
+			"admin-state":        "disable",
+			"use-authentication": "true",
 		},
 	}
 

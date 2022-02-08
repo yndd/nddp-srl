@@ -25,10 +25,16 @@ func initInterfaceSubinterfaceIpv6Dhcpv6server(p *yentry.Entry, opts ...yentry.E
 	e := &yentry.Entry{
 		Name:             "dhcpv6-server",
 		Key:              []string{},
+		Module:           "srl_nokia-interfaces-ip-dhcp-server",
+		Namespace:        "urn:srl_nokia/interfaces/ip/dhcp/server",
+		Prefix:           "srl_nokia-if-ip-dhcp-server",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
 		LeafRefs:         []*leafref.LeafRef{},
+		Defaults: map[string]string{
+			"admin-state": "disable",
+		},
 	}
 
 	for _, opt := range opts {

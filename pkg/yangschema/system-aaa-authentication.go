@@ -29,10 +29,17 @@ func initSystemAaaAuthentication(p *yentry.Entry, opts ...yentry.EntryOption) *y
 	e := &yentry.Entry{
 		Name:             "authentication",
 		Key:              []string{},
+		Module:           "",
+		Namespace:        "",
+		Prefix:           "srl-aaa",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
 		LeafRefs:         []*leafref.LeafRef{},
+		Defaults: map[string]string{
+			"exit-on-reject": "false",
+			"idle-timeout":   "600",
+		},
 	}
 
 	for _, opt := range opts {

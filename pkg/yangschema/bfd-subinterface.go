@@ -27,10 +27,20 @@ func initBfdSubinterface(p *yentry.Entry, opts ...yentry.EntryOption) *yentry.En
 		Key: []string{
 			"id",
 		},
+		Module:           "",
+		Namespace:        "",
+		Prefix:           "srl_nokia-bfd",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
 		LeafRefs:         []*leafref.LeafRef{},
+		Defaults: map[string]string{
+			"admin-state":                       "disable",
+			"desired-minimum-transmit-interval": "1000000",
+			"detection-multiplier":              "3",
+			"minimum-echo-receive-interval":     "0",
+			"required-minimum-receive":          "1000000",
+		},
 	}
 
 	for _, opt := range opts {

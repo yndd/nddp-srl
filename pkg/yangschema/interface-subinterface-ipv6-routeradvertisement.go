@@ -28,10 +28,14 @@ func initInterfaceSubinterfaceIpv6Routeradvertisement(p *yentry.Entry, opts ...y
 	e := &yentry.Entry{
 		Name:             "router-advertisement",
 		Key:              []string{},
+		Module:           "srl_nokia-interfaces-router-adv",
+		Namespace:        "urn:srl_nokia/interfaces/ip/ra",
+		Prefix:           "srl_nokia-if-ip-ra",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
 		LeafRefs:         []*leafref.LeafRef{},
+		Defaults:         map[string]string{},
 	}
 
 	for _, opt := range opts {

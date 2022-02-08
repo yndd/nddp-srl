@@ -25,10 +25,14 @@ func initInterfaceSubinterfaceVlanEncapSingletagged(p *yentry.Entry, opts ...yen
 	e := &yentry.Entry{
 		Name:             "single-tagged",
 		Key:              []string{},
+		Module:           "",
+		Namespace:        "",
+		Prefix:           "srl_nokia-if-vlan",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
 		LeafRefs:         []*leafref.LeafRef{},
+		Defaults:         map[string]string{},
 	}
 
 	for _, opt := range opts {

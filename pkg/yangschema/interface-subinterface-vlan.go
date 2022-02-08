@@ -27,10 +27,14 @@ func initInterfaceSubinterfaceVlan(p *yentry.Entry, opts ...yentry.EntryOption) 
 	e := &yentry.Entry{
 		Name:             "vlan",
 		Key:              []string{},
+		Module:           "srl_nokia-interfaces-vlans",
+		Namespace:        "urn:srl_nokia/interfaces/vlans",
+		Prefix:           "srl_nokia-if-vlan",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
 		LeafRefs:         []*leafref.LeafRef{},
+		Defaults:         map[string]string{},
 	}
 
 	for _, opt := range opts {

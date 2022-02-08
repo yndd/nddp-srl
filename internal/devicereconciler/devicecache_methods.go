@@ -289,6 +289,45 @@ func (r *reconciler) getCachedata(resource *systemv1alpha1.Gvk) (interface{}, er
 	return x2, nil
 }
 
+func (r *reconciler) getUpdates(resource *systemv1alpha1.Gvk) (*gnmi.Update, error) {
+	rootPath, err := xpath.ToGNMIPath(*resource.Rootpath)
+	if err != nil {
+		return nil, err
+	}
+	x1, err := r.getSpecdata(resource)
+	if err != nil {
+		return nil, err
+	}
+	v, err := json.Marshal(x1)
+	if err != nil {
+		return nil, err
+	}
+	return &gnmi.Update{
+		Path: rootPath,
+		Val:  &gnmi.TypedValue{Value: &gnmi.TypedValue_JsonIetfVal{JsonIetfVal: v}},
+	}, nil
+	/*
+		fmt.Printf("getUpdates: rootPath: %s, x1: %v\n", *resource.Rootpath, x1)
+		updates, err := yparser.GetUpdatesFromJSON(rootPath, x1, r.deviceSchema)
+		if err != nil {
+			return nil, err
+		}
+		for i, u := range updates {
+			x, err := yparser.GetValue(u.GetVal())
+			if err != nil {
+				return nil, err
+			}
+			switch xx := x.(type) {
+			case map[string]interface{}:
+				if len(xx) == 0 {
+					updates = append(updates[:i], updates[i+1:]...)
+				}
+			}
+		}
+	*/
+	//return updates, nil
+}
+
 func (r *reconciler) processUpdates(resource *systemv1alpha1.Gvk) ([]*gnmi.Path, []*gnmi.Update, error) {
 	rootPath, err := xpath.ToGNMIPath(*resource.Rootpath)
 	if err != nil {

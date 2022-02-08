@@ -27,10 +27,14 @@ func initNetworkinstanceTepolicies(p *yentry.Entry, opts ...yentry.EntryOption) 
 	e := &yentry.Entry{
 		Name:             "te-policies",
 		Key:              []string{},
+		Module:           "srl_nokia-te-policies",
+		Namespace:        "urn:srl_nokia/te-policies",
+		Prefix:           "srl_nokia-te-policies",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
 		LeafRefs:         []*leafref.LeafRef{},
+		Defaults:         map[string]string{},
 	}
 
 	for _, opt := range opts {

@@ -27,10 +27,14 @@ func initInterfaceSubinterfaceIpv6NeighbordiscoveryHostroute(p *yentry.Entry, op
 	e := &yentry.Entry{
 		Name:             "host-route",
 		Key:              []string{},
+		Module:           "",
+		Namespace:        "",
+		Prefix:           "srl_nokia-if-ip-nbr",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
 		LeafRefs:         []*leafref.LeafRef{},
+		Defaults:         map[string]string{},
 	}
 
 	for _, opt := range opts {

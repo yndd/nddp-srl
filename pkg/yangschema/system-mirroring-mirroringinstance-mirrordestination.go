@@ -25,10 +25,14 @@ func initSystemMirroringMirroringinstanceMirrordestination(p *yentry.Entry, opts
 	e := &yentry.Entry{
 		Name:             "mirror-destination",
 		Key:              []string{},
+		Module:           "",
+		Namespace:        "",
+		Prefix:           "srl_nokia-mirroring",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
 		LeafRefs:         []*leafref.LeafRef{},
+		Defaults:         map[string]string{},
 	}
 
 	for _, opt := range opts {

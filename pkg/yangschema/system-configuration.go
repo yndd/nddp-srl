@@ -27,10 +27,19 @@ func initSystemConfiguration(p *yentry.Entry, opts ...yentry.EntryOption) *yentr
 	e := &yentry.Entry{
 		Name:             "configuration",
 		Key:              []string{},
+		Module:           "srl_nokia-configuration",
+		Namespace:        "urn:srl_nokia/configuration",
+		Prefix:           "srl-config",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
 		LeafRefs:         []*leafref.LeafRef{},
+		Defaults: map[string]string{
+			"auto-checkpoint": "false",
+			"idle-timeout":    "10080",
+			"max-candidates":  "10",
+			"max-checkpoints": "10",
+		},
 	}
 
 	for _, opt := range opts {

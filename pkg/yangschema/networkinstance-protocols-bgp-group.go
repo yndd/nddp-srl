@@ -43,6 +43,9 @@ func initNetworkinstanceProtocolsBgpGroup(p *yentry.Entry, opts ...yentry.EntryO
 		Key: []string{
 			"group-name",
 		},
+		Module:           "",
+		Namespace:        "",
+		Prefix:           "srl_nokia-bgp",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
@@ -73,6 +76,10 @@ func initNetworkinstanceProtocolsBgpGroup(p *yentry.Entry, opts ...yentry.EntryO
 					},
 				},
 			},
+		},
+		Defaults: map[string]string{
+			"admin-state":   "enable",
+			"next-hop-self": "false",
 		},
 	}
 

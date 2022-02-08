@@ -29,10 +29,14 @@ func initNetworkinstanceTepoliciesStaticpolicySegmentlistSegment(p *yentry.Entry
 		Key: []string{
 			"segment-index",
 		},
+		Module:           "",
+		Namespace:        "",
+		Prefix:           "srl_nokia-te-policies",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
 		LeafRefs:         []*leafref.LeafRef{},
+		Defaults:         map[string]string{},
 	}
 
 	for _, opt := range opts {

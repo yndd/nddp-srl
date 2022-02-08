@@ -30,10 +30,17 @@ func initNetworkinstanceProtocolsIsisInstanceInterfaceLevel(p *yentry.Entry, opt
 		Key: []string{
 			"level-number",
 		},
+		Module:           "",
+		Namespace:        "",
+		Prefix:           "srl_nokia-isis",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
 		LeafRefs:         []*leafref.LeafRef{},
+		Defaults: map[string]string{
+			"disable":  "false",
+			"priority": "64",
+		},
 	}
 
 	for _, opt := range opts {

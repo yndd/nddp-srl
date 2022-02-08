@@ -30,6 +30,9 @@ func initSystemGribiserverNetworkinstance(p *yentry.Entry, opts ...yentry.EntryO
 		Key: []string{
 			"name",
 		},
+		Module:           "",
+		Namespace:        "",
+		Prefix:           "srl-gribi-server",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
@@ -60,6 +63,11 @@ func initSystemGribiserverNetworkinstance(p *yentry.Entry, opts ...yentry.EntryO
 					},
 				},
 			},
+		},
+		Defaults: map[string]string{
+			"admin-state":        "disable",
+			"port":               "57401",
+			"use-authentication": "true",
 		},
 	}
 

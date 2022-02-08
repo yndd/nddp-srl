@@ -29,6 +29,9 @@ func initNetworkinstanceProtocolsLdpTraceoptionsPeer(p *yentry.Entry, opts ...ye
 			"label-space-id",
 			"lsr-id",
 		},
+		Module:           "",
+		Namespace:        "",
+		Prefix:           "srl_nokia-ldp",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
@@ -66,6 +69,7 @@ func initNetworkinstanceProtocolsLdpTraceoptionsPeer(p *yentry.Entry, opts ...ye
 				},
 			},
 		},
+		Defaults: map[string]string{},
 	}
 
 	for _, opt := range opts {

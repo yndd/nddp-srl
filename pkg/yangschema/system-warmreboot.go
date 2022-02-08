@@ -25,10 +25,16 @@ func initSystemWarmreboot(p *yentry.Entry, opts ...yentry.EntryOption) *yentry.E
 	e := &yentry.Entry{
 		Name:             "warm-reboot",
 		Key:              []string{},
+		Module:           "srl_nokia-system-reboot",
+		Namespace:        "urn:srl_nokia/system-reboot",
+		Prefix:           "srl_nokia-system-reboot",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
 		LeafRefs:         []*leafref.LeafRef{},
+		Defaults: map[string]string{
+			"bgp-max-wait": "600",
+		},
 	}
 
 	for _, opt := range opts {

@@ -25,10 +25,17 @@ func initNetworkinstanceProtocolsIsisInstanceAttachedbit(p *yentry.Entry, opts .
 	e := &yentry.Entry{
 		Name:             "attached-bit",
 		Key:              []string{},
+		Module:           "",
+		Namespace:        "",
+		Prefix:           "srl_nokia-isis",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
 		LeafRefs:         []*leafref.LeafRef{},
+		Defaults: map[string]string{
+			"ignore":   "false",
+			"suppress": "false",
+		},
 	}
 
 	for _, opt := range opts {

@@ -25,10 +25,14 @@ func initSystemLoggingFileSubsystemPriorityMatchexact(p *yentry.Entry, opts ...y
 	e := &yentry.Entry{
 		Name:             "match-exact",
 		Key:              []string{},
+		Module:           "",
+		Namespace:        "",
+		Prefix:           "srl_nokia-logging",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
 		LeafRefs:         []*leafref.LeafRef{},
+		Defaults:         map[string]string{},
 	}
 
 	for _, opt := range opts {

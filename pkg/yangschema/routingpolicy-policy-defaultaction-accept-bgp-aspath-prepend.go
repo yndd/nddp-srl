@@ -25,10 +25,16 @@ func initRoutingpolicyPolicyDefaultactionAcceptBgpAspathPrepend(p *yentry.Entry,
 	e := &yentry.Entry{
 		Name:             "prepend",
 		Key:              []string{},
+		Module:           "",
+		Namespace:        "",
+		Prefix:           "srl_rpol",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
 		LeafRefs:         []*leafref.LeafRef{},
+		Defaults: map[string]string{
+			"repeat-n": "1",
+		},
 	}
 
 	for _, opt := range opts {

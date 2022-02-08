@@ -29,10 +29,16 @@ func initSystemAaaServergroup(p *yentry.Entry, opts ...yentry.EntryOption) *yent
 		Key: []string{
 			"name",
 		},
+		Module:           "",
+		Namespace:        "",
+		Prefix:           "srl-aaa",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
 		LeafRefs:         []*leafref.LeafRef{},
+		Defaults: map[string]string{
+			"timeout": "10",
+		},
 	}
 
 	for _, opt := range opts {

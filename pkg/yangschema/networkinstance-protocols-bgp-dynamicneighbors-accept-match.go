@@ -30,6 +30,9 @@ func initNetworkinstanceProtocolsBgpDynamicneighborsAcceptMatch(p *yentry.Entry,
 		Key: []string{
 			"prefix",
 		},
+		Module:           "",
+		Namespace:        "",
+		Prefix:           "srl_nokia-bgp",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
@@ -50,6 +53,7 @@ func initNetworkinstanceProtocolsBgpDynamicneighborsAcceptMatch(p *yentry.Entry,
 				},
 			},
 		},
+		Defaults: map[string]string{},
 	}
 
 	for _, opt := range opts {

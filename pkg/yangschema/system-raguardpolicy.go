@@ -28,6 +28,9 @@ func initSystemRaguardpolicy(p *yentry.Entry, opts ...yentry.EntryOption) *yentr
 		Key: []string{
 			"name",
 		},
+		Module:           "srl_nokia-ra_guard",
+		Namespace:        "urn:srl_nokia/ra_guard",
+		Prefix:           "srl_nokia-ra_guard",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
@@ -58,6 +61,9 @@ func initSystemRaguardpolicy(p *yentry.Entry, opts ...yentry.EntryOption) *yentr
 					},
 				},
 			},
+		},
+		Defaults: map[string]string{
+			"action": "discard",
 		},
 	}
 

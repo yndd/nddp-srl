@@ -19,6 +19,7 @@ package controllers
 import (
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/controller"
+	"sigs.k8s.io/controller-runtime/pkg/event"
 
 	//"github.com/yndd/ndda-network/internal/controllers/network"
 	"github.com/yndd/nddp-srl/internal/controllers/device"
@@ -27,9 +28,9 @@ import (
 )
 
 // Setup package controllers.
-func Setup(mgr ctrl.Manager, option controller.Options, nddcopts *shared.NddControllerOptions) error {
-	for _, setup := range []func(ctrl.Manager, controller.Options, *shared.NddControllerOptions) error{
-		device.Setup,
+func Setup(mgr ctrl.Manager, option controller.Options, nddcopts *shared.NddControllerOptions) (map[string]chan event.GenericEvent, error) {
+	eventChans := make(map[string]chan event.GenericEvent)
+	for _, setup := range []func(ctrl.Manager, controller.Options, *shared.NddControllerOptions) (string, chan event.GenericEvent, error){
 		srl.SetupBfd,
 		srl.SetupInterface,
 		srl.SetupInterfaceSubinterface,
@@ -56,10 +57,18 @@ func Setup(mgr ctrl.Manager, option controller.Options, nddcopts *shared.NddCont
 		srl.SetupTunnelinterface,
 		srl.SetupTunnelinterfaceVxlaninterface,
 	} {
+		gvk, eventChan, err := setup(mgr, option, nddcopts)
+		if err != nil {
+			return nil, err
+		}
+		eventChans[gvk] = eventChan
+	}
+	for _, setup := range []func(ctrl.Manager, controller.Options, *shared.NddControllerOptions) error{
+		device.Setup,
+	} {
 		if err := setup(mgr, option, nddcopts); err != nil {
-			return err
+			return nil, err
 		}
 	}
-
-	return nil
+	return eventChans, nil
 }

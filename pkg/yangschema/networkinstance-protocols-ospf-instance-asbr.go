@@ -25,10 +25,16 @@ func initNetworkinstanceProtocolsOspfInstanceAsbr(p *yentry.Entry, opts ...yentr
 	e := &yentry.Entry{
 		Name:             "asbr",
 		Key:              []string{},
+		Module:           "",
+		Namespace:        "",
+		Prefix:           "srl_nokia-ospf",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
 		LeafRefs:         []*leafref.LeafRef{},
+		Defaults: map[string]string{
+			"trace-path": "none",
+		},
 	}
 
 	for _, opt := range opts {

@@ -25,10 +25,17 @@ func initNetworkinstanceProtocolsOspfInstanceTrafficengineering(p *yentry.Entry,
 	e := &yentry.Entry{
 		Name:             "traffic-engineering",
 		Key:              []string{},
+		Module:           "",
+		Namespace:        "",
+		Prefix:           "srl_nokia-te",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
 		LeafRefs:         []*leafref.LeafRef{},
+		Defaults: map[string]string{
+			"advertisement":                       "false",
+			"legacy-link-attribute-advertisement": "true",
+		},
 	}
 
 	for _, opt := range opts {

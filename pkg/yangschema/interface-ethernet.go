@@ -30,6 +30,9 @@ func initInterfaceEthernet(p *yentry.Entry, opts ...yentry.EntryOption) *yentry.
 	e := &yentry.Entry{
 		Name:             "ethernet",
 		Key:              []string{},
+		Module:           "",
+		Namespace:        "",
+		Prefix:           "srl_nokia-if",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
@@ -47,6 +50,7 @@ func initInterfaceEthernet(p *yentry.Entry, opts ...yentry.EntryOption) *yentry.
 				},
 			},
 		},
+		Defaults: map[string]string{},
 	}
 
 	for _, opt := range opts {

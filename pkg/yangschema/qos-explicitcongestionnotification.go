@@ -26,6 +26,9 @@ func initQosExplicitcongestionnotification(p *yentry.Entry, opts ...yentry.Entry
 	e := &yentry.Entry{
 		Name:             "explicit-congestion-notification",
 		Key:              []string{},
+		Module:           "",
+		Namespace:        "",
+		Prefix:           "srl_nokia-qos",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
@@ -45,6 +48,7 @@ func initQosExplicitcongestionnotification(p *yentry.Entry, opts ...yentry.Entry
 				},
 			},
 		},
+		Defaults: map[string]string{},
 	}
 
 	for _, opt := range opts {

@@ -25,10 +25,17 @@ func initNetworkinstanceProtocolsBgpRouteadvertisement(p *yentry.Entry, opts ...
 	e := &yentry.Entry{
 		Name:             "route-advertisement",
 		Key:              []string{},
+		Module:           "",
+		Namespace:        "",
+		Prefix:           "srl_nokia-bgp",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
 		LeafRefs:         []*leafref.LeafRef{},
+		Defaults: map[string]string{
+			"rapid-withdrawal":     "false",
+			"wait-for-fib-install": "true",
+		},
 	}
 
 	for _, opt := range opts {

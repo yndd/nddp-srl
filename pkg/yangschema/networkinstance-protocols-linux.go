@@ -25,10 +25,18 @@ func initNetworkinstanceProtocolsLinux(p *yentry.Entry, opts ...yentry.EntryOpti
 	e := &yentry.Entry{
 		Name:             "linux",
 		Key:              []string{},
+		Module:           "srl_nokia-linux",
+		Namespace:        "urn:srl_nokia/linux",
+		Prefix:           "srl_nokia-linux",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: true,
 		LeafRefs:         []*leafref.LeafRef{},
+		Defaults: map[string]string{
+			"export-neighbors": "true",
+			"export-routes":    "false",
+			"import-routes":    "false",
+		},
 	}
 
 	for _, opt := range opts {

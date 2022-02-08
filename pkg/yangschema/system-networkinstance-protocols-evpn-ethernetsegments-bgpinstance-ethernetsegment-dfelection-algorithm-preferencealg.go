@@ -27,10 +27,16 @@ func initSystemNetworkinstanceProtocolsEvpnEthernetsegmentsBgpinstanceEthernetse
 	e := &yentry.Entry{
 		Name:             "preference-alg",
 		Key:              []string{},
+		Module:           "",
+		Namespace:        "",
+		Prefix:           "srl_nokia-system-bgp-evpn-ethernet-segments",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
 		LeafRefs:         []*leafref.LeafRef{},
+		Defaults: map[string]string{
+			"preference-value": "32767",
+		},
 	}
 
 	for _, opt := range opts {

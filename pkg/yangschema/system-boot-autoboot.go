@@ -26,6 +26,9 @@ func initSystemBootAutoboot(p *yentry.Entry, opts ...yentry.EntryOption) *yentry
 	e := &yentry.Entry{
 		Name:             "autoboot",
 		Key:              []string{},
+		Module:           "",
+		Namespace:        "",
+		Prefix:           "srl-boot",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
@@ -42,6 +45,9 @@ func initSystemBootAutoboot(p *yentry.Entry, opts ...yentry.EntryOption) *yentry
 					},
 				},
 			},
+		},
+		Defaults: map[string]string{
+			"interface": "mgmt0",
 		},
 	}
 

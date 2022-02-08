@@ -27,10 +27,16 @@ func initSystemMirroringMirroringinstanceMirrorsourceInterface(p *yentry.Entry, 
 		Key: []string{
 			"name",
 		},
+		Module:           "",
+		Namespace:        "",
+		Prefix:           "srl_nokia-mirroring",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
 		LeafRefs:         []*leafref.LeafRef{},
+		Defaults: map[string]string{
+			"direction": "egress-only",
+		},
 	}
 
 	for _, opt := range opts {

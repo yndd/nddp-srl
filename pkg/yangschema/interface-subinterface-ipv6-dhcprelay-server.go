@@ -25,10 +25,14 @@ func initInterfaceSubinterfaceIpv6DhcprelayServer(p *yentry.Entry, opts ...yentr
 	e := &yentry.Entry{
 		Name:             "server",
 		Key:              []string{},
+		Module:           "",
+		Namespace:        "",
+		Prefix:           "srl_nokia-if-ip-dhcp-relay",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
 		LeafRefs:         []*leafref.LeafRef{},
+		Defaults:         map[string]string{},
 	}
 
 	for _, opt := range opts {

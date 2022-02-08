@@ -31,6 +31,9 @@ func initNetworkinstanceProtocolsBgpvpnBgpinstance(p *yentry.Entry, opts ...yent
 		Key: []string{
 			"id",
 		},
+		Module:           "",
+		Namespace:        "",
+		Prefix:           "srl_nokia-bgp-vpn",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
@@ -62,6 +65,7 @@ func initNetworkinstanceProtocolsBgpvpnBgpinstance(p *yentry.Entry, opts ...yent
 				},
 			},
 		},
+		Defaults: map[string]string{},
 	}
 
 	for _, opt := range opts {

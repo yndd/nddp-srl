@@ -29,10 +29,16 @@ func initNetworkinstanceProtocolsBgpIpv6unicast(p *yentry.Entry, opts ...yentry.
 	e := &yentry.Entry{
 		Name:             "ipv6-unicast",
 		Key:              []string{},
+		Module:           "",
+		Namespace:        "",
+		Prefix:           "srl_nokia-bgp",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
 		LeafRefs:         []*leafref.LeafRef{},
+		Defaults: map[string]string{
+			"admin-state": "disable",
+		},
 	}
 
 	for _, opt := range opts {

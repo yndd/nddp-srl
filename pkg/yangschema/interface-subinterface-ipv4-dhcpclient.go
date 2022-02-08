@@ -27,10 +27,14 @@ func initInterfaceSubinterfaceIpv4Dhcpclient(p *yentry.Entry, opts ...yentry.Ent
 	e := &yentry.Entry{
 		Name:             "dhcp-client",
 		Key:              []string{},
+		Module:           "srl_nokia-interfaces-ip-dhcp",
+		Namespace:        "urn:srl_nokia/interfaces/ip/dhcp",
+		Prefix:           "srl_nokia-if-ip-dhcp",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
 		LeafRefs:         []*leafref.LeafRef{},
+		Defaults:         map[string]string{},
 	}
 
 	for _, opt := range opts {

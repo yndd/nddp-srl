@@ -25,10 +25,18 @@ func initNetworkinstanceProtocolsBgpAspathoptionsRemoveprivateas(p *yentry.Entry
 	e := &yentry.Entry{
 		Name:             "remove-private-as",
 		Key:              []string{},
+		Module:           "",
+		Namespace:        "",
+		Prefix:           "srl_nokia-bgp",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
 		LeafRefs:         []*leafref.LeafRef{},
+		Defaults: map[string]string{
+			"ignore-peer-as": "false",
+			"leading-only":   "false",
+			"mode":           "disabled",
+		},
 	}
 
 	for _, opt := range opts {

@@ -25,10 +25,16 @@ func initPlatformResourcemanagementUnifiedforwardingresources(p *yentry.Entry, o
 	e := &yentry.Entry{
 		Name:             "unified-forwarding-resources",
 		Key:              []string{},
+		Module:           "",
+		Namespace:        "",
+		Prefix:           "srl_nokia-platform-res-mgmt",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
 		LeafRefs:         []*leafref.LeafRef{},
+		Defaults: map[string]string{
+			"alpm": "disabled",
+		},
 	}
 
 	for _, opt := range opts {

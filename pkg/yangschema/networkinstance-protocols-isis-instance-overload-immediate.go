@@ -25,10 +25,17 @@ func initNetworkinstanceProtocolsIsisInstanceOverloadImmediate(p *yentry.Entry, 
 	e := &yentry.Entry{
 		Name:             "immediate",
 		Key:              []string{},
+		Module:           "",
+		Namespace:        "",
+		Prefix:           "srl_nokia-isis",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
 		LeafRefs:         []*leafref.LeafRef{},
+		Defaults: map[string]string{
+			"max-metric": "false",
+			"set-bit":    "false",
+		},
 	}
 
 	for _, opt := range opts {

@@ -25,10 +25,16 @@ func initNetworkinstanceProtocolsOspfInstanceOverloadOverloadonboot(p *yentry.En
 	e := &yentry.Entry{
 		Name:             "overload-on-boot",
 		Key:              []string{},
+		Module:           "",
+		Namespace:        "",
+		Prefix:           "srl_nokia-ospf",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
 		LeafRefs:         []*leafref.LeafRef{},
+		Defaults: map[string]string{
+			"timeout": "60",
+		},
 	}
 
 	for _, opt := range opts {

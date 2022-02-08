@@ -27,10 +27,14 @@ func initNetworkinstanceProtocolsOspf(p *yentry.Entry, opts ...yentry.EntryOptio
 	e := &yentry.Entry{
 		Name:             "ospf",
 		Key:              []string{},
+		Module:           "srl_nokia-ospf",
+		Namespace:        "urn:srl_nokia/ospf",
+		Prefix:           "srl_nokia-ospf",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: true,
 		LeafRefs:         []*leafref.LeafRef{},
+		Defaults:         map[string]string{},
 	}
 
 	for _, opt := range opts {

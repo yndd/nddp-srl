@@ -26,6 +26,9 @@ func initNetworkinstanceProtocolsOspfInstanceAreaInterfaceAuthentication(p *yent
 	e := &yentry.Entry{
 		Name:             "authentication",
 		Key:              []string{},
+		Module:           "",
+		Namespace:        "",
+		Prefix:           "srl_nokia-ospf",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
@@ -45,6 +48,7 @@ func initNetworkinstanceProtocolsOspfInstanceAreaInterfaceAuthentication(p *yent
 				},
 			},
 		},
+		Defaults: map[string]string{},
 	}
 
 	for _, opt := range opts {

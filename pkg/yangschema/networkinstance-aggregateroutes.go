@@ -27,10 +27,14 @@ func initNetworkinstanceAggregateroutes(p *yentry.Entry, opts ...yentry.EntryOpt
 	e := &yentry.Entry{
 		Name:             "aggregate-routes",
 		Key:              []string{},
+		Module:           "srl_nokia-aggregate-routes",
+		Namespace:        "urn:srl_nokia/aggregate-routes",
+		Prefix:           "srl_nokia-aggregate-routes",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: true,
 		LeafRefs:         []*leafref.LeafRef{},
+		Defaults:         map[string]string{},
 	}
 
 	for _, opt := range opts {

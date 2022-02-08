@@ -25,10 +25,17 @@ func initInterfaceSubinterfaceBridgetableMaclimit(p *yentry.Entry, opts ...yentr
 	e := &yentry.Entry{
 		Name:             "mac-limit",
 		Key:              []string{},
+		Module:           "",
+		Namespace:        "",
+		Prefix:           "srl_nokia-if-bt",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
 		LeafRefs:         []*leafref.LeafRef{},
+		Defaults: map[string]string{
+			"maximum-entries":       "250",
+			"warning-threshold-pct": "95",
+		},
 	}
 
 	for _, opt := range opts {

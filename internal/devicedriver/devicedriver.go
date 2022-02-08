@@ -37,6 +37,7 @@ import (
 	"github.com/yndd/nddp-srl/internal/gnmiserver"
 	"github.com/yndd/nddp-srl/internal/shared"
 	"google.golang.org/grpc"
+	"sigs.k8s.io/controller-runtime/pkg/event"
 )
 
 const (
@@ -56,6 +57,7 @@ type DeviceDriver interface {
 	WithClient(c resource.ClientApplicator)
 	WithCh(reqCh chan shared.DeviceUpdate, respCh chan shared.DeviceResponse)
 	WithDeviceSchema(y *yentry.Entry)
+	WithEventCh(eventChs map[string]chan event.GenericEvent)
 	Start() error
 	Stop() error
 }
@@ -84,6 +86,12 @@ func WithCh(reqCh chan shared.DeviceUpdate, respCh chan shared.DeviceResponse) O
 func WithDeviceSchema(y *yentry.Entry) Option {
 	return func(o DeviceDriver) {
 		o.WithDeviceSchema(y)
+	}
+}
+
+func WithEventCh(eventChs map[string]chan event.GenericEvent) Option {
+	return func(o DeviceDriver) {
+		o.WithEventCh(eventChs)
 	}
 }
 
@@ -119,7 +127,8 @@ type deviceDriver struct {
 	deviceDriverResponseCh chan shared.DeviceResponse
 
 	// kubernetes
-	client resource.ClientApplicator
+	client   resource.ClientApplicator
+	eventChs map[string]chan event.GenericEvent
 	// server
 	server gnmiserver.Server
 
@@ -166,6 +175,10 @@ func (d *deviceDriver) WithCh(reqCh chan shared.DeviceUpdate, respCh chan shared
 
 func (d *deviceDriver) WithDeviceSchema(y *yentry.Entry) {
 	d.deviceSchema = y
+}
+
+func (d *deviceDriver) WithEventCh(eventChs map[string]chan event.GenericEvent) {
+	d.eventChs = eventChs
 }
 
 func (d *deviceDriver) Start() error {
@@ -369,6 +382,7 @@ func (d *deviceDriver) createDevice(du shared.DeviceUpdate) error {
 	ddd.collector, err = devicecollector.New(du.TargetConfig, du.Namespace, ddd.paths,
 		devicecollector.WithCache(d.cache),
 		devicecollector.WithLogger(d.log),
+		devicecollector.WithEventCh(d.eventChs),
 	)
 	if err != nil {
 		return err

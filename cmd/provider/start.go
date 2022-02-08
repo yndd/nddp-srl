@@ -113,6 +113,12 @@ var startCmd = &cobra.Command{
 			DeviceDriverResponseCh: make(chan shared.DeviceResponse),
 		}
 
+		// initialize controllers
+		eventChs, err := controllers.Setup(mgr, nddCtlrOptions(concurrency), nddcopts)
+		if err != nil {
+			return errors.Wrap(err, "Cannot add ndd controllers to manager")
+		}
+
 		// intialize the devicedriver
 		d := devicedriver.New(
 			devicedriver.WithCh(nddcopts.DeviceDriverRequestCh, nddcopts.DeviceDriverResponseCh),
@@ -122,14 +128,10 @@ var startCmd = &cobra.Command{
 			}),
 			devicedriver.WithLogger(logging.NewLogrLogger(zlog.WithName("device driver"))),
 			devicedriver.WithDeviceSchema(deviceSchema),
+			devicedriver.WithEventCh(eventChs),
 		)
 		if err := d.Start(); err != nil {
 			return errors.Wrap(err, "Cannot start device driver")
-		}
-
-		// initialize controllers
-		if err := controllers.Setup(mgr, nddCtlrOptions(concurrency), nddcopts); err != nil {
-			return errors.Wrap(err, "Cannot add ndd controllers to manager")
 		}
 
 		// +kubebuilder:scaffold:builder

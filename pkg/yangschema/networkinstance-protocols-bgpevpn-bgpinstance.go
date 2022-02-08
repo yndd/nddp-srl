@@ -30,6 +30,9 @@ func initNetworkinstanceProtocolsBgpevpnBgpinstance(p *yentry.Entry, opts ...yen
 		Key: []string{
 			"id",
 		},
+		Module:           "srl_nokia-bgp-evpn",
+		Namespace:        "urn:srl_nokia/network-instance/protocols/bgp-evpn",
+		Prefix:           "srl_nokia-bgp-evpn",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
@@ -62,6 +65,12 @@ func initNetworkinstanceProtocolsBgpevpnBgpinstance(p *yentry.Entry, opts ...yen
 					},
 				},
 			},
+		},
+		Defaults: map[string]string{
+			"admin-state":        "enable",
+			"default-admin-tag":  "0",
+			"ecmp":               "1",
+			"encapsulation-type": "vxlan",
 		},
 	}
 

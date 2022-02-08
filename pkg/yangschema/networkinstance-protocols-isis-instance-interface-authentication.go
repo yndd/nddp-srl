@@ -26,6 +26,9 @@ func initNetworkinstanceProtocolsIsisInstanceInterfaceAuthentication(p *yentry.E
 	e := &yentry.Entry{
 		Name:             "authentication",
 		Key:              []string{},
+		Module:           "",
+		Namespace:        "",
+		Prefix:           "srl_nokia-isis",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
@@ -45,6 +48,7 @@ func initNetworkinstanceProtocolsIsisInstanceInterfaceAuthentication(p *yentry.E
 				},
 			},
 		},
+		Defaults: map[string]string{},
 	}
 
 	for _, opt := range opts {

@@ -27,10 +27,14 @@ func initInterfaceSubinterfaceIpv4ArpEvpn(p *yentry.Entry, opts ...yentry.EntryO
 	e := &yentry.Entry{
 		Name:             "evpn",
 		Key:              []string{},
+		Module:           "srl_nokia-interfaces-nbr-evpn",
+		Namespace:        "urn:srl_nokia/interfaces/ip/nbr/evpn",
+		Prefix:           "srl_nokia-if-ip-nbr-evpn",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
 		LeafRefs:         []*leafref.LeafRef{},
+		Defaults:         map[string]string{},
 	}
 
 	for _, opt := range opts {

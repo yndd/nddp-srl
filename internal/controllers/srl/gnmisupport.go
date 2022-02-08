@@ -28,11 +28,15 @@ import (
 	"github.com/yndd/nddp-system/pkg/gvkresource"
 )
 
+type adder interface {
+	Add(item interface{})
+}
+
 type observe struct {
 	hasData bool
-	deletes []*gnmi.Path
-	updates []*gnmi.Update
-	data    []byte
+	delta   bool
+	//deletes []*gnmi.Path
+	//updates []*gnmi.Update
 }
 
 // processObserve
@@ -84,7 +88,7 @@ func processObserve(rootPath *gnmi.Path, hierPaths []*gnmi.Path, specData interf
 		fmt.Printf("processObserve x1 data %v\n", x1)
 	}
 	// the gnmi response already comes without the last element in the return data
-	fmt.Printf("processObserve x2 data %v\n", x2)
+	//fmt.Printf("processObserve x2 data %v\n", x2)
 
 	// remove hierarchical resource elements from the data to be able to compare the gnmi response
 	// with the k8s Spec
@@ -93,13 +97,6 @@ func processObserve(rootPath *gnmi.Path, hierPaths []*gnmi.Path, specData interf
 		for _, hierPath := range hierPaths {
 			x2 = removeHierarchicalResourceData(x, hierPath)
 		}
-	}
-
-	// prepare the return data that will be used in the status field
-	b, err := json.Marshal(x2)
-	if err != nil {
-		fmt.Printf("Mmarshal error: %v", err)
-		return nil, errors.Wrap(err, errJSONMarshal)
 	}
 
 	fmt.Printf("processObserve x2 data %v\n", x2)
@@ -126,11 +123,16 @@ func processObserve(rootPath *gnmi.Path, hierPaths []*gnmi.Path, specData interf
 	*/
 	// returns the deletes and updates that need to be performed to bring the spec object back to the desired state
 	deletes, updates, err := yparser.FindResourceDelta(updatesx1, updatesx2)
+	delta := false
+	if len(deletes) != 0 || len(updates) != 0 {
+		delta = true
+	}
 	return &observe{
 		hasData: true,
-		deletes: deletes,
-		updates: updates,
-		data:    b,
+		delta:   delta,
+		//deletes: deletes,
+		//updates: updates,
+		//data:    b,
 	}, err
 }
 

@@ -30,6 +30,9 @@ func initSystemDns(p *yentry.Entry, opts ...yentry.EntryOption) *yentry.Entry {
 	e := &yentry.Entry{
 		Name:             "dns",
 		Key:              []string{},
+		Module:           "srl_nokia-dns",
+		Namespace:        "urn:srl_nokia/dns",
+		Prefix:           "srl_nokia-dns",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
@@ -47,6 +50,7 @@ func initSystemDns(p *yentry.Entry, opts ...yentry.EntryOption) *yentry.Entry {
 				},
 			},
 		},
+		Defaults: map[string]string{},
 	}
 
 	for _, opt := range opts {

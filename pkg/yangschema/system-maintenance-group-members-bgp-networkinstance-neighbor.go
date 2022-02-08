@@ -25,10 +25,14 @@ func initSystemMaintenanceGroupMembersBgpNetworkinstanceNeighbor(p *yentry.Entry
 	e := &yentry.Entry{
 		Name:             "neighbor",
 		Key:              []string{},
+		Module:           "",
+		Namespace:        "",
+		Prefix:           "srl-m-mode",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
 		LeafRefs:         []*leafref.LeafRef{},
+		Defaults:         map[string]string{},
 	}
 
 	for _, opt := range opts {

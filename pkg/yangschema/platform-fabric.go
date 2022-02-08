@@ -27,10 +27,16 @@ func initPlatformFabric(p *yentry.Entry, opts ...yentry.EntryOption) *yentry.Ent
 		Key: []string{
 			"slot",
 		},
+		Module:           "srl_nokia-platform-fabric",
+		Namespace:        "urn:srl_nokia/platform-fabric",
+		Prefix:           "srl_nokia-platform-fabric",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
 		LeafRefs:         []*leafref.LeafRef{},
+		Defaults: map[string]string{
+			"admin-state": "enable",
+		},
 	}
 
 	for _, opt := range opts {

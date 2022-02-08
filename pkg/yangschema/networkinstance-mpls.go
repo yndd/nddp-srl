@@ -28,6 +28,9 @@ func initNetworkinstanceMpls(p *yentry.Entry, opts ...yentry.EntryOption) *yentr
 	e := &yentry.Entry{
 		Name:             "mpls",
 		Key:              []string{},
+		Module:           "srl_nokia-mpls",
+		Namespace:        "urn:srl_nokia/mpls",
+		Prefix:           "srl_nokia-mpls",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
@@ -47,6 +50,9 @@ func initNetworkinstanceMpls(p *yentry.Entry, opts ...yentry.EntryOption) *yentr
 					},
 				},
 			},
+		},
+		Defaults: map[string]string{
+			"admin-state": "disable",
 		},
 	}
 

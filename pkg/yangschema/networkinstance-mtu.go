@@ -25,10 +25,14 @@ func initNetworkinstanceMtu(p *yentry.Entry, opts ...yentry.EntryOption) *yentry
 	e := &yentry.Entry{
 		Name:             "mtu",
 		Key:              []string{},
+		Module:           "srl_nokia-network-instance-mtu",
+		Namespace:        "urn:srl_nokia/netinst-mtu",
+		Prefix:           "srl-netinst-mtu",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
 		LeafRefs:         []*leafref.LeafRef{},
+		Defaults:         map[string]string{},
 	}
 
 	for _, opt := range opts {

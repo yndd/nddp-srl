@@ -30,10 +30,17 @@ func initNetworkinstanceAggregateroutesRoute(p *yentry.Entry, opts ...yentry.Ent
 		Key: []string{
 			"prefix",
 		},
+		Module:           "",
+		Namespace:        "",
+		Prefix:           "srl_nokia-aggregate-routes",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
 		LeafRefs:         []*leafref.LeafRef{},
+		Defaults: map[string]string{
+			"admin-state":  "enable",
+			"summary-only": "false",
+		},
 	}
 
 	for _, opt := range opts {

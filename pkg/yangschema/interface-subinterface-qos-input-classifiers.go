@@ -26,6 +26,9 @@ func initInterfaceSubinterfaceQosInputClassifiers(p *yentry.Entry, opts ...yentr
 	e := &yentry.Entry{
 		Name:             "classifiers",
 		Key:              []string{},
+		Module:           "",
+		Namespace:        "",
+		Prefix:           "srl_nokia-qos",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
@@ -87,6 +90,7 @@ func initInterfaceSubinterfaceQosInputClassifiers(p *yentry.Entry, opts ...yentr
 				},
 			},
 		},
+		Defaults: map[string]string{},
 	}
 
 	for _, opt := range opts {

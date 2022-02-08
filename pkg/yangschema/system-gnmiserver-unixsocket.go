@@ -26,6 +26,9 @@ func initSystemGnmiserverUnixsocket(p *yentry.Entry, opts ...yentry.EntryOption)
 	e := &yentry.Entry{
 		Name:             "unix-socket",
 		Key:              []string{},
+		Module:           "",
+		Namespace:        "",
+		Prefix:           "srl-gnmi-server",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
@@ -44,6 +47,10 @@ func initSystemGnmiserverUnixsocket(p *yentry.Entry, opts ...yentry.EntryOption)
 					},
 				},
 			},
+		},
+		Defaults: map[string]string{
+			"admin-state":        "disable",
+			"use-authentication": "true",
 		},
 	}
 

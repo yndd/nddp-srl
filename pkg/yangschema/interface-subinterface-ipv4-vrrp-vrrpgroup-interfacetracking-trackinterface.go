@@ -28,6 +28,9 @@ func initInterfaceSubinterfaceIpv4VrrpVrrpgroupInterfacetrackingTrackinterface(p
 		Key: []string{
 			"interface",
 		},
+		Module:           "",
+		Namespace:        "",
+		Prefix:           "srl_nokia-if-ip-vrrp",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
@@ -45,6 +48,7 @@ func initInterfaceSubinterfaceIpv4VrrpVrrpgroupInterfacetrackingTrackinterface(p
 				},
 			},
 		},
+		Defaults: map[string]string{},
 	}
 
 	for _, opt := range opts {

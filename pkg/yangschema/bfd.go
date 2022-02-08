@@ -28,10 +28,14 @@ func initBfd(p *yentry.Entry, opts ...yentry.EntryOption) *yentry.Entry {
 	e := &yentry.Entry{
 		Name:             "bfd",
 		Key:              []string{},
+		Module:           "srl_nokia-bfd",
+		Namespace:        "urn:srl_nokia/bfd",
+		Prefix:           "srl_nokia-bfd",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: true,
 		LeafRefs:         []*leafref.LeafRef{},
+		Defaults:         map[string]string{},
 	}
 
 	for _, opt := range opts {

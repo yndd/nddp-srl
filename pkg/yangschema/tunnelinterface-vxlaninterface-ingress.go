@@ -25,10 +25,14 @@ func initTunnelinterfaceVxlaninterfaceIngress(p *yentry.Entry, opts ...yentry.En
 	e := &yentry.Entry{
 		Name:             "ingress",
 		Key:              []string{},
+		Module:           "",
+		Namespace:        "",
+		Prefix:           "srl_nokia-tunnel-if",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
 		LeafRefs:         []*leafref.LeafRef{},
+		Defaults:         map[string]string{},
 	}
 
 	for _, opt := range opts {

@@ -45,6 +45,9 @@ func initNetworkinstanceProtocolsBgp(p *yentry.Entry, opts ...yentry.EntryOption
 	e := &yentry.Entry{
 		Name:             "bgp",
 		Key:              []string{},
+		Module:           "srl_nokia-bgp",
+		Namespace:        "urn:srl_nokia/bgp",
+		Prefix:           "srl_nokia-bgp",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: true,
@@ -75,6 +78,10 @@ func initNetworkinstanceProtocolsBgp(p *yentry.Entry, opts ...yentry.EntryOption
 					},
 				},
 			},
+		},
+		Defaults: map[string]string{
+			"admin-state":      "enable",
+			"local-preference": "100",
 		},
 	}
 

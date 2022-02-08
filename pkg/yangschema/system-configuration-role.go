@@ -30,6 +30,9 @@ func initSystemConfigurationRole(p *yentry.Entry, opts ...yentry.EntryOption) *y
 		Key: []string{
 			"name",
 		},
+		Module:           "srl_nokia-configuration-role",
+		Namespace:        "urn:srl_nokia/configuration-role",
+		Prefix:           "srl_nokia-configuration-role",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
@@ -50,6 +53,7 @@ func initSystemConfigurationRole(p *yentry.Entry, opts ...yentry.EntryOption) *y
 				},
 			},
 		},
+		Defaults: map[string]string{},
 	}
 
 	for _, opt := range opts {

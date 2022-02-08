@@ -25,10 +25,20 @@ func initNetworkinstanceBridgetableMacduplication(p *yentry.Entry, opts ...yentr
 	e := &yentry.Entry{
 		Name:             "mac-duplication",
 		Key:              []string{},
+		Module:           "",
+		Namespace:        "",
+		Prefix:           "srl_nokia-bridge-table-mac-duplication",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
 		LeafRefs:         []*leafref.LeafRef{},
+		Defaults: map[string]string{
+			"action":            "stop-learning",
+			"admin-state":       "enable",
+			"hold-down-time":    "9",
+			"monitoring-window": "3",
+			"num-moves":         "5",
+		},
 	}
 
 	for _, opt := range opts {

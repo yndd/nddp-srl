@@ -27,10 +27,14 @@ func initSystemMpls(p *yentry.Entry, opts ...yentry.EntryOption) *yentry.Entry {
 	e := &yentry.Entry{
 		Name:             "mpls",
 		Key:              []string{},
+		Module:           "srl_nokia-mpls-label-management",
+		Namespace:        "urn:srl_nokia/mpls-label-management",
+		Prefix:           "srl_nokia-mplslbl",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
 		LeafRefs:         []*leafref.LeafRef{},
+		Defaults:         map[string]string{},
 	}
 
 	for _, opt := range opts {

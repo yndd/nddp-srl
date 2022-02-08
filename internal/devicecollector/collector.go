@@ -31,6 +31,7 @@ import (
 	deviceschema "github.com/yndd/nddp-srl/pkg/yangschema"
 	nddpschema "github.com/yndd/nddp-system/pkg/yangschema"
 	"google.golang.org/grpc"
+	"sigs.k8s.io/controller-runtime/pkg/event"
 )
 
 const (
@@ -51,6 +52,7 @@ type DeviceCollector interface {
 	Stop() error
 	WithLogger(log logging.Logger)
 	WithCache(c *cache.Cache)
+	WithEventCh(eventChs map[string]chan event.GenericEvent)
 }
 
 // Option can be used to manipulate Options.
@@ -69,6 +71,12 @@ func WithCache(c *cache.Cache) Option {
 	}
 }
 
+func WithEventCh(eventChs map[string]chan event.GenericEvent) Option {
+	return func(o DeviceCollector) {
+		o.WithEventCh(eventChs)
+	}
+}
+
 // collector defines the parameters for the collector
 type collector struct {
 	namespace           string
@@ -81,6 +89,8 @@ type collector struct {
 
 	nddpSchema   *yentry.Entry
 	deviceSchema *yentry.Entry
+
+	eventChs map[string]chan event.GenericEvent
 
 	stopCh chan bool // used to stop the child go routines if the device gets deleted
 
@@ -130,6 +140,10 @@ func (c *collector) WithLogger(log logging.Logger) {
 
 func (c *collector) WithCache(tc *cache.Cache) {
 	c.cache = tc
+}
+
+func (c *collector) WithEventCh(eventChs map[string]chan event.GenericEvent) {
+	c.eventChs = eventChs
 }
 
 func (c *collector) GetTarget() *target.Target {

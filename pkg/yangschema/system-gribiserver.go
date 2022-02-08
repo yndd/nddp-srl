@@ -29,10 +29,19 @@ func initSystemGribiserver(p *yentry.Entry, opts ...yentry.EntryOption) *yentry.
 	e := &yentry.Entry{
 		Name:             "gribi-server",
 		Key:              []string{},
+		Module:           "srl_nokia-gribi-server",
+		Namespace:        "urn:srl_nokia/gribi-server",
+		Prefix:           "srl-gribi-server",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
 		LeafRefs:         []*leafref.LeafRef{},
+		Defaults: map[string]string{
+			"admin-state":   "disable",
+			"rate-limit":    "60",
+			"session-limit": "20",
+			"timeout":       "7200",
+		},
 	}
 
 	for _, opt := range opts {

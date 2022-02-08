@@ -26,6 +26,9 @@ func initRoutingpolicyPolicyDefaultactionAcceptBgpCommunities(p *yentry.Entry, o
 	e := &yentry.Entry{
 		Name:             "communities",
 		Key:              []string{},
+		Module:           "",
+		Namespace:        "",
+		Prefix:           "srl_rpol",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
@@ -70,6 +73,7 @@ func initRoutingpolicyPolicyDefaultactionAcceptBgpCommunities(p *yentry.Entry, o
 				},
 			},
 		},
+		Defaults: map[string]string{},
 	}
 
 	for _, opt := range opts {

@@ -29,6 +29,9 @@ func initNetworkinstanceMplsStaticentry(p *yentry.Entry, opts ...yentry.EntryOpt
 			"preference",
 			"top-label",
 		},
+		Module:           "",
+		Namespace:        "",
+		Prefix:           "srl_nokia-mpls",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
@@ -47,6 +50,11 @@ func initNetworkinstanceMplsStaticentry(p *yentry.Entry, opts ...yentry.EntryOpt
 					},
 				},
 			},
+		},
+		Defaults: map[string]string{
+			"admin-state":   "enable",
+			"collect-stats": "false",
+			"operation":     "swap",
 		},
 	}
 

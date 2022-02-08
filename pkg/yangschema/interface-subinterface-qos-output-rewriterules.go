@@ -26,6 +26,9 @@ func initInterfaceSubinterfaceQosOutputRewriterules(p *yentry.Entry, opts ...yen
 	e := &yentry.Entry{
 		Name:             "rewrite-rules",
 		Key:              []string{},
+		Module:           "",
+		Namespace:        "",
+		Prefix:           "srl_nokia-qos",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
@@ -87,6 +90,7 @@ func initInterfaceSubinterfaceQosOutputRewriterules(p *yentry.Entry, opts ...yen
 				},
 			},
 		},
+		Defaults: map[string]string{},
 	}
 
 	for _, opt := range opts {

@@ -27,10 +27,14 @@ func initNetworkinstanceProtocolsLdpIpv4(p *yentry.Entry, opts ...yentry.EntryOp
 	e := &yentry.Entry{
 		Name:             "ipv4",
 		Key:              []string{},
+		Module:           "",
+		Namespace:        "",
+		Prefix:           "srl_nokia-ldp",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
 		LeafRefs:         []*leafref.LeafRef{},
+		Defaults:         map[string]string{},
 	}
 
 	for _, opt := range opts {

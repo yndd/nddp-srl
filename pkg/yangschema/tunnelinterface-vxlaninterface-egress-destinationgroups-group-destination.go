@@ -29,10 +29,16 @@ func initTunnelinterfaceVxlaninterfaceEgressDestinationgroupsGroupDestination(p 
 		Key: []string{
 			"index",
 		},
+		Module:           "",
+		Namespace:        "",
+		Prefix:           "srl_nokia-tunnel-if",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
 		LeafRefs:         []*leafref.LeafRef{},
+		Defaults: map[string]string{
+			"admin-state": "enable",
+		},
 	}
 
 	for _, opt := range opts {

@@ -31,6 +31,9 @@ func initSystemNetworkinstanceProtocolsEvpnEthernetsegmentsBgpinstanceEthernetse
 		Key: []string{
 			"name",
 		},
+		Module:           "",
+		Namespace:        "",
+		Prefix:           "srl_nokia-system-bgp-evpn-ethernet-segments",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: true,
@@ -47,6 +50,10 @@ func initSystemNetworkinstanceProtocolsEvpnEthernetsegmentsBgpinstanceEthernetse
 					},
 				},
 			},
+		},
+		Defaults: map[string]string{
+			"admin-state":       "disable",
+			"multi-homing-mode": "all-active",
 		},
 	}
 

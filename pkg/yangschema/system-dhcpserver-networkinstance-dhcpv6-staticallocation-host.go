@@ -29,10 +29,14 @@ func initSystemDhcpserverNetworkinstanceDhcpv6StaticallocationHost(p *yentry.Ent
 		Key: []string{
 			"mac",
 		},
+		Module:           "",
+		Namespace:        "",
+		Prefix:           "srl-dhcp-server",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
 		LeafRefs:         []*leafref.LeafRef{},
+		Defaults:         map[string]string{},
 	}
 
 	for _, opt := range opts {

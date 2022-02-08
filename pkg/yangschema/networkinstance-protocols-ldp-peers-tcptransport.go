@@ -27,10 +27,14 @@ func initNetworkinstanceProtocolsLdpPeersTcptransport(p *yentry.Entry, opts ...y
 	e := &yentry.Entry{
 		Name:             "tcp-transport",
 		Key:              []string{},
+		Module:           "",
+		Namespace:        "",
+		Prefix:           "srl_nokia-ldp",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
 		LeafRefs:         []*leafref.LeafRef{},
+		Defaults:         map[string]string{},
 	}
 
 	for _, opt := range opts {

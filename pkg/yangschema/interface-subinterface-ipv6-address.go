@@ -27,10 +27,14 @@ func initInterfaceSubinterfaceIpv6Address(p *yentry.Entry, opts ...yentry.EntryO
 		Key: []string{
 			"ip-prefix",
 		},
+		Module:           "",
+		Namespace:        "",
+		Prefix:           "srl_nokia-if-ip",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
 		LeafRefs:         []*leafref.LeafRef{},
+		Defaults:         map[string]string{},
 	}
 
 	for _, opt := range opts {

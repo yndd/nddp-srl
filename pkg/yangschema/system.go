@@ -58,10 +58,14 @@ func initSystem(p *yentry.Entry, opts ...yentry.EntryOption) *yentry.Entry {
 	e := &yentry.Entry{
 		Name:             "system",
 		Key:              []string{},
+		Module:           "srl_nokia-system",
+		Namespace:        "urn:srl_nokia/system",
+		Prefix:           "srl_nokia-system",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
 		LeafRefs:         []*leafref.LeafRef{},
+		Defaults:         map[string]string{},
 	}
 
 	for _, opt := range opts {

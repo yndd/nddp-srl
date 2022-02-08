@@ -27,10 +27,17 @@ func initPlatformResourcemonitoringAclResource(p *yentry.Entry, opts ...yentry.E
 		Key: []string{
 			"name",
 		},
+		Module:           "",
+		Namespace:        "",
+		Prefix:           "srl_nokia-platform-acl",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
 		LeafRefs:         []*leafref.LeafRef{},
+		Defaults: map[string]string{
+			"falling-threshold-log": "70",
+			"rising-threshold-log":  "90",
+		},
 	}
 
 	for _, opt := range opts {

@@ -30,6 +30,9 @@ func initInterfaceQosOutputUnicastqueue(p *yentry.Entry, opts ...yentry.EntryOpt
 		Key: []string{
 			"queue-id",
 		},
+		Module:           "",
+		Namespace:        "",
+		Prefix:           "srl_nokia-qos",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
@@ -63,6 +66,7 @@ func initInterfaceQosOutputUnicastqueue(p *yentry.Entry, opts ...yentry.EntryOpt
 				},
 			},
 		},
+		Defaults: map[string]string{},
 	}
 
 	for _, opt := range opts {

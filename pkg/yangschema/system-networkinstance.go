@@ -27,10 +27,14 @@ func initSystemNetworkinstance(p *yentry.Entry, opts ...yentry.EntryOption) *yen
 	e := &yentry.Entry{
 		Name:             "network-instance",
 		Key:              []string{},
+		Module:           "srl_nokia-system-network-instance",
+		Namespace:        "urn:srl_nokia/system-network-instance",
+		Prefix:           "srl_nokia-system-netinst",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
 		LeafRefs:         []*leafref.LeafRef{},
+		Defaults:         map[string]string{},
 	}
 
 	for _, opt := range opts {

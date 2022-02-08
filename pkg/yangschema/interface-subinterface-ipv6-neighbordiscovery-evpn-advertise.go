@@ -27,10 +27,16 @@ func initInterfaceSubinterfaceIpv6NeighbordiscoveryEvpnAdvertise(p *yentry.Entry
 		Key: []string{
 			"route-type",
 		},
+		Module:           "",
+		Namespace:        "",
+		Prefix:           "srl_nokia-if-ip-nbr-evpn",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
 		LeafRefs:         []*leafref.LeafRef{},
+		Defaults: map[string]string{
+			"admin-tag": "0",
+		},
 	}
 
 	for _, opt := range opts {

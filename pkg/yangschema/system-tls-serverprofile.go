@@ -29,10 +29,16 @@ func initSystemTlsServerprofile(p *yentry.Entry, opts ...yentry.EntryOption) *ye
 		Key: []string{
 			"name",
 		},
+		Module:           "",
+		Namespace:        "",
+		Prefix:           "srl_nokia-tls",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
 		LeafRefs:         []*leafref.LeafRef{},
+		Defaults: map[string]string{
+			"authenticate-client": "false",
+		},
 	}
 
 	for _, opt := range opts {

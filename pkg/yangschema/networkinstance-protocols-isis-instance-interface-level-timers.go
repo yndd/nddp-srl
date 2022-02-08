@@ -25,10 +25,17 @@ func initNetworkinstanceProtocolsIsisInstanceInterfaceLevelTimers(p *yentry.Entr
 	e := &yentry.Entry{
 		Name:             "timers",
 		Key:              []string{},
+		Module:           "",
+		Namespace:        "",
+		Prefix:           "srl_nokia-isis",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
 		LeafRefs:         []*leafref.LeafRef{},
+		Defaults: map[string]string{
+			"hello-interval":   "9",
+			"hello-multiplier": "3",
+		},
 	}
 
 	for _, opt := range opts {

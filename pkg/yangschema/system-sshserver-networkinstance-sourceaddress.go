@@ -25,10 +25,14 @@ func initSystemSshserverNetworkinstanceSourceaddress(p *yentry.Entry, opts ...ye
 	e := &yentry.Entry{
 		Name:             "source-address",
 		Key:              []string{},
+		Module:           "",
+		Namespace:        "",
+		Prefix:           "srl_nokia-ssh",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
 		LeafRefs:         []*leafref.LeafRef{},
+		Defaults:         map[string]string{},
 	}
 
 	for _, opt := range opts {

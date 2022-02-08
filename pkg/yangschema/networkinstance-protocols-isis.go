@@ -28,6 +28,9 @@ func initNetworkinstanceProtocolsIsis(p *yentry.Entry, opts ...yentry.EntryOptio
 	e := &yentry.Entry{
 		Name:             "isis",
 		Key:              []string{},
+		Module:           "srl_nokia-isis",
+		Namespace:        "urn:srl_nokia/isis",
+		Prefix:           "srl_nokia-isis",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: true,
@@ -48,6 +51,7 @@ func initNetworkinstanceProtocolsIsis(p *yentry.Entry, opts ...yentry.EntryOptio
 				},
 			},
 		},
+		Defaults: map[string]string{},
 	}
 
 	for _, opt := range opts {

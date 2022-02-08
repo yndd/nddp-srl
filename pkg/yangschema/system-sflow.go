@@ -27,10 +27,18 @@ func initSystemSflow(p *yentry.Entry, opts ...yentry.EntryOption) *yentry.Entry 
 	e := &yentry.Entry{
 		Name:             "sflow",
 		Key:              []string{},
+		Module:           "srl_nokia-sflow",
+		Namespace:        "urn:srl_nokia/sflow",
+		Prefix:           "srl_nokia-sflow",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
 		LeafRefs:         []*leafref.LeafRef{},
+		Defaults: map[string]string{
+			"admin-state": "disable",
+			"sample-rate": "10000",
+			"sample-size": "256",
+		},
 	}
 
 	for _, opt := range opts {

@@ -30,10 +30,17 @@ func initNetworkinstanceBridgetable(p *yentry.Entry, opts ...yentry.EntryOption)
 	e := &yentry.Entry{
 		Name:             "bridge-table",
 		Key:              []string{},
+		Module:           "",
+		Namespace:        "",
+		Prefix:           "srl_nokia-netinst",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
 		LeafRefs:         []*leafref.LeafRef{},
+		Defaults: map[string]string{
+			"discard-unknown-dest-mac": "false",
+			"protect-anycast-gw-mac":   "false",
+		},
 	}
 
 	for _, opt := range opts {

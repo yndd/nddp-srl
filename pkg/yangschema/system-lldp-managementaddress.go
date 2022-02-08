@@ -29,10 +29,14 @@ func initSystemLldpManagementaddress(p *yentry.Entry, opts ...yentry.EntryOption
 		Key: []string{
 			"subinterface",
 		},
+		Module:           "",
+		Namespace:        "",
+		Prefix:           "srl_nokia-lldp",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
 		LeafRefs:         []*leafref.LeafRef{},
+		Defaults:         map[string]string{},
 	}
 
 	for _, opt := range opts {

@@ -30,10 +30,14 @@ func initRoutingpolicyPolicyDefaultaction(p *yentry.Entry, opts ...yentry.EntryO
 	e := &yentry.Entry{
 		Name:             "default-action",
 		Key:              []string{},
+		Module:           "",
+		Namespace:        "",
+		Prefix:           "srl_rpol",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
 		LeafRefs:         []*leafref.LeafRef{},
+		Defaults:         map[string]string{},
 	}
 
 	for _, opt := range opts {

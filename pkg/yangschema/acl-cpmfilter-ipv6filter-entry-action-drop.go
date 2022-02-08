@@ -25,10 +25,16 @@ func initAclCpmfilterIpv6filterEntryActionDrop(p *yentry.Entry, opts ...yentry.E
 	e := &yentry.Entry{
 		Name:             "drop",
 		Key:              []string{},
+		Module:           "",
+		Namespace:        "",
+		Prefix:           "srl_nokia-acl",
 		Parent:           p,
 		Children:         make(map[string]*yentry.Entry),
 		ResourceBoundary: false,
 		LeafRefs:         []*leafref.LeafRef{},
+		Defaults: map[string]string{
+			"log": "false",
+		},
 	}
 
 	for _, opt := range opts {
