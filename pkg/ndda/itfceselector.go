@@ -92,7 +92,7 @@ func (x *selectedNodeItfces) GetNodeItfcesByEpgSelector(epgSelectors []*nddov1.E
 			if epgSelector.EpgName != "" && epgSelector.EpgName == nddaItfce.GetEndpointGroup() {
 				fmt.Printf("getNodeItfcesByEpgSelector: %s\n", nddaItfce.GetName())
 				// avoid selecting lag members
-				if nddaItfce.GetInterfaceLag() == nil {
+				if !(nddaItfce.GetInterfaceEthernet() != nil && nddaItfce.GetInterfaceEthernet().Aggregateid != nil) {
 					x.addNodeItfce(nddaItfce.GetDeviceName(), nddaItfce.GetInterfaceName(), itfceinfo.NewItfceInfo(
 						itfceinfo.WithInnerVlanId(epgSelector.InnerVlanId),
 						itfceinfo.WithOuterVlanId(epgSelector.OuterVlanId),
@@ -120,18 +120,20 @@ func (x *selectedNodeItfces) GetNodeItfcesByNodeItfceSelector(nodeItfceSelectors
 			}
 
 			// avoid selecting lag members
-			if nddaItfce.GetInterfaceLag() == nil &&
-				deviceName == nddaItfce.GetDeviceName() &&
-				itfceName == nddaItfce.GetInterfaceName() {
-				fmt.Printf("getNodeItfcesByNodeItfceSelector: nodename: %s, itfcename: %s, lagmember: %v, nodename: %s\n", nddaItfce.GetDeviceName(), nddaItfce.GetInterfaceName(), nddaItfce.GetInterfaceLag(), deviceName)
-				x.addNodeItfce(nddaItfce.GetDeviceName(), nddaItfce.GetInterfaceName(), itfceinfo.NewItfceInfo(
-					itfceinfo.WithInnerVlanId(itfceInfo.InnerVlanId),
-					itfceinfo.WithOuterVlanId(itfceInfo.OuterVlanId),
-					itfceinfo.WithItfceKind(networkv1alpha1.E_InterfaceKind_INTERFACE),
-					itfceinfo.WithIpv4Prefixes(itfceInfo.Ipv4Prefixes),
-					itfceinfo.WithIpv6Prefixes(itfceInfo.Ipv6Prefixes),
-				))
+			if !(nddaItfce.GetInterfaceEthernet() != nil && nddaItfce.GetInterfaceEthernet().Aggregateid != nil) {
+				if deviceName == nddaItfce.GetDeviceName() &&
+					itfceName == nddaItfce.GetInterfaceName() {
+					fmt.Printf("getNodeItfcesByNodeItfceSelector: nodename: %s, itfcename: %s, lagmember: %v, nodename: %s\n", nddaItfce.GetDeviceName(), nddaItfce.GetInterfaceName(), nddaItfce.GetInterfaceLag(), deviceName)
+					x.addNodeItfce(nddaItfce.GetDeviceName(), nddaItfce.GetInterfaceName(), itfceinfo.NewItfceInfo(
+						itfceinfo.WithInnerVlanId(itfceInfo.InnerVlanId),
+						itfceinfo.WithOuterVlanId(itfceInfo.OuterVlanId),
+						itfceinfo.WithItfceKind(networkv1alpha1.E_InterfaceKind_INTERFACE),
+						itfceinfo.WithIpv4Prefixes(itfceInfo.Ipv4Prefixes),
+						itfceinfo.WithIpv6Prefixes(itfceInfo.Ipv6Prefixes),
+					))
+				}
 			}
+
 		}
 	}
 }

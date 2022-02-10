@@ -46,9 +46,9 @@ func (s *server) Set(ctx context.Context, req *gnmi.SetRequest) (*gnmi.SetRespon
 
 	log := s.log.WithValues("numUpdates", numUpdates, "numReplaces", numReplaces, "numDeletes", numDeletes)
 	prefix := req.GetPrefix()
-	log.Debug("Set", "prefix", prefix)
 
 	if numReplaces > 0 {
+		log.Debug("Set Replace", "target", prefix.Target, "Path", yparser.GnmiPath2XPath(req.GetReplace()[0].GetPath(), true))
 		// delete the cache first and after update it, since the gvk entry comes first
 		if err := s.DeleteCache(prefix, req.GetReplace()[0].GetPath()); err != nil {
 			return nil, status.Errorf(codes.Internal, err.Error())
@@ -62,6 +62,7 @@ func (s *server) Set(ctx context.Context, req *gnmi.SetRequest) (*gnmi.SetRespon
 	}
 
 	if numUpdates > 0 {
+		log.Debug("Set Update", "target", prefix.Target, "Path", yparser.GnmiPath2XPath(req.GetUpdate()[0].GetPath(), true))
 		for _, u := range req.GetUpdate() {
 			if err := s.UpdateCache(prefix, u); err != nil {
 				return nil, status.Errorf(codes.Internal, err.Error())
@@ -70,6 +71,7 @@ func (s *server) Set(ctx context.Context, req *gnmi.SetRequest) (*gnmi.SetRespon
 	}
 
 	if numDeletes > 0 {
+		log.Debug("Set Delete", "target", prefix.Target, "Path", yparser.GnmiPath2XPath(req.GetDelete()[0], true))
 		for _, p := range req.GetDelete() {
 			if err := s.DeleteCache(prefix, p); err != nil {
 				return nil, status.Errorf(codes.InvalidArgument, err.Error())
@@ -103,11 +105,13 @@ func (s *server) UpdateCache(prefix *gnmi.Path, u *gnmi.Update) error {
 		//log.Debug("GetNotificationFromUpdate Error", "Notification", n, "Error", err)
 		return err
 	}
-	s.log.Debug("UpdateCache", "notification", n)
+	//s.log.Debug("UpdateCache", "notification", n)
 	if n != nil {
-		for _, u := range n.GetUpdate() {
-			s.log.Debug("gnmiserver update cache", "notification path", yparser.GnmiPath2XPath(u.GetPath(), true), "val", u.GetVal())
-		}
+		/*
+			for _, u := range n.GetUpdate() {
+				s.log.Debug("gnmiserver update cache", "notification path", yparser.GnmiPath2XPath(u.GetPath(), true), "val", u.GetVal())
+			}
+		*/
 
 		if err := s.cache.GnmiUpdate(prefix.GetTarget(), n); err != nil {
 			//log.Debug("GnmiUpdate Error", "Notification", n, "Error", err)
@@ -123,9 +127,11 @@ func (s *server) DeleteCache(prefix *gnmi.Path, p *gnmi.Path) error {
 	if err != nil {
 		return err
 	}
-	for _, d := range n.GetDelete() {
-		s.log.Debug("gnmiserver delete cache", "notification", yparser.GnmiPath2XPath(d, true))
-	}
+	/*
+		for _, d := range n.GetDelete() {
+			s.log.Debug("gnmiserver delete cache", "notification", yparser.GnmiPath2XPath(d, true))
+		}
+	*/
 	if err := s.cache.GnmiUpdate(prefix.GetTarget(), n); err != nil {
 		return err
 	}
@@ -134,7 +140,7 @@ func (s *server) DeleteCache(prefix *gnmi.Path, p *gnmi.Path) error {
 
 func (s *server) setUpdateStatus(req *gnmi.SetRequest) error {
 	crDeviceName := req.GetPrefix().GetTarget()
-	s.log.Debug("setUpdateStatus", "cacheName", crDeviceName)
+	//s.log.Debug("setUpdateStatus", "cacheName", crDeviceName)
 
 	if strings.HasPrefix(crDeviceName, shared.SystemNamespace) {
 		crSystemDeviceName := crDeviceName
@@ -174,10 +180,10 @@ func (s *server) hasKey(prefix *gnmi.Path, u *gnmi.Update) (bool, error) {
 			p := &gnmi.Path{Elem: u.Path.GetElem()[2:]}
 			// check the device schema if keys exist
 			if len(s.deviceSchema.GetKeys(p)) == 0 {
-				s.log.Debug("hasKey", "path", yparser.GnmiPath2XPath(u.GetPath(), true), "Bool", false)
+				//s.log.Debug("hasKey", "path", yparser.GnmiPath2XPath(u.GetPath(), true), "Bool", false)
 				return false, nil
 			} else {
-				s.log.Debug("hasKey", "path", yparser.GnmiPath2XPath(u.GetPath(), true), "Bool", true)
+				//s.log.Debug("hasKey", "path", yparser.GnmiPath2XPath(u.GetPath(), true), "Bool", true)
 				return true, nil
 			}
 		}

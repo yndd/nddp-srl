@@ -29,28 +29,28 @@ type Device interface {
 	// methods children
 	NewNetworkinstance(c resource.ClientApplicator, key string) Networkinstance
 	NewBfd(c resource.ClientApplicator, key string) Bfd
-	NewSystemNtp(c resource.ClientApplicator, key string) SystemNtp
-	NewSystemNetworkinstanceProtocolsBgpvpn(c resource.ClientApplicator, key string) SystemNetworkinstanceProtocolsBgpvpn
-	NewSystemNetworkinstanceProtocolsEvpn(c resource.ClientApplicator, key string) SystemNetworkinstanceProtocolsEvpn
-	NewInterface(c resource.ClientApplicator, key string) Interface
-	NewRoutingpolicyCommunityset(c resource.ClientApplicator, key string) RoutingpolicyCommunityset
-	NewRoutingpolicyPrefixset(c resource.ClientApplicator, key string) RoutingpolicyPrefixset
 	NewSystemName(c resource.ClientApplicator, key string) SystemName
+	NewSystemNetworkinstanceProtocolsEvpn(c resource.ClientApplicator, key string) SystemNetworkinstanceProtocolsEvpn
 	NewTunnelinterface(c resource.ClientApplicator, key string) Tunnelinterface
 	NewRoutingpolicyAspathset(c resource.ClientApplicator, key string) RoutingpolicyAspathset
 	NewRoutingpolicyPolicy(c resource.ClientApplicator, key string) RoutingpolicyPolicy
+	NewRoutingpolicyPrefixset(c resource.ClientApplicator, key string) RoutingpolicyPrefixset
+	NewSystemNtp(c resource.ClientApplicator, key string) SystemNtp
+	NewSystemNetworkinstanceProtocolsBgpvpn(c resource.ClientApplicator, key string) SystemNetworkinstanceProtocolsBgpvpn
+	NewInterface(c resource.ClientApplicator, key string) Interface
+	NewRoutingpolicyCommunityset(c resource.ClientApplicator, key string) RoutingpolicyCommunityset
 	GetNetworkinstances() map[string]Networkinstance
 	GetBfds() map[string]Bfd
-	GetSystemNtps() map[string]SystemNtp
-	GetSystemNetworkinstanceProtocolsBgpvpns() map[string]SystemNetworkinstanceProtocolsBgpvpn
-	GetSystemNetworkinstanceProtocolsEvpns() map[string]SystemNetworkinstanceProtocolsEvpn
-	GetInterfaces() map[string]Interface
-	GetRoutingpolicyCommunitysets() map[string]RoutingpolicyCommunityset
-	GetRoutingpolicyPrefixsets() map[string]RoutingpolicyPrefixset
 	GetSystemNames() map[string]SystemName
+	GetSystemNetworkinstanceProtocolsEvpns() map[string]SystemNetworkinstanceProtocolsEvpn
 	GetTunnelinterfaces() map[string]Tunnelinterface
 	GetRoutingpolicyAspathsets() map[string]RoutingpolicyAspathset
 	GetRoutingpolicyPolicys() map[string]RoutingpolicyPolicy
+	GetRoutingpolicyPrefixsets() map[string]RoutingpolicyPrefixset
+	GetSystemNtps() map[string]SystemNtp
+	GetSystemNetworkinstanceProtocolsBgpvpns() map[string]SystemNetworkinstanceProtocolsBgpvpn
+	GetInterfaces() map[string]Interface
+	GetRoutingpolicyCommunitysets() map[string]RoutingpolicyCommunityset
 	// methods data
 	GetKey() []string
 	Get() interface{}
@@ -74,16 +74,16 @@ func NewDevice(c resource.ClientApplicator, p Schema, key string) Device {
 		// children
 		Networkinstance:                      make(map[string]Networkinstance),
 		Bfd:                                  make(map[string]Bfd),
-		SystemNtp:                            make(map[string]SystemNtp),
-		SystemNetworkinstanceProtocolsBgpvpn: make(map[string]SystemNetworkinstanceProtocolsBgpvpn),
-		SystemNetworkinstanceProtocolsEvpn:   make(map[string]SystemNetworkinstanceProtocolsEvpn),
-		Interface:                            make(map[string]Interface),
-		RoutingpolicyCommunityset:            make(map[string]RoutingpolicyCommunityset),
-		RoutingpolicyPrefixset:               make(map[string]RoutingpolicyPrefixset),
 		SystemName:                           make(map[string]SystemName),
+		SystemNetworkinstanceProtocolsEvpn:   make(map[string]SystemNetworkinstanceProtocolsEvpn),
 		Tunnelinterface:                      make(map[string]Tunnelinterface),
 		RoutingpolicyAspathset:               make(map[string]RoutingpolicyAspathset),
 		RoutingpolicyPolicy:                  make(map[string]RoutingpolicyPolicy),
+		RoutingpolicyPrefixset:               make(map[string]RoutingpolicyPrefixset),
+		SystemNtp:                            make(map[string]SystemNtp),
+		SystemNetworkinstanceProtocolsBgpvpn: make(map[string]SystemNetworkinstanceProtocolsBgpvpn),
+		Interface:                            make(map[string]Interface),
+		RoutingpolicyCommunityset:            make(map[string]RoutingpolicyCommunityset),
 		// data key
 		//Device: &srlv1alpha1.Device{
 		//	Name: &name,
@@ -101,16 +101,16 @@ type device struct {
 	// children
 	Networkinstance                      map[string]Networkinstance
 	Bfd                                  map[string]Bfd
-	SystemNtp                            map[string]SystemNtp
-	SystemNetworkinstanceProtocolsBgpvpn map[string]SystemNetworkinstanceProtocolsBgpvpn
-	SystemNetworkinstanceProtocolsEvpn   map[string]SystemNetworkinstanceProtocolsEvpn
-	Interface                            map[string]Interface
-	RoutingpolicyCommunityset            map[string]RoutingpolicyCommunityset
-	RoutingpolicyPrefixset               map[string]RoutingpolicyPrefixset
 	SystemName                           map[string]SystemName
+	SystemNetworkinstanceProtocolsEvpn   map[string]SystemNetworkinstanceProtocolsEvpn
 	Tunnelinterface                      map[string]Tunnelinterface
 	RoutingpolicyAspathset               map[string]RoutingpolicyAspathset
 	RoutingpolicyPolicy                  map[string]RoutingpolicyPolicy
+	RoutingpolicyPrefixset               map[string]RoutingpolicyPrefixset
+	SystemNtp                            map[string]SystemNtp
+	SystemNetworkinstanceProtocolsBgpvpn map[string]SystemNetworkinstanceProtocolsBgpvpn
+	Interface                            map[string]Interface
+	RoutingpolicyCommunityset            map[string]RoutingpolicyCommunityset
 	// Data
 }
 
@@ -144,47 +144,17 @@ func (x *device) NewBfd(c resource.ClientApplicator, key string) Bfd {
 	}
 	return x.Bfd[key]
 }
-func (x *device) NewSystemNtp(c resource.ClientApplicator, key string) SystemNtp {
-	if _, ok := x.SystemNtp[key]; !ok {
-		x.SystemNtp[key] = NewSystemNtp(c, x, key)
+func (x *device) NewSystemName(c resource.ClientApplicator, key string) SystemName {
+	if _, ok := x.SystemName[key]; !ok {
+		x.SystemName[key] = NewSystemName(c, x, key)
 	}
-	return x.SystemNtp[key]
-}
-func (x *device) NewSystemNetworkinstanceProtocolsBgpvpn(c resource.ClientApplicator, key string) SystemNetworkinstanceProtocolsBgpvpn {
-	if _, ok := x.SystemNetworkinstanceProtocolsBgpvpn[key]; !ok {
-		x.SystemNetworkinstanceProtocolsBgpvpn[key] = NewSystemNetworkinstanceProtocolsBgpvpn(c, x, key)
-	}
-	return x.SystemNetworkinstanceProtocolsBgpvpn[key]
+	return x.SystemName[key]
 }
 func (x *device) NewSystemNetworkinstanceProtocolsEvpn(c resource.ClientApplicator, key string) SystemNetworkinstanceProtocolsEvpn {
 	if _, ok := x.SystemNetworkinstanceProtocolsEvpn[key]; !ok {
 		x.SystemNetworkinstanceProtocolsEvpn[key] = NewSystemNetworkinstanceProtocolsEvpn(c, x, key)
 	}
 	return x.SystemNetworkinstanceProtocolsEvpn[key]
-}
-func (x *device) NewInterface(c resource.ClientApplicator, key string) Interface {
-	if _, ok := x.Interface[key]; !ok {
-		x.Interface[key] = NewInterface(c, x, key)
-	}
-	return x.Interface[key]
-}
-func (x *device) NewRoutingpolicyCommunityset(c resource.ClientApplicator, key string) RoutingpolicyCommunityset {
-	if _, ok := x.RoutingpolicyCommunityset[key]; !ok {
-		x.RoutingpolicyCommunityset[key] = NewRoutingpolicyCommunityset(c, x, key)
-	}
-	return x.RoutingpolicyCommunityset[key]
-}
-func (x *device) NewRoutingpolicyPrefixset(c resource.ClientApplicator, key string) RoutingpolicyPrefixset {
-	if _, ok := x.RoutingpolicyPrefixset[key]; !ok {
-		x.RoutingpolicyPrefixset[key] = NewRoutingpolicyPrefixset(c, x, key)
-	}
-	return x.RoutingpolicyPrefixset[key]
-}
-func (x *device) NewSystemName(c resource.ClientApplicator, key string) SystemName {
-	if _, ok := x.SystemName[key]; !ok {
-		x.SystemName[key] = NewSystemName(c, x, key)
-	}
-	return x.SystemName[key]
 }
 func (x *device) NewTunnelinterface(c resource.ClientApplicator, key string) Tunnelinterface {
 	if _, ok := x.Tunnelinterface[key]; !ok {
@@ -204,32 +174,47 @@ func (x *device) NewRoutingpolicyPolicy(c resource.ClientApplicator, key string)
 	}
 	return x.RoutingpolicyPolicy[key]
 }
+func (x *device) NewRoutingpolicyPrefixset(c resource.ClientApplicator, key string) RoutingpolicyPrefixset {
+	if _, ok := x.RoutingpolicyPrefixset[key]; !ok {
+		x.RoutingpolicyPrefixset[key] = NewRoutingpolicyPrefixset(c, x, key)
+	}
+	return x.RoutingpolicyPrefixset[key]
+}
+func (x *device) NewSystemNtp(c resource.ClientApplicator, key string) SystemNtp {
+	if _, ok := x.SystemNtp[key]; !ok {
+		x.SystemNtp[key] = NewSystemNtp(c, x, key)
+	}
+	return x.SystemNtp[key]
+}
+func (x *device) NewSystemNetworkinstanceProtocolsBgpvpn(c resource.ClientApplicator, key string) SystemNetworkinstanceProtocolsBgpvpn {
+	if _, ok := x.SystemNetworkinstanceProtocolsBgpvpn[key]; !ok {
+		x.SystemNetworkinstanceProtocolsBgpvpn[key] = NewSystemNetworkinstanceProtocolsBgpvpn(c, x, key)
+	}
+	return x.SystemNetworkinstanceProtocolsBgpvpn[key]
+}
+func (x *device) NewInterface(c resource.ClientApplicator, key string) Interface {
+	if _, ok := x.Interface[key]; !ok {
+		x.Interface[key] = NewInterface(c, x, key)
+	}
+	return x.Interface[key]
+}
+func (x *device) NewRoutingpolicyCommunityset(c resource.ClientApplicator, key string) RoutingpolicyCommunityset {
+	if _, ok := x.RoutingpolicyCommunityset[key]; !ok {
+		x.RoutingpolicyCommunityset[key] = NewRoutingpolicyCommunityset(c, x, key)
+	}
+	return x.RoutingpolicyCommunityset[key]
+}
 func (x *device) GetNetworkinstances() map[string]Networkinstance {
 	return x.Networkinstance
 }
 func (x *device) GetBfds() map[string]Bfd {
 	return x.Bfd
 }
-func (x *device) GetSystemNtps() map[string]SystemNtp {
-	return x.SystemNtp
-}
-func (x *device) GetSystemNetworkinstanceProtocolsBgpvpns() map[string]SystemNetworkinstanceProtocolsBgpvpn {
-	return x.SystemNetworkinstanceProtocolsBgpvpn
+func (x *device) GetSystemNames() map[string]SystemName {
+	return x.SystemName
 }
 func (x *device) GetSystemNetworkinstanceProtocolsEvpns() map[string]SystemNetworkinstanceProtocolsEvpn {
 	return x.SystemNetworkinstanceProtocolsEvpn
-}
-func (x *device) GetInterfaces() map[string]Interface {
-	return x.Interface
-}
-func (x *device) GetRoutingpolicyCommunitysets() map[string]RoutingpolicyCommunityset {
-	return x.RoutingpolicyCommunityset
-}
-func (x *device) GetRoutingpolicyPrefixsets() map[string]RoutingpolicyPrefixset {
-	return x.RoutingpolicyPrefixset
-}
-func (x *device) GetSystemNames() map[string]SystemName {
-	return x.SystemName
 }
 func (x *device) GetTunnelinterfaces() map[string]Tunnelinterface {
 	return x.Tunnelinterface
@@ -239,6 +224,21 @@ func (x *device) GetRoutingpolicyAspathsets() map[string]RoutingpolicyAspathset 
 }
 func (x *device) GetRoutingpolicyPolicys() map[string]RoutingpolicyPolicy {
 	return x.RoutingpolicyPolicy
+}
+func (x *device) GetRoutingpolicyPrefixsets() map[string]RoutingpolicyPrefixset {
+	return x.RoutingpolicyPrefixset
+}
+func (x *device) GetSystemNtps() map[string]SystemNtp {
+	return x.SystemNtp
+}
+func (x *device) GetSystemNetworkinstanceProtocolsBgpvpns() map[string]SystemNetworkinstanceProtocolsBgpvpn {
+	return x.SystemNetworkinstanceProtocolsBgpvpn
+}
+func (x *device) GetInterfaces() map[string]Interface {
+	return x.Interface
+}
+func (x *device) GetRoutingpolicyCommunitysets() map[string]RoutingpolicyCommunityset {
+	return x.RoutingpolicyCommunityset
 }
 
 // methods data
@@ -266,25 +266,10 @@ func (x *device) Print(key string, n int) {
 	for key, i := range x.GetBfds() {
 		i.Print(key, n)
 	}
-	for key, i := range x.GetSystemNtps() {
-		i.Print(key, n)
-	}
-	for key, i := range x.GetSystemNetworkinstanceProtocolsBgpvpns() {
+	for key, i := range x.GetSystemNames() {
 		i.Print(key, n)
 	}
 	for key, i := range x.GetSystemNetworkinstanceProtocolsEvpns() {
-		i.Print(key, n)
-	}
-	for key, i := range x.GetInterfaces() {
-		i.Print(key, n)
-	}
-	for key, i := range x.GetRoutingpolicyCommunitysets() {
-		i.Print(key, n)
-	}
-	for key, i := range x.GetRoutingpolicyPrefixsets() {
-		i.Print(key, n)
-	}
-	for key, i := range x.GetSystemNames() {
 		i.Print(key, n)
 	}
 	for key, i := range x.GetTunnelinterfaces() {
@@ -294,6 +279,21 @@ func (x *device) Print(key string, n int) {
 		i.Print(key, n)
 	}
 	for key, i := range x.GetRoutingpolicyPolicys() {
+		i.Print(key, n)
+	}
+	for key, i := range x.GetRoutingpolicyPrefixsets() {
+		i.Print(key, n)
+	}
+	for key, i := range x.GetSystemNtps() {
+		i.Print(key, n)
+	}
+	for key, i := range x.GetSystemNetworkinstanceProtocolsBgpvpns() {
+		i.Print(key, n)
+	}
+	for key, i := range x.GetInterfaces() {
+		i.Print(key, n)
+	}
+	for key, i := range x.GetRoutingpolicyCommunitysets() {
 		i.Print(key, n)
 	}
 }
@@ -312,37 +312,12 @@ func (x *device) DeploySchema(ctx context.Context, mg resource.Managed, deviceNa
 			return err
 		}
 	}
-	for _, r := range x.GetSystemNtps() {
-		if err := r.DeploySchema(ctx, mg, deviceName, labels); err != nil {
-			return err
-		}
-	}
-	for _, r := range x.GetSystemNetworkinstanceProtocolsBgpvpns() {
+	for _, r := range x.GetSystemNames() {
 		if err := r.DeploySchema(ctx, mg, deviceName, labels); err != nil {
 			return err
 		}
 	}
 	for _, r := range x.GetSystemNetworkinstanceProtocolsEvpns() {
-		if err := r.DeploySchema(ctx, mg, deviceName, labels); err != nil {
-			return err
-		}
-	}
-	for _, r := range x.GetInterfaces() {
-		if err := r.DeploySchema(ctx, mg, deviceName, labels); err != nil {
-			return err
-		}
-	}
-	for _, r := range x.GetRoutingpolicyCommunitysets() {
-		if err := r.DeploySchema(ctx, mg, deviceName, labels); err != nil {
-			return err
-		}
-	}
-	for _, r := range x.GetRoutingpolicyPrefixsets() {
-		if err := r.DeploySchema(ctx, mg, deviceName, labels); err != nil {
-			return err
-		}
-	}
-	for _, r := range x.GetSystemNames() {
 		if err := r.DeploySchema(ctx, mg, deviceName, labels); err != nil {
 			return err
 		}
@@ -362,6 +337,31 @@ func (x *device) DeploySchema(ctx context.Context, mg resource.Managed, deviceNa
 			return err
 		}
 	}
+	for _, r := range x.GetRoutingpolicyPrefixsets() {
+		if err := r.DeploySchema(ctx, mg, deviceName, labels); err != nil {
+			return err
+		}
+	}
+	for _, r := range x.GetSystemNtps() {
+		if err := r.DeploySchema(ctx, mg, deviceName, labels); err != nil {
+			return err
+		}
+	}
+	for _, r := range x.GetSystemNetworkinstanceProtocolsBgpvpns() {
+		if err := r.DeploySchema(ctx, mg, deviceName, labels); err != nil {
+			return err
+		}
+	}
+	for _, r := range x.GetInterfaces() {
+		if err := r.DeploySchema(ctx, mg, deviceName, labels); err != nil {
+			return err
+		}
+	}
+	for _, r := range x.GetRoutingpolicyCommunitysets() {
+		if err := r.DeploySchema(ctx, mg, deviceName, labels); err != nil {
+			return err
+		}
+	}
 
 	return nil
 }
@@ -371,25 +371,25 @@ func (x *device) InitializeDummySchema() {
 	c0.InitializeDummySchema()
 	c1 := x.NewBfd(x.client, "dummy")
 	c1.InitializeDummySchema()
-	c2 := x.NewSystemNtp(x.client, "dummy")
+	c2 := x.NewSystemName(x.client, "dummy")
 	c2.InitializeDummySchema()
-	c3 := x.NewSystemNetworkinstanceProtocolsBgpvpn(x.client, "dummy")
+	c3 := x.NewSystemNetworkinstanceProtocolsEvpn(x.client, "dummy")
 	c3.InitializeDummySchema()
-	c4 := x.NewSystemNetworkinstanceProtocolsEvpn(x.client, "dummy")
+	c4 := x.NewTunnelinterface(x.client, "dummy")
 	c4.InitializeDummySchema()
-	c5 := x.NewInterface(x.client, "dummy")
+	c5 := x.NewRoutingpolicyAspathset(x.client, "dummy")
 	c5.InitializeDummySchema()
-	c6 := x.NewRoutingpolicyCommunityset(x.client, "dummy")
+	c6 := x.NewRoutingpolicyPolicy(x.client, "dummy")
 	c6.InitializeDummySchema()
 	c7 := x.NewRoutingpolicyPrefixset(x.client, "dummy")
 	c7.InitializeDummySchema()
-	c8 := x.NewSystemName(x.client, "dummy")
+	c8 := x.NewSystemNtp(x.client, "dummy")
 	c8.InitializeDummySchema()
-	c9 := x.NewTunnelinterface(x.client, "dummy")
+	c9 := x.NewSystemNetworkinstanceProtocolsBgpvpn(x.client, "dummy")
 	c9.InitializeDummySchema()
-	c10 := x.NewRoutingpolicyAspathset(x.client, "dummy")
+	c10 := x.NewInterface(x.client, "dummy")
 	c10.InitializeDummySchema()
-	c11 := x.NewRoutingpolicyPolicy(x.client, "dummy")
+	c11 := x.NewRoutingpolicyCommunityset(x.client, "dummy")
 	c11.InitializeDummySchema()
 }
 
@@ -407,37 +407,12 @@ func (x *device) ListResources(ctx context.Context, mg resource.Managed, resourc
 			return err
 		}
 	}
-	for _, i := range x.GetSystemNtps() {
-		if err := i.ListResources(ctx, mg, resources); err != nil {
-			return err
-		}
-	}
-	for _, i := range x.GetSystemNetworkinstanceProtocolsBgpvpns() {
+	for _, i := range x.GetSystemNames() {
 		if err := i.ListResources(ctx, mg, resources); err != nil {
 			return err
 		}
 	}
 	for _, i := range x.GetSystemNetworkinstanceProtocolsEvpns() {
-		if err := i.ListResources(ctx, mg, resources); err != nil {
-			return err
-		}
-	}
-	for _, i := range x.GetInterfaces() {
-		if err := i.ListResources(ctx, mg, resources); err != nil {
-			return err
-		}
-	}
-	for _, i := range x.GetRoutingpolicyCommunitysets() {
-		if err := i.ListResources(ctx, mg, resources); err != nil {
-			return err
-		}
-	}
-	for _, i := range x.GetRoutingpolicyPrefixsets() {
-		if err := i.ListResources(ctx, mg, resources); err != nil {
-			return err
-		}
-	}
-	for _, i := range x.GetSystemNames() {
 		if err := i.ListResources(ctx, mg, resources); err != nil {
 			return err
 		}
@@ -453,6 +428,31 @@ func (x *device) ListResources(ctx context.Context, mg resource.Managed, resourc
 		}
 	}
 	for _, i := range x.GetRoutingpolicyPolicys() {
+		if err := i.ListResources(ctx, mg, resources); err != nil {
+			return err
+		}
+	}
+	for _, i := range x.GetRoutingpolicyPrefixsets() {
+		if err := i.ListResources(ctx, mg, resources); err != nil {
+			return err
+		}
+	}
+	for _, i := range x.GetSystemNtps() {
+		if err := i.ListResources(ctx, mg, resources); err != nil {
+			return err
+		}
+	}
+	for _, i := range x.GetSystemNetworkinstanceProtocolsBgpvpns() {
+		if err := i.ListResources(ctx, mg, resources); err != nil {
+			return err
+		}
+	}
+	for _, i := range x.GetInterfaces() {
+		if err := i.ListResources(ctx, mg, resources); err != nil {
+			return err
+		}
+	}
+	for _, i := range x.GetRoutingpolicyCommunitysets() {
 		if err := i.ListResources(ctx, mg, resources); err != nil {
 			return err
 		}
@@ -474,37 +474,12 @@ func (x *device) ValidateResources(ctx context.Context, mg resource.Managed, dev
 			return err
 		}
 	}
-	for _, i := range x.GetSystemNtps() {
-		if err := i.ValidateResources(ctx, mg, deviceName, resources); err != nil {
-			return err
-		}
-	}
-	for _, i := range x.GetSystemNetworkinstanceProtocolsBgpvpns() {
+	for _, i := range x.GetSystemNames() {
 		if err := i.ValidateResources(ctx, mg, deviceName, resources); err != nil {
 			return err
 		}
 	}
 	for _, i := range x.GetSystemNetworkinstanceProtocolsEvpns() {
-		if err := i.ValidateResources(ctx, mg, deviceName, resources); err != nil {
-			return err
-		}
-	}
-	for _, i := range x.GetInterfaces() {
-		if err := i.ValidateResources(ctx, mg, deviceName, resources); err != nil {
-			return err
-		}
-	}
-	for _, i := range x.GetRoutingpolicyCommunitysets() {
-		if err := i.ValidateResources(ctx, mg, deviceName, resources); err != nil {
-			return err
-		}
-	}
-	for _, i := range x.GetRoutingpolicyPrefixsets() {
-		if err := i.ValidateResources(ctx, mg, deviceName, resources); err != nil {
-			return err
-		}
-	}
-	for _, i := range x.GetSystemNames() {
 		if err := i.ValidateResources(ctx, mg, deviceName, resources); err != nil {
 			return err
 		}
@@ -520,6 +495,31 @@ func (x *device) ValidateResources(ctx context.Context, mg resource.Managed, dev
 		}
 	}
 	for _, i := range x.GetRoutingpolicyPolicys() {
+		if err := i.ValidateResources(ctx, mg, deviceName, resources); err != nil {
+			return err
+		}
+	}
+	for _, i := range x.GetRoutingpolicyPrefixsets() {
+		if err := i.ValidateResources(ctx, mg, deviceName, resources); err != nil {
+			return err
+		}
+	}
+	for _, i := range x.GetSystemNtps() {
+		if err := i.ValidateResources(ctx, mg, deviceName, resources); err != nil {
+			return err
+		}
+	}
+	for _, i := range x.GetSystemNetworkinstanceProtocolsBgpvpns() {
+		if err := i.ValidateResources(ctx, mg, deviceName, resources); err != nil {
+			return err
+		}
+	}
+	for _, i := range x.GetInterfaces() {
+		if err := i.ValidateResources(ctx, mg, deviceName, resources); err != nil {
+			return err
+		}
+	}
+	for _, i := range x.GetRoutingpolicyCommunitysets() {
 		if err := i.ValidateResources(ctx, mg, deviceName, resources); err != nil {
 			return err
 		}
@@ -541,37 +541,12 @@ func (x *device) DeleteResources(ctx context.Context, mg resource.Managed, resou
 			return err
 		}
 	}
-	for _, i := range x.GetSystemNtps() {
-		if err := i.DeleteResources(ctx, mg, resources); err != nil {
-			return err
-		}
-	}
-	for _, i := range x.GetSystemNetworkinstanceProtocolsBgpvpns() {
+	for _, i := range x.GetSystemNames() {
 		if err := i.DeleteResources(ctx, mg, resources); err != nil {
 			return err
 		}
 	}
 	for _, i := range x.GetSystemNetworkinstanceProtocolsEvpns() {
-		if err := i.DeleteResources(ctx, mg, resources); err != nil {
-			return err
-		}
-	}
-	for _, i := range x.GetInterfaces() {
-		if err := i.DeleteResources(ctx, mg, resources); err != nil {
-			return err
-		}
-	}
-	for _, i := range x.GetRoutingpolicyCommunitysets() {
-		if err := i.DeleteResources(ctx, mg, resources); err != nil {
-			return err
-		}
-	}
-	for _, i := range x.GetRoutingpolicyPrefixsets() {
-		if err := i.DeleteResources(ctx, mg, resources); err != nil {
-			return err
-		}
-	}
-	for _, i := range x.GetSystemNames() {
 		if err := i.DeleteResources(ctx, mg, resources); err != nil {
 			return err
 		}
@@ -587,6 +562,31 @@ func (x *device) DeleteResources(ctx context.Context, mg resource.Managed, resou
 		}
 	}
 	for _, i := range x.GetRoutingpolicyPolicys() {
+		if err := i.DeleteResources(ctx, mg, resources); err != nil {
+			return err
+		}
+	}
+	for _, i := range x.GetRoutingpolicyPrefixsets() {
+		if err := i.DeleteResources(ctx, mg, resources); err != nil {
+			return err
+		}
+	}
+	for _, i := range x.GetSystemNtps() {
+		if err := i.DeleteResources(ctx, mg, resources); err != nil {
+			return err
+		}
+	}
+	for _, i := range x.GetSystemNetworkinstanceProtocolsBgpvpns() {
+		if err := i.DeleteResources(ctx, mg, resources); err != nil {
+			return err
+		}
+	}
+	for _, i := range x.GetInterfaces() {
+		if err := i.DeleteResources(ctx, mg, resources); err != nil {
+			return err
+		}
+	}
+	for _, i := range x.GetRoutingpolicyCommunitysets() {
 		if err := i.DeleteResources(ctx, mg, resources); err != nil {
 			return err
 		}

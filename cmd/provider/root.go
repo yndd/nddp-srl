@@ -33,8 +33,9 @@ import (
 )
 
 var (
-	scheme = runtime.NewScheme()
-	debug  bool
+	scheme   = runtime.NewScheme()
+	debug    bool
+	profiler bool
 )
 
 // rootCmd represents the base command when called without any subcommands
@@ -56,6 +57,7 @@ func Execute() {
 func init() {
 	rootCmd.SilenceUsage = true
 	rootCmd.PersistentFlags().BoolVarP(&debug, "debug", "d", false, "enable debug mode")
+	rootCmd.PersistentFlags().BoolVarP(&profiler, "profiler", "", false, "enable profiling")
 
 	utilruntime.Must(clientgoscheme.AddToScheme(scheme))
 	utilruntime.Must(srlv1alpha1.AddToScheme(scheme))

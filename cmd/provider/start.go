@@ -22,7 +22,11 @@ import (
 	"strings"
 	"time"
 
+	"net/http"
+	_ "net/http/pprof"
+
 	"github.com/pkg/errors"
+	"github.com/pkg/profile"
 	"github.com/spf13/cobra"
 
 	pkgmetav1 "github.com/yndd/ndd-core/apis/pkg/meta/v1"
@@ -71,6 +75,10 @@ var startCmd = &cobra.Command{
 			// Only use a logr.Logger when debug is on
 			ctrl.SetLogger(zlog)
 		}
+		if profiler {
+			startProfiling()
+		}
+
 		zlog.Info("create manager")
 		mgr, err := ctrl.NewManager(ctrl.GetConfigOrDie(), ctrl.Options{
 			Scheme:                 scheme,
@@ -188,3 +196,10 @@ func getGnmiServerAddress(podname string) string {
 	return pkgmetav1.PrefixGnmiService + "-" + newName + "." + pkgmetav1.NamespaceLocalK8sDNS + strconv.Itoa((pkgmetav1.GnmiServerPort))
 }
 */
+
+func startProfiling() {
+	defer profile.Start().Stop()
+	go func() {
+		http.ListenAndServe(":8000", nil)
+	}()
+}

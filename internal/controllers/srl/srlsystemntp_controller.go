@@ -42,6 +42,8 @@ import (
 	"github.com/yndd/nddp-system/pkg/gvkresource"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	corev1 "k8s.io/api/core/v1"
+	"k8s.io/apimachinery/pkg/types"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/controller"
@@ -209,12 +211,14 @@ func (v *validatorSystemNtp) ValidateLeafRef(ctx context.Context, mg resource.Ma
 
 	leafRefs := v.deviceSchema.GetLeafRefsLocal(true, rootPath[0], &gnmi.Path{}, make([]*leafref.LeafRef, 0))
 	//log.Debug("Validate leafRefs ...", "Path", yparser.GnmiPath2XPath(rootPath[0], false), "leafRefs", leafRefs)
-	for _, leafRef := range leafRefs {
-		log.Debug("Validate leafRefs ...",
-			"rootPath", yparser.GnmiPath2XPath(rootPath[0], true),
-			"localPath", yparser.GnmiPath2XPath(leafRef.LocalPath, true),
-			"RemotePath", yparser.GnmiPath2XPath(leafRef.RemotePath, true))
-	}
+	/*
+		for _, leafRef := range leafRefs{
+			log.Debug("Validate leafRefs ...",
+				"rootPath", yparser.GnmiPath2XPath(rootPath[0], true),
+				"localPath", yparser.GnmiPath2XPath(leafRef.LocalPath, true),
+				"RemotePath", yparser.GnmiPath2XPath(leafRef.RemotePath, true))
+		}
+	*/
 
 	// For local external leafref validation we need to supply the external
 	// data to validate the remote leafref, we use x2 for this
@@ -242,15 +246,17 @@ func (v *validatorSystemNtp) ValidateLeafRef(ctx context.Context, mg resource.Ma
 			Success:          false,
 			ResolvedLeafRefs: resultValidation}, nil
 	}
-	for _, r := range resultValidation {
-		log.Debug("ValidateLeafRef success",
-			"localPath", yparser.GnmiPath2XPath(r.LeafRef.LocalPath, true),
-			"RemotePath", yparser.GnmiPath2XPath(r.LeafRef.RemotePath, true),
-			"Resolved", r.Resolved,
-			"External", r.External,
-			"Value", r.Value,
-		)
-	}
+	/*
+		for _, r := range resultValidation {
+			log.Debug("ValidateLeafRef success",
+				"localPath", yparser.GnmiPath2XPath(r.LeafRef.LocalPath, true),
+				"RemotePath", yparser.GnmiPath2XPath(r.LeafRef.RemotePath, true),
+				"Resolved", r.Resolved,
+				"External", r.External,
+				"Value", r.Value,
+			)
+		}
+	*/
 	return managed.ValidateLeafRefObservation{
 		Success:          true,
 		ResolvedLeafRefs: resultValidation}, nil
@@ -281,11 +287,12 @@ func (v *validatorSystemNtp) ValidateParentDependency(ctx context.Context, mg re
 	}
 	if !success {
 		log.Debug("ValidateParentDependency failed", "resultParentValidation", resultValidation)
+		log.Debug("Latest Config", "data", x1)
 		return managed.ValidateParentDependencyObservation{
 			Success:          false,
 			ResolvedLeafRefs: resultValidation}, nil
 	}
-	log.Debug("ValidateParentDependency success", "resultParentValidation", resultValidation)
+	//log.Debug("ValidateParentDependency success", "resultParentValidation", resultValidation)
 	return managed.ValidateParentDependencyObservation{
 		Success:          true,
 		ResolvedLeafRefs: resultValidation}, nil
@@ -307,7 +314,7 @@ func (v *validatorSystemNtp) ValidateResourceIndexes(ctx context.Context, mg res
 		return managed.ValidateResourceIndexesObservation{Changed: true, ResourceDeletes: deletPaths, ResourceIndexes: newResourceIndex}, nil
 	}
 
-	log.Debug("ValidateResourceIndexes success", "indexes", newResourceIndex)
+	//log.Debug("ValidateResourceIndexes success", "indexes", newResourceIndex)
 	return managed.ValidateResourceIndexesObservation{Changed: false, ResourceIndexes: newResourceIndex}, nil
 }
 
@@ -331,6 +338,25 @@ type connectorSystemNtp struct {
 func (c *connectorSystemNtp) Connect(ctx context.Context, mg resource.Managed) (managed.ExternalClient, error) {
 	log := c.log.WithValues("resource", mg.GetName())
 	log.Debug("Connect")
+
+	cr, ok := mg.(*srlv1alpha1.SrlSystemNtp)
+	if !ok {
+		return nil, errors.New(errUnexpectedSystemNtp)
+	}
+	if err := c.usage.Track(ctx, mg); err != nil {
+		return nil, errors.Wrap(err, errTrackTCUsage)
+	}
+
+	// find network node that is configured status
+	nn := &ndrv1.NetworkNode{}
+	if err := c.kube.Get(ctx, types.NamespacedName{Name: cr.GetNetworkNodeReference().Name}, nn); err != nil {
+		return nil, errors.Wrap(err, errGetNetworkNode)
+	}
+
+	if nn.GetCondition(ndrv1.ConditionKindDeviceDriverConfigured).Status != corev1.ConditionTrue {
+		return nil, errors.New(targetNotConfigured)
+	}
+
 	cfg := &gnmitypes.TargetConfig{
 		Name:       "dummy",
 		Address:    c.gnmiAddress,
@@ -350,7 +376,7 @@ func (c *connectorSystemNtp) Connect(ctx context.Context, mg resource.Managed) (
 		return nil, errors.Wrap(err, errNewClient)
 	}
 
-	tns := []string{"localGNMIServer"}
+	tns := []string{nn.GetName()}
 
 	return &externalSystemNtp{client: cl, targets: tns, log: log, deviceSchema: c.deviceSchema, nddpSchema: c.nddpSchema, y: c.y}, nil
 }
@@ -366,6 +392,10 @@ type externalSystemNtp struct {
 	y            yresource.Handler
 }
 
+func (e *externalSystemNtp) Close() {
+	e.client.Close()
+}
+
 func (e *externalSystemNtp) Observe(ctx context.Context, mg resource.Managed) (managed.ExternalObservation, error) {
 	log := e.log.WithValues("Resource", mg.GetName())
 	log.Debug("Observing ...")
@@ -378,7 +408,7 @@ func (e *externalSystemNtp) Observe(ctx context.Context, mg resource.Managed) (m
 	// rootpath of the resource
 	rootPath := e.y.GetRootPath(cr)
 	hierElements := e.deviceSchema.GetHierarchicalResourcesLocal(true, rootPath[0], &gnmi.Path{}, make([]*gnmi.Path, 0))
-	log.Debug("Observing hierElements ...", "Path", yparser.GnmiPath2XPath(rootPath[0], false), "hierElements", hierElements)
+	//log.Debug("Observing hierElements ...", "Path", yparser.GnmiPath2XPath(rootPath[0], false), "hierElements", hierElements)
 
 	gvkName := gvkresource.GetGvkName(mg)
 
@@ -413,13 +443,13 @@ func (e *externalSystemNtp) Observe(ctx context.Context, mg resource.Managed) (m
 			case codes.NotFound:
 				// the k8s resource does not exists but the data can still exist
 				// if data exists it means we go from UMR -> MR
-				log.Debug("observing when using gnmic: resource does not exist")
+				//log.Debug("observing when using gnmic: resource does not exist")
 				exists = false
 			case codes.FailedPrecondition:
 				// the k8s resource exists but is in failed status, compare the response spec with current spec
 				// if the specs are equal return observation.ResponseSuccess -> False
 				// if the specs are not equal follow the regular procedure
-				log.Debug("observing when using gnmic: resource failed")
+				//log.Debug("observing when using gnmic: resource failed")
 				failedObserve, err := processObserve(rootPath[0], hierElements, &cr.Spec, resp, e.deviceSchema)
 				if err != nil {
 					return managed.ExternalObservation{}, err
@@ -458,10 +488,10 @@ func (e *externalSystemNtp) Observe(ctx context.Context, mg resource.Managed) (m
 					ResourceUpToDate: false,
 				}, nil
 			case strings.Contains(err.Error(), "NotFound"):
-				log.Debug("observing: resource does not exist")
+				//log.Debug("observing: resource does not exist")
 				exists = false
 			case strings.Contains(err.Error(), "Failed"):
-				log.Debug("observing: resource failed")
+				//log.Debug("observing: resource failed")
 				// the k8s resource exists but is in failed status, compare the response spec with current spec
 				// if the specs are equal return observation.ResponseSuccess -> False
 				// if the specs are not equal follow the regular procedure
@@ -504,14 +534,14 @@ func (e *externalSystemNtp) Observe(ctx context.Context, mg resource.Managed) (m
 	// 5. transform the data in gnmi to process the delta
 	// 6. find the resource delta: updates and/or deletes in gnmi
 	//exists, deletes, updates, b, err := processObserve(rootPath[0], hierElements, &cr.Spec, resp, e.deviceSchema)
-	e.log.Debug("processObserve", "notification", resp.GetNotification())
+	//e.log.Debug("processObserve", "notification", resp.GetNotification())
 	observe, err := processObserve(rootPath[0], hierElements, &cr.Spec, resp, e.deviceSchema)
 	if err != nil {
 		return managed.ExternalObservation{}, err
 	}
 	if !observe.hasData {
 		// No Data exists -> Create it or Delete is complete
-		log.Debug("Observing Response:", "observe", observe, "exists", exists, "Response", resp)
+		//log.Debug("Observing Response:", "observe", observe, "exists", exists, "Response", resp)
 		return managed.ExternalObservation{
 			Ready:            true,
 			ResourceExists:   exists,
@@ -536,7 +566,7 @@ func (e *externalSystemNtp) Observe(ctx context.Context, mg resource.Managed) (m
 		}, nil
 	}
 	// resource is up to date
-	log.Debug("Observing Response: resource up to date", "Observe", observe, "Response", resp)
+	//log.Debug("Observing Response: resource up to date", "Observe", observe, "Response", resp)
 	return managed.ExternalObservation{
 		Ready:            true,
 		ResourceExists:   exists,
@@ -566,14 +596,16 @@ func (e *externalSystemNtp) Create(ctx context.Context, mg resource.Managed) err
 	if err != nil {
 		return errors.Wrap(err, errCreateObject)
 	}
-	for _, update := range updates {
-		log.Debug("Create Fine Grane Updates", "Path", yparser.GnmiPath2XPath(update.Path, true), "Value", update.GetVal())
-	}
+	/*
+		for _, update := range updates {
+			log.Debug("Create Fine Grane Updates", "Path", yparser.GnmiPath2XPath(update.Path, true), "Value", update.GetVal())
+		}
 
-	if len(updates) == 0 {
-		log.Debug("cannot create object since there are no updates present")
-		return errors.Wrap(err, errCreateObject)
-	}
+		if len(updates) == 0 {
+			log.Debug("cannot create object since there are no updates present")
+			return errors.Wrap(err, errCreateObject)
+		}
+	*/
 
 	crSystemDeviceName := shared.GetCrSystemDeviceName(shared.GetCrDeviceName(mg.GetNamespace(), mg.GetNetworkNodeReference().Name))
 
@@ -606,9 +638,11 @@ func (e *externalSystemNtp) Update(ctx context.Context, mg resource.Managed, obs
 	if err != nil {
 		return errors.Wrap(err, errUpdateInterfaceSubinterface)
 	}
-	for _, update := range updates {
-		log.Debug("Update Fine Grane Updates", "Path", yparser.GnmiPath2XPath(update.Path, true), "Value", update.GetVal())
-	}
+	/*
+		for _, update := range updates {
+			log.Debug("Update Fine Grane Updates", "Path", yparser.GnmiPath2XPath(update.Path, true), "Value", update.GetVal())
+		}
+	*/
 
 	crSystemDeviceName := shared.GetCrSystemDeviceName(shared.GetCrDeviceName(mg.GetNamespace(), mg.GetNetworkNodeReference().Name))
 
@@ -636,9 +670,11 @@ func (e *externalSystemNtp) Delete(ctx context.Context, mg resource.Managed) err
 	if err != nil {
 		return errors.Wrap(err, errDeleteInterfaceSubinterface)
 	}
-	for _, update := range updates {
-		log.Debug("Delete Fine Grane Updates", "Path", yparser.GnmiPath2XPath(update.Path, true), "Value", update.GetVal())
-	}
+	/*
+		for _, update := range updates {
+			log.Debug("Delete Fine Grane Updates", "Path", yparser.GnmiPath2XPath(update.Path, true), "Value", update.GetVal())
+		}
+	*/
 
 	crSystemDeviceName := shared.GetCrSystemDeviceName(shared.GetCrDeviceName(mg.GetNamespace(), mg.GetNetworkNodeReference().Name))
 
@@ -691,12 +727,12 @@ func (e *externalSystemNtp) GetConfig(ctx context.Context, mg resource.Managed) 
 			return data, nil
 		}
 	}
-	e.log.Debug("Get Config Empty response")
+	//e.log.Debug("Get Config Empty response")
 	return nil, nil
 }
 
 func (e *externalSystemNtp) GetResourceName(ctx context.Context, mg resource.Managed, path *gnmi.Path) (string, error) {
-	e.log.Debug("Get GetResourceName ...", "remotePath", yparser.GnmiPath2XPath(path, true))
+	//e.log.Debug("Get GetResourceName ...", "remotePath", yparser.GnmiPath2XPath(path, true))
 	crSystemDeviceName := shared.GetCrSystemDeviceName(shared.GetCrDeviceName(mg.GetNamespace(), mg.GetNetworkNodeReference().Name))
 
 	// gnmi get request
@@ -731,7 +767,7 @@ func (e *externalSystemNtp) GetResourceName(ctx context.Context, mg resource.Man
 		return "", errors.Wrap(err, errJSONUnMarshal)
 	}
 
-	e.log.Debug("Get ResourceName Response", "ResourceName", resourceName)
+	e.log.Debug("Get ResourceName Response", "remotePath", yparser.GnmiPath2XPath(path, true), "ResourceName", resourceName)
 
 	return resourceName.Name, nil
 }

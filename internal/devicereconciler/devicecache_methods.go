@@ -17,19 +17,17 @@ limitations under the License.
 package devicereconciler
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
-	"time"
 
 	"github.com/google/gnxi/utils/xpath"
 	"github.com/openconfig/gnmi/proto/gnmi"
-	"github.com/pkg/errors"
 	"github.com/yndd/ndd-yang/pkg/yparser"
 	"github.com/yndd/nddp-srl/internal/shared"
 	systemv1alpha1 "github.com/yndd/nddp-system/apis/system/v1alpha1"
 )
 
+/*
 func (r *reconciler) deletePathsFromCache(delPaths []*gnmi.Path) error {
 	crDeviceName := shared.GetCrDeviceName(r.namespace, r.target.Config.Name)
 
@@ -44,7 +42,9 @@ func (r *reconciler) deletePathsFromCache(delPaths []*gnmi.Path) error {
 	}
 	return nil
 }
+*/
 
+/*
 func (r *reconciler) copyRunning2Candidate() error {
 	crDeviceName := shared.GetCrDeviceName(r.namespace, r.target.Config.Name)
 	crCandidateDeviceName := shared.GetCrCandidateDeviceName(crDeviceName)
@@ -68,7 +68,8 @@ func (r *reconciler) copyRunning2Candidate() error {
 	}
 	return nil
 }
-
+*/
+/*
 func (r *reconciler) copyCandidate2Running() error {
 	crDeviceName := shared.GetCrDeviceName(r.namespace, r.target.Config.Name)
 	crCandidateDeviceName := shared.GetCrCandidateDeviceName(crDeviceName)
@@ -87,18 +88,19 @@ func (r *reconciler) copyCandidate2Running() error {
 			Prefix:    &gnmi.Path{Target: crDeviceName},
 			Update:    n.GetUpdate(),
 		}
-		/*
-			for _, u := range newNotification.GetUpdate() {
-				r.log.Debug("copyCandidate2Running", "path", yparser.GnmiPath2XPath(u.GetPath(), true), "val", u.GetVal())
-			}
-		*/
+
+		//	for _, u := range newNotification.GetUpdate() {
+		//		r.log.Debug("copyCandidate2Running", "path", yparser.GnmiPath2XPath(u.GetPath(), true), "val", u.GetVal())
+		//	}
+
 		if err := r.cache.GnmiUpdate(crDeviceName, newNotification); err != nil {
 			return err
 		}
 	}
 	return nil
 }
-
+*/
+/*
 func (r *reconciler) updateCandidate(resource *systemv1alpha1.Gvk) error {
 	crDeviceName := shared.GetCrDeviceName(r.namespace, r.target.Config.Name)
 	crSystemDeviceName := shared.GetCrSystemDeviceName(crDeviceName)
@@ -134,12 +136,12 @@ func (r *reconciler) updateCandidate(resource *systemv1alpha1.Gvk) error {
 				Prefix:    &gnmi.Path{Target: crCandidateDeviceName},
 				Update:    []*gnmi.Update{update},
 			}
-			/*
-				r.log.Debug("updateCandidate notification",
-					"path", yparser.GnmiPath2XPath(newNotification.GetUpdate()[0].GetPath(), true),
-					"val", newNotification.GetUpdate()[0].GetVal(),
-				)
-			*/
+
+			//	r.log.Debug("updateCandidate notification",
+			//		"path", yparser.GnmiPath2XPath(newNotification.GetUpdate()[0].GetPath(), true),
+			//		"val", newNotification.GetUpdate()[0].GetVal(),
+			//	)
+
 			if err := r.cache.GnmiUpdate(crCandidateDeviceName, newNotification); err != nil {
 				return errors.Wrap(err, "cache update failed")
 			}
@@ -147,7 +149,9 @@ func (r *reconciler) updateCandidate(resource *systemv1alpha1.Gvk) error {
 	}
 	return nil
 }
+*/
 
+/*
 func (r *reconciler) getCandidateUpdate() ([]*gnmi.Update, bool, error) {
 	crDeviceName := shared.GetCrDeviceName(r.namespace, r.target.Config.Name)
 	crCandidateDeviceName := shared.GetCrCandidateDeviceName(crDeviceName)
@@ -160,9 +164,9 @@ func (r *reconciler) getCandidateUpdate() ([]*gnmi.Update, bool, error) {
 		return nil, false, err
 	}
 
-	/*
-		r.log.Debug("getCandidateUpdate", "config", candidatecacheData)
-	*/
+
+	//	r.log.Debug("getCandidateUpdate", "config", candidatecacheData)
+
 
 	d, err := json.Marshal(candidatecacheData)
 	if err != nil {
@@ -184,7 +188,8 @@ func (r *reconciler) getCandidateUpdate() ([]*gnmi.Update, bool, error) {
 
 	return updates, true, nil
 }
-
+*/
+/*
 func (r *reconciler) getCandidateConfig() (interface{}, error) {
 	crDeviceName := shared.GetCrDeviceName(r.namespace, r.target.Config.Name)
 	crCandidateDeviceName := shared.GetCrCandidateDeviceName(crDeviceName)
@@ -199,7 +204,8 @@ func (r *reconciler) getCandidateConfig() (interface{}, error) {
 
 	return candidatecacheData, nil
 }
-
+*/
+/*
 func (r *reconciler) initializeCandidateCache() {
 	crDeviceName := shared.GetCrDeviceName(r.namespace, r.target.Config.Name)
 	crCandidateDeviceName := shared.GetCrCandidateDeviceName(crDeviceName)
@@ -209,6 +215,7 @@ func (r *reconciler) initializeCandidateCache() {
 	}
 	r.cache.GetCache().Add(crCandidateDeviceName)
 }
+*/
 
 func (r *reconciler) getSpecdata(resource *systemv1alpha1.Gvk) (interface{}, error) {
 	crDeviceName := shared.GetCrDeviceName(r.namespace, r.target.Config.Name)
@@ -240,7 +247,7 @@ func (r *reconciler) getSpecdata(resource *systemv1alpha1.Gvk) (interface{}, err
 }
 
 func getDataFromRootPath(path *gnmi.Path, x1 interface{}) interface{} {
-	fmt.Printf("getDataFromRootPath: %s, data: %v\n", yparser.GnmiPath2XPath(path, true), x1)
+	//fmt.Printf("getDataFromRootPath: %s, data: %v\n", yparser.GnmiPath2XPath(path, true), x1)
 	p := yparser.DeepCopyGnmiPath(path)
 	if len(p.GetElem()) > 0 {
 		hasKey := false
@@ -342,7 +349,6 @@ func (r *reconciler) processUpdates(resource *systemv1alpha1.Gvk) ([]*gnmi.Path,
 	if err != nil {
 		return nil, nil, err
 	}
-	fmt.Printf("processUpdates x2 data %v\n", x2)
 
 	// remove hierarchical elements
 	hierPaths := r.deviceSchema.GetHierarchicalResourcesLocal(true, rootPath, &gnmi.Path{}, make([]*gnmi.Path, 0))
@@ -354,6 +360,7 @@ func (r *reconciler) processUpdates(resource *systemv1alpha1.Gvk) ([]*gnmi.Path,
 			x2 = removeHierarchicalResourceData(x, hierPath)
 		}
 	}
+	fmt.Printf("processUpdates x2 data %v\n", x2)
 
 	updatesx1, err := yparser.GetUpdatesFromJSON(rootPath, x1, r.deviceSchema)
 	if err != nil {

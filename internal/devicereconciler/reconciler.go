@@ -18,7 +18,6 @@ package devicereconciler
 
 import (
 	"context"
-	"fmt"
 	"sort"
 	"strings"
 	"time"
@@ -221,12 +220,14 @@ func (r *reconciler) Reconcile(ctx context.Context) error {
 				return err
 			}
 			// debug
-			for _, d := range deletes {
-				log.Debug("Update deletes", "delPath", yparser.GnmiPath2XPath(d, true))
-			}
-			for _, u := range updates {
-				log.Debug("Update updates", "updPath", yparser.GnmiPath2XPath(u.GetPath(), true), "val", u.GetVal())
-			}
+			/*
+				for _, d := range deletes {
+					log.Debug("Update deletes", "delPath", yparser.GnmiPath2XPath(d, true))
+				}
+				for _, u := range updates {
+					log.Debug("Update updates", "updPath", yparser.GnmiPath2XPath(u.GetPath(), true), "val", u.GetVal())
+				}
+			*/
 
 			// execute the deletes and updates in the cache and to the device
 			_, err = r.device.SetGnmi(r.ctx, updates, deletes)
@@ -268,7 +269,7 @@ func (r *reconciler) Reconcile(ctx context.Context) error {
 	// we use the chnage notification to update the cache
 	murder := false
 	for _, delPath := range delPaths {
-		log.Debug("Delete", "Path", delPath)
+		//log.Debug("Delete", "Path", delPath)
 		if delPath == nil {
 			murder = true
 		}
@@ -286,7 +287,7 @@ func (r *reconciler) Reconcile(ctx context.Context) error {
 				}
 			}
 		} else {
-			log.Debug("gnmi delete success", "Paths", delPaths)
+			//log.Debug("gnmi delete success", "Paths", delPaths)
 
 			// delete resources from the system cache
 			for _, resource := range delResources {
@@ -321,13 +322,16 @@ func (r *reconciler) Reconcile(ctx context.Context) error {
 
 	if len(updates) > 0 {
 		// debug
-		for _, upd := range updates {
-			fmt.Printf("Updates: path: %s, data: %v\n", yparser.GnmiPath2XPath(upd.GetPath(), true), upd.GetVal())
-		}
+		/*
+			for _, upd := range updates {
+				fmt.Printf("Updates: path: %s, data: %v\n", yparser.GnmiPath2XPath(upd.GetPath(), true), upd.GetVal())
+			}
+		*/
 		// retrieve the config that will be applied to the device
 		if _, err := r.device.UpdateGnmi(ctx, updates); err != nil {
-			log.Debug("gnmi update failed", "Paths", updates, "Error", err)
-
+			for _, upd := range updates {
+				log.Debug("gnmi update failed", "Path", yparser.GnmiPath2XPath(upd.GetPath(), true), "Val", upd.GetVal(), "Error", err)
+			}
 			// set resource status to failed
 			for _, resource := range updResources {
 				if err := r.updateResourceStatus(*resource.Name, systemv1alpha1.E_GvkStatus_Failed); err != nil {

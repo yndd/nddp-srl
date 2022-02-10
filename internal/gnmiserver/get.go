@@ -19,7 +19,6 @@ package gnmiserver
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"strings"
 	"time"
 
@@ -42,11 +41,16 @@ func (s *server) Get(ctx context.Context, req *gnmi.GetRequest) (*gnmi.GetRespon
 	}
 	defer s.unaryRPCsem.Release(1)
 
+	prefix := req.GetPrefix()
+	target := ""
+	if prefix != nil {
+		target = prefix.Target
+	}
 	log := s.log.WithValues("Type", req.GetType())
 	if req.GetPath() != nil {
-		log.Debug("Get...", "Path", yparser.GnmiPath2XPath(req.GetPath()[0], true))
+		log.Debug("Get...", "Target", target, "Path", yparser.GnmiPath2XPath(req.GetPath()[0], true))
 	} else {
-		log.Debug("Get...")
+		log.Debug("Get...", "Target", target)
 	}
 
 	// We dont act upon the error here, but we pass it on the response with updates
@@ -63,7 +67,6 @@ func (s *server) Get(ctx context.Context, req *gnmi.GetRequest) (*gnmi.GetRespon
 }
 
 func (s *server) HandleGet(req *gnmi.GetRequest) ([]*gnmi.Update, error) {
-
 	//var err error
 	updates := make([]*gnmi.Update, 0)
 
@@ -206,7 +209,7 @@ func (s *server) getResourceName(crSystemDeviceName string, reqpath *gnmi.Path) 
 		}
 
 	}
-	s.log.Debug("K8sResource GetResourceName Match", "ResourceName", matchedResourceName)
+	//s.log.Debug("K8sResource GetResourceName Match", "ResourceName", matchedResourceName)
 
 	d, err := json.Marshal(nddv1.ResourceName{
 		Name: matchedResourceName,
@@ -250,7 +253,7 @@ func (s *server) getSpecdata(crSystemDeviceName string, resource *systemv1alpha1
 }
 
 func getDataFromRootPath(path *gnmi.Path, x1 interface{}) interface{} {
-	fmt.Printf("gnmiserver getDataFromRootPath: %s, data: %v\n", yparser.GnmiPath2XPath(path, true), x1)
+	//fmt.Printf("gnmiserver getDataFromRootPath: %s, data: %v\n", yparser.GnmiPath2XPath(path, true), x1)
 	p := yparser.DeepCopyGnmiPath(path)
 	if len(p.GetElem()) > 0 {
 		hasKey := false

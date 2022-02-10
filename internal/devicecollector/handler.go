@@ -53,7 +53,7 @@ func (c *collector) handleSubscription(resp *gnmi.SubscribeResponse) error {
 		c.handleUpdates(crDeviceName, resourceList, resp.GetUpdate().Update)
 
 	case *gnmi.SubscribeResponse_SyncResponse:
-		log.Debug("SyncResponse")
+		//log.Debug("SyncResponse")
 	}
 
 	return nil
@@ -73,7 +73,7 @@ func (c *collector) handleDeletes(crDeviceName string, resourceList []*systemv1a
 		}
 
 		// if a default is enabled on the path we should revert to default
-		def := c.deviceSchema.GetDefault(path)
+		def := c.deviceSchema.GetPathDefault(path)
 		var n *gnmi.Notification
 		c.log.Debug("collector config delete", "path", xpath, "default", def)
 		if def != "" {
@@ -169,7 +169,7 @@ func (c *collector) handleUpdates(crDeviceName string, resourceList []*systemv1a
 				if err != nil {
 					return err
 				}
-				fmt.Printf("string cleaned: %s\n", string(b))
+				//fmt.Printf("string cleaned: %s\n", string(b))
 				upd.Val = &gnmi.TypedValue{
 					Value: &gnmi.TypedValue_JsonIetfVal{
 						JsonIetfVal: bytes.Trim(b, " \r\n\t"),
@@ -178,17 +178,20 @@ func (c *collector) handleUpdates(crDeviceName string, resourceList []*systemv1a
 			case string:
 				// for string values there can be also a header in the values e.g. type, Value: srl_nokia-network-instance:ip-vrf
 				if !strings.Contains(vv, "::") {
-					fmt.Printf("string to be cleaned: %s\n", vv)
-					vv = strings.Split(vv, ":")[len(strings.Split(vv, ":"))-1]
-					b, err := json.Marshal(vv)
-					if err != nil {
-						return err
-					}
-					fmt.Printf("string cleaned: %s\n", string(b))
-					upd.Val = &gnmi.TypedValue{
-						Value: &gnmi.TypedValue_JsonIetfVal{
-							JsonIetfVal: bytes.Trim(b, " \r\n\t"),
-						},
+					// if there are more ":" in the string it is likely an esi or mac address
+					if len(strings.Split(vv, ":")) <= 2 {
+						//fmt.Printf("string to be cleaned: %s\n", vv)
+						vv = strings.Split(vv, ":")[len(strings.Split(vv, ":"))-1]
+						b, err := json.Marshal(vv)
+						if err != nil {
+							return err
+						}
+						//fmt.Printf("string cleaned: %s\n", string(b))
+						upd.Val = &gnmi.TypedValue{
+							Value: &gnmi.TypedValue_JsonIetfVal{
+								JsonIetfVal: bytes.Trim(b, " \r\n\t"),
+							},
+						}
 					}
 				}
 			}
@@ -206,19 +209,58 @@ func (c *collector) handleUpdates(crDeviceName string, resourceList []*systemv1a
 		if err != nil {
 			return err
 		}
-		for _, u := range n.GetUpdate() {
-			c.log.Debug("collector config update", "path", yparser.GnmiPath2XPath(u.GetPath(), true), "value", u.GetVal())
+
+		// default handling
+		defaults := c.deviceSchema.GetPathDefaults(upd.GetPath())
+		for pathElemName, defValue := range defaults {
+			c.log.Debug("collector config update defaults", "pathElemName", pathElemName, "defValue", defValue, "path", yparser.GnmiPath2XPath(upd.GetPath(), true))
+
+			d, err := json.Marshal(defValue)
+			if err != nil {
+				return err
+			}
+			// if the data is empty, there is no need for an update
+			if string(d) == "null" {
+				return nil
+			}
+
+			// check if the element exists in the original notification
+			// if not we add the default, if it is there we avoid adding the default
+			found := false
+			for _, nu := range n.GetUpdate() {
+				if nu.GetPath().GetElem()[len(nu.GetPath().GetElem())-1].GetName() == pathElemName {
+					found = true
+				}
+			}
+			if !found {
+				newPath := yparser.DeepCopyGnmiPath(upd.GetPath())
+				newPath.Elem = append(newPath.GetElem(), &gnmi.PathElem{Name: pathElemName})
+				u := &gnmi.Update{
+					Path: newPath,
+					Val: &gnmi.TypedValue{
+						Value: &gnmi.TypedValue_JsonIetfVal{
+							JsonIetfVal: bytes.Trim(d, " \r\n\t"),
+						},
+					},
+				}
+				n.Update = append(n.GetUpdate(), u)
+			}
+
 		}
 
 		// update the cache with the latest config from the device
 		if err := c.cache.GnmiUpdate(crDeviceName, n); err != nil {
-			//log.Debug("handle target update", "error", err, "Path", yparser.GnmiPath2XPath(u.GetPath(), true), "Value", u.GetVal())
-			//log.Debug("handle target update", "error", err, "Notification", *n)
-			return errors.New("cache update failed")
+			for _, u := range n.GetUpdate() {
+				c.log.Debug("collector config update", "path", yparser.GnmiPath2XPath(u.GetPath(), true), "value", u.GetVal(), "error", err)
+			}
+			return errors.Wrap(err, "cache update failed")
+		}
+
+		for _, u := range n.GetUpdate() {
+			c.log.Debug("collector config update", "path", yparser.GnmiPath2XPath(u.GetPath(), true), "value", u.GetVal(), "error", err)
 		}
 
 		if *resourceName != unmanagedResource {
-			// TODO Trigger reconcile event
 			c.triggerReconcileEvent(resourceName)
 		}
 	}
@@ -264,7 +306,7 @@ func (c *collector) triggerReconcileEvent(resourceName *string) error {
 
 	object := getObject(gvk)
 
-	c.log.Debug("triggerReconcileEvent", "kindgroup", kindgroup, "gvk", gvk, "object", object)
+	//c.log.Debug("triggerReconcileEvent", "kindgroup", kindgroup, "gvk", gvk, "object", object)
 
 	if eventCh, ok := c.eventChs[kindgroup]; ok {
 		c.log.Debug("triggerReconcileEvent with channel lookup", "kindgroup", kindgroup, "gvk", gvk, "object", object)
