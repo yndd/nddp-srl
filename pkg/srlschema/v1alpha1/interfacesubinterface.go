@@ -182,7 +182,7 @@ func (x *interfacesubinterface) buildCR(mg resource.Managed, deviceName string, 
 					Name: deviceName,
 				},
 			},
-			InterfaceName: &parent0Key0,
+			InterfaceName: &x.parent.GetKey()[0],
 			//1
 			InterfaceSubinterface: x.InterfaceSubinterface,
 		},
