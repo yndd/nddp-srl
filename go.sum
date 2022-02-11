@@ -1517,8 +1517,8 @@ github.com/yndd/ndd-yang v0.1.62/go.mod h1:GT/8efIchBH1sQ6J64AM1FZDXXIaWeirkYUpb
 github.com/yndd/ndd-yang v0.1.276/go.mod h1:vcKhP5OU3oJHSEILaE0HEgZKxftcu2GFOGdS6w0TauM=
 github.com/yndd/ndd-yang v0.1.448/go.mod h1:rIFXnOALLTloxMQtqGmTq32q6V9iTVHySE4ELup7hes=
 github.com/yndd/ndd-yang v0.1.515/go.mod h1:Hi5zfUg6Atk+2kERAV5XxoopE6rqtkLH9+bHhZkjEic=
-github.com/yndd/ndd-yang v0.1.533 h1:LHXsIGEQhtSdLhxs8VgIw5rP/LAVRpBYm3oAmycLu5I=
-github.com/yndd/ndd-yang v0.1.533/go.mod h1:Hi5zfUg6Atk+2kERAV5XxoopE6rqtkLH9+bHhZkjEic=
+github.com/yndd/ndd-yang v0.1.534 h1:UusaJH/sxyCrNml1ZxIx8mnF6w2mioIoMDRl11KkMR0=
+github.com/yndd/ndd-yang v0.1.534/go.mod h1:Hi5zfUg6Atk+2kERAV5XxoopE6rqtkLH9+bHhZkjEic=
 github.com/yndd/ndda-network v0.0.6/go.mod h1:xTLmLhhuUvMwQ5wcRvVCsymcq9PDK98RoXDf+X3rC2I=
 github.com/yndd/ndda-network v0.0.9/go.mod h1:xTLmLhhuUvMwQ5wcRvVCsymcq9PDK98RoXDf+X3rC2I=
 github.com/yndd/ndda-network v0.0.10/go.mod h1:xTLmLhhuUvMwQ5wcRvVCsymcq9PDK98RoXDf+X3rC2I=

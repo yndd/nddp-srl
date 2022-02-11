@@ -117,13 +117,17 @@ func (x *selectedNodeItfces) GetNodeItfcesByNodeItfceSelector(nodeItfceSelectors
 			}
 			if strings.Contains(itfceInfo.ItfceName, "int") {
 				itfceName = strings.ReplaceAll(itfceInfo.ItfceName, "int", "ethernet")
+				split := strings.Split(itfceName, "/")
+				if len(split) > 2 {
+					itfceName = "ethernet-" + split[len(split)-2] + "/" + split[len(split)-1]
+				}
 			}
 
 			// avoid selecting lag members
 			if !(nddaItfce.GetInterfaceEthernet() != nil && nddaItfce.GetInterfaceEthernet().Aggregateid != nil) {
 				if deviceName == nddaItfce.GetDeviceName() &&
 					itfceName == nddaItfce.GetInterfaceName() {
-					fmt.Printf("getNodeItfcesByNodeItfceSelector: nodename: %s, itfcename: %s, lagmember: %v, nodename: %s\n", nddaItfce.GetDeviceName(), nddaItfce.GetInterfaceName(), nddaItfce.GetInterfaceLag(), deviceName)
+					fmt.Printf("getNodeItfcesByNodeItfceSelector selected: nodename: %s, itfcename: %s, lagmember: %v, nodename: %s\n", nddaItfce.GetDeviceName(), nddaItfce.GetInterfaceName(), nddaItfce.GetInterfaceLag(), deviceName)
 					x.addNodeItfce(nddaItfce.GetDeviceName(), nddaItfce.GetInterfaceName(), itfceinfo.NewItfceInfo(
 						itfceinfo.WithInnerVlanId(itfceInfo.InnerVlanId),
 						itfceinfo.WithOuterVlanId(itfceInfo.OuterVlanId),

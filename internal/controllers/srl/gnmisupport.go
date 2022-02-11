@@ -125,47 +125,54 @@ func processObserve(rootPath *gnmi.Path, hierPaths []*gnmi.Path, specData interf
 	// returns the deletes and updates that need to be performed to bring the spec object back to the desired state
 	deletes, updates, err := yparser.FindResourceDelta(updatesx1, updatesx2)
 	// check for defaults:
-	delta := false
+	delta := false // means all ok
 	for _, u := range updates {
-		defVal := deviceSchema.GetPathDefault(u.GetPath())
-
-		v, err := yparser.GetValue(u.GetVal())
+		delta, err = validateDefaults(u, rootPath, x2, deviceSchema)
 		if err != nil {
 			return nil, err
 		}
-		var updVal string
-		switch val := v.(type) {
-		case bool:
-			updVal = strconv.FormatBool(val)
-		case uint32:
-			updVal = strconv.Itoa(int(val))
-		case uint8:
-			updVal = strconv.Itoa(int(val))
-		case uint16:
-			updVal = strconv.Itoa(int(val))
-		case float64, float32:
-			updVal = fmt.Sprintf("%.0f", val)
-		case string:
-			updVal = val
-		case map[string]interface{}:
-			delta = true
-		case []interface{}:
-			delta = true
-		}
-		fmt.Printf("processObserve delta check: %v, default: %s, update value: %v, path:%s\n", v, defVal, updVal, yparser.GnmiPath2XPath(u.GetPath(), true))
+		/*
+			defVal := deviceSchema.GetPathDefault(u.GetPath())
 
-		// only perform the check on defaults if the data does not exist
-		if !dataExists(u.GetPath().GetElem()[len(rootPath.GetElem()):], x2) {
-			if defVal != "" && updVal != defVal {
-				delta = true
-				fmt.Printf("processObserve default check: path %s, deviceschema default: %s, update value: %v\n",
-					yparser.GnmiPath2XPath(u.GetPath(), true),
-					defVal,
-					updVal)
+			v, err := yparser.GetValue(u.GetVal())
+			if err != nil {
+				return nil, err
 			}
-		} else {
-			delta = true
-		}
+
+			var updVal string
+			switch val := v.(type) {
+			case bool:
+				updVal = strconv.FormatBool(val)
+			case uint32:
+				updVal = strconv.Itoa(int(val))
+			case uint8:
+				updVal = strconv.Itoa(int(val))
+			case uint16:
+				updVal = strconv.Itoa(int(val))
+			case float64, float32:
+				updVal = fmt.Sprintf("%.0f", val)
+			case string:
+				updVal = val
+			case map[string]interface{}:
+				delta = true
+			case []interface{}:
+				delta = true
+			}
+			fmt.Printf("processObserve delta check: %v, default: %s, update value: %v, path:%s\n", v, defVal, updVal, yparser.GnmiPath2XPath(u.GetPath(), true))
+
+			// only perform the check on defaults if the data does not exist
+			if !dataExists(u.GetPath().GetElem()[len(rootPath.GetElem()):], x2) {
+				if defVal != "" && updVal != defVal {
+					delta = true
+					fmt.Printf("processObserve default check: path %s, deviceschema default: %s, update value: %v\n",
+						yparser.GnmiPath2XPath(u.GetPath(), true),
+						defVal,
+						updVal)
+				}
+			} else {
+				delta = true
+			}
+		*/
 
 	}
 
@@ -179,6 +186,65 @@ func processObserve(rootPath *gnmi.Path, hierPaths []*gnmi.Path, specData interf
 		//updates: updates,
 		//data:    b,
 	}, err
+}
+
+func validateDefaults(u *gnmi.Update, rootPath *gnmi.Path, x2 interface{}, deviceSchema *yentry.Entry) (bool, error) {
+	v, err := yparser.GetValue(u.GetVal())
+	if err != nil {
+		return false, err
+	}
+
+	// check if the value contains a map, if so validate the defaults per element in the map
+	delta := false
+	switch val := v.(type) {
+	case map[string]interface{}:
+		for k, vv := range val {
+			path := yparser.DeepCopyGnmiPath(u.GetPath())
+			path.Elem = append(path.GetElem(), &gnmi.PathElem{Name: k})
+			delta := validateDefault(path, rootPath, vv, x2, deviceSchema)
+			if delta { // if we find a diff we can already return
+				return delta, nil
+			}
+		}
+	default:
+		delta = validateDefault(u.GetPath(), rootPath, v, x2, deviceSchema)
+	}
+	return delta, nil
+}
+
+func validateDefault(p, rootPath *gnmi.Path, v, x2 interface{}, deviceSchema *yentry.Entry) bool {
+	defVal := deviceSchema.GetPathDefault(p)
+	var updVal string
+	switch val := v.(type) {
+	case bool:
+		updVal = strconv.FormatBool(val)
+	case uint32:
+		updVal = strconv.Itoa(int(val))
+	case uint8:
+		updVal = strconv.Itoa(int(val))
+	case uint16:
+		updVal = strconv.Itoa(int(val))
+	case float64, float32:
+		updVal = fmt.Sprintf("%.0f", val)
+	case string:
+		updVal = val
+	}
+	fmt.Printf("processObserve delta check: %v, default: %s, update value: %v, path:%s\n", v, defVal, updVal, yparser.GnmiPath2XPath(p, true))
+
+	delta := false // means all ok
+	// only perform the check on defaults if the data does not exist
+	if !dataExists(p.GetElem()[len(rootPath.GetElem()):], x2) {
+		if defVal != "" && updVal != defVal {
+			delta = true
+			fmt.Printf("processObserve default check: path %s, deviceschema default: %s, update value: %v\n",
+				yparser.GnmiPath2XPath(p, true),
+				defVal,
+				updVal)
+		}
+	} else {
+		delta = true
+	}
+	return delta
 }
 
 // given the updates are per container i dont expect we would ever come here
