@@ -1402,6 +1402,66 @@ func (mg *SrlSystemNtp) SetTarget(t []string) {
 	mg.Status.Target = t
 }
 
+// GetActive of this SrlTransaction.
+func (mg *SrlTransaction) GetActive() bool {
+	return mg.Spec.Active
+}
+
+// GetDeletionPolicy of this SrlTransaction.
+func (mg *SrlTransaction) GetDeletionPolicy() nddv1.DeletionPolicy {
+	return mg.Spec.DeletionPolicy
+}
+
+// GetExternalLeafRefs of this SrlTransaction.
+func (mg *SrlTransaction) GetExternalLeafRefs() []string {
+	return mg.Status.ExternalLeafRefs
+}
+
+// GetNetworkNodeReference of this SrlTransaction.
+func (mg *SrlTransaction) GetNetworkNodeReference() *nddv1.Reference {
+	return mg.Spec.NetworkNodeReference
+}
+
+// GetResourceIndexes of this SrlTransaction.
+func (mg *SrlTransaction) GetResourceIndexes() map[string]string {
+	return mg.Status.ResourceIndexes
+}
+
+// GetTarget of this SrlTransaction.
+func (mg *SrlTransaction) GetTarget() []string {
+	return mg.Status.Target
+}
+
+// SetActive of this SrlTransaction.
+func (mg *SrlTransaction) SetActive(b bool) {
+	mg.Spec.Active = b
+}
+
+// SetDeletionPolicy of this SrlTransaction.
+func (mg *SrlTransaction) SetDeletionPolicy(r nddv1.DeletionPolicy) {
+	mg.Spec.DeletionPolicy = r
+}
+
+// SetExternalLeafRefs of this SrlTransaction.
+func (mg *SrlTransaction) SetExternalLeafRefs(n []string) {
+	mg.Status.ExternalLeafRefs = n
+}
+
+// SetNetworkNodeReference of this SrlTransaction.
+func (mg *SrlTransaction) SetNetworkNodeReference(r *nddv1.Reference) {
+	mg.Spec.NetworkNodeReference = r
+}
+
+// SetResourceIndexes of this SrlTransaction.
+func (mg *SrlTransaction) SetResourceIndexes(n map[string]string) {
+	mg.Status.ResourceIndexes = n
+}
+
+// SetTarget of this SrlTransaction.
+func (mg *SrlTransaction) SetTarget(t []string) {
+	mg.Status.Target = t
+}
+
 // GetActive of this SrlTunnelinterface.
 func (mg *SrlTunnelinterface) GetActive() bool {
 	return mg.Spec.Active

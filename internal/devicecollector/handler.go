@@ -271,11 +271,11 @@ func (c *collector) findManagedResource(xpath string, resourceList []*systemv1al
 	matchedResourceName := unmanagedResource
 	matchedResourcePath := ""
 	for _, r := range resourceList {
-		if strings.Contains(xpath, *r.Rootpath) {
+		if strings.Contains(xpath, r.Rootpath) {
 			// if there is a better match we use the better match
-			if len(*r.Rootpath) > len(matchedResourcePath) {
-				matchedResourcePath = *r.Rootpath
-				matchedResourceName = *r.Name
+			if len(r.Rootpath) > len(matchedResourcePath) {
+				matchedResourcePath = r.Rootpath
+				matchedResourceName = r.Name
 			}
 		}
 	}

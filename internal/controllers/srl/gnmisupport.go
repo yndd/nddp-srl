@@ -26,6 +26,7 @@ import (
 	"github.com/yndd/ndd-runtime/pkg/resource"
 	"github.com/yndd/ndd-yang/pkg/yentry"
 	"github.com/yndd/ndd-yang/pkg/yparser"
+	systemv1alpha1 "github.com/yndd/nddp-system/apis/system/v1alpha1"
 	"github.com/yndd/nddp-system/pkg/gvkresource"
 )
 
@@ -34,8 +35,8 @@ type adder interface {
 }
 
 type observe struct {
-	hasData bool
-	delta   bool
+	hasData  bool
+	upToDate bool
 	//deletes []*gnmi.Path
 	//updates []*gnmi.Update
 }
@@ -125,63 +126,21 @@ func processObserve(rootPath *gnmi.Path, hierPaths []*gnmi.Path, specData interf
 	// returns the deletes and updates that need to be performed to bring the spec object back to the desired state
 	deletes, updates, err := yparser.FindResourceDelta(updatesx1, updatesx2)
 	// check for defaults:
-	delta := false // means all ok
+	upToDate := true // means all ok
 	for _, u := range updates {
-		delta, err = validateDefaults(u, rootPath, x2, deviceSchema)
+		upToDate, err = validateDefaults(u, rootPath, x2, deviceSchema)
 		if err != nil {
 			return nil, err
 		}
-		/*
-			defVal := deviceSchema.GetPathDefault(u.GetPath())
-
-			v, err := yparser.GetValue(u.GetVal())
-			if err != nil {
-				return nil, err
-			}
-
-			var updVal string
-			switch val := v.(type) {
-			case bool:
-				updVal = strconv.FormatBool(val)
-			case uint32:
-				updVal = strconv.Itoa(int(val))
-			case uint8:
-				updVal = strconv.Itoa(int(val))
-			case uint16:
-				updVal = strconv.Itoa(int(val))
-			case float64, float32:
-				updVal = fmt.Sprintf("%.0f", val)
-			case string:
-				updVal = val
-			case map[string]interface{}:
-				delta = true
-			case []interface{}:
-				delta = true
-			}
-			fmt.Printf("processObserve delta check: %v, default: %s, update value: %v, path:%s\n", v, defVal, updVal, yparser.GnmiPath2XPath(u.GetPath(), true))
-
-			// only perform the check on defaults if the data does not exist
-			if !dataExists(u.GetPath().GetElem()[len(rootPath.GetElem()):], x2) {
-				if defVal != "" && updVal != defVal {
-					delta = true
-					fmt.Printf("processObserve default check: path %s, deviceschema default: %s, update value: %v\n",
-						yparser.GnmiPath2XPath(u.GetPath(), true),
-						defVal,
-						updVal)
-				}
-			} else {
-				delta = true
-			}
-		*/
-
 	}
 
 	if len(deletes) != 0 {
-		delta = true
+		upToDate = false
 	}
+	fmt.Printf("processObserve upToDate %t\n", upToDate)
 	return &observe{
-		hasData: true,
-		delta:   delta,
+		hasData:  true,
+		upToDate: upToDate,
 		//deletes: deletes,
 		//updates: updates,
 		//data:    b,
@@ -195,21 +154,21 @@ func validateDefaults(u *gnmi.Update, rootPath *gnmi.Path, x2 interface{}, devic
 	}
 
 	// check if the value contains a map, if so validate the defaults per element in the map
-	delta := false
+	upToDate := true
 	switch val := v.(type) {
 	case map[string]interface{}:
 		for k, vv := range val {
 			path := yparser.DeepCopyGnmiPath(u.GetPath())
 			path.Elem = append(path.GetElem(), &gnmi.PathElem{Name: k})
-			delta := validateDefault(path, rootPath, vv, x2, deviceSchema)
-			if delta { // if we find a diff we can already return
-				return delta, nil
+			upToDate := validateDefault(path, rootPath, vv, x2, deviceSchema)
+			if !upToDate { // if we find a diff we can already return
+				return upToDate, nil
 			}
 		}
 	default:
-		delta = validateDefault(u.GetPath(), rootPath, v, x2, deviceSchema)
+		upToDate = validateDefault(u.GetPath(), rootPath, v, x2, deviceSchema)
 	}
-	return delta, nil
+	return upToDate, nil
 }
 
 func validateDefault(p, rootPath *gnmi.Path, v, x2 interface{}, deviceSchema *yentry.Entry) bool {
@@ -229,27 +188,29 @@ func validateDefault(p, rootPath *gnmi.Path, v, x2 interface{}, deviceSchema *ye
 	case string:
 		updVal = val
 	}
-	fmt.Printf("processObserve delta check: %v, default: %s, update value: %v, path:%s\n", v, defVal, updVal, yparser.GnmiPath2XPath(p, true))
+	fmt.Printf("processObserve upToDate check: %v, default: %s, update value: %v, path:%s\n", v, defVal, updVal, yparser.GnmiPath2XPath(p, true))
 
-	delta := false // means all ok
+	upToDate := true // means all ok
 	// only perform the check on defaults if the data does not exist
 	if !dataExists(p.GetElem()[len(rootPath.GetElem()):], x2) {
 		if defVal != "" && updVal != defVal {
-			delta = true
+			upToDate = false
+
 			fmt.Printf("processObserve default check: path %s, deviceschema default: %s, update value: %v\n",
 				yparser.GnmiPath2XPath(p, true),
 				defVal,
 				updVal)
+
 		}
 	} else {
-		delta = true
+		upToDate = false
 	}
-	return delta
+	return upToDate
 }
 
 // given the updates are per container i dont expect we would ever come here
 func dataExists(pe []*gnmi.PathElem, x interface{}) bool {
-	fmt.Printf("dataExists: PathElem: %s\n", pe[0].GetName())
+	//fmt.Printf("dataExists: PathElem: %s\n", pe[0].GetName())
 	if len(pe[0].Key) == 0 {
 		switch xx := x.(type) {
 		case map[string]interface{}:
@@ -272,7 +233,7 @@ func processUpdateK8sResource(mg resource.Managed, rootPath *gnmi.Path, nddpSche
 	gvkData := gvkresource.GetK8sResourceUpdate(mg, rootPath)
 	gvkPath := &gnmi.Path{
 		Elem: []*gnmi.PathElem{
-			{Name: "gvk", Key: map[string]string{"name": *gvkData.Name}},
+			{Name: "gvk", Key: map[string]string{"name": gvkData.Name}},
 		},
 	}
 	gvkd, err := processGvkData(*gvkData)
@@ -285,10 +246,16 @@ func processUpdateK8sResource(mg resource.Managed, rootPath *gnmi.Path, nddpSche
 
 // returns the delete using group version kind namespace name
 func processDeleteK8sResource(mg resource.Managed, rootPath *gnmi.Path, nddpSchema *yentry.Entry) ([]*gnmi.Update, error) {
-	gvkData := gvkresource.GetK8sResourceDelete(mg, rootPath)
+	var gvkData *systemv1alpha1.Gvk
+	if gvkresource.GetTransaction(mg) != gvkresource.TransactionNone {
+		// transaction
+		gvkData = gvkresource.GetK8sResourceTransactionDelete(mg, rootPath)
+	} else {
+		gvkData = gvkresource.GetK8sResourceDelete(mg, rootPath)
+	}
 	gvkPath := &gnmi.Path{
 		Elem: []*gnmi.PathElem{
-			{Name: "gvk", Key: map[string]string{"name": *gvkData.Name}},
+			{Name: "gvk", Key: map[string]string{"name": gvkData.Name}},
 		},
 	}
 	gvkd, err := processGvkData(*gvkData)
@@ -301,10 +268,16 @@ func processDeleteK8sResource(mg resource.Managed, rootPath *gnmi.Path, nddpSche
 
 // returns the create using group version kind namespace name
 func processCreateK8sResource(mg resource.Managed, rootPath *gnmi.Path, nddpSchema *yentry.Entry) ([]*gnmi.Update, error) {
-	gvkData := gvkresource.GetK8sResourceCreate(mg, rootPath)
+	var gvkData *systemv1alpha1.Gvk
+	if gvkresource.GetTransaction(mg) != gvkresource.TransactionNone {
+		// transaction
+		gvkData = gvkresource.GetK8sResourceTransactionCreate(mg, rootPath)
+	} else {
+		gvkData = gvkresource.GetK8sResourceCreate(mg, rootPath)
+	}
 	gvkPath := &gnmi.Path{
 		Elem: []*gnmi.PathElem{
-			{Name: "gvk", Key: map[string]string{"name": *gvkData.Name}},
+			{Name: "gvk", Key: map[string]string{"name": gvkData.Name}},
 		},
 	}
 	gvkd, err := processGvkData(*gvkData)
@@ -340,11 +313,13 @@ func processCreateK8s(mg resource.Managed, rootPath *gnmi.Path, specData interfa
 	if err != nil {
 		return nil, err
 	}
-	fmt.Printf("gvkUpdates: %v\n", gvkUpdates)
+	//fmt.Printf("gvkUpdates: %v\n", gvkUpdates)
 
-	for _, gvku := range gvkUpdates {
-		fmt.Printf("gvk update :%s, data: %v \n", yparser.GnmiPath2XPath(gvku.Path, true), gvku.GetVal())
-	}
+	/*
+		for _, gvku := range gvkUpdates {
+			fmt.Printf("gvk update :%s, data: %v \n", yparser.GnmiPath2XPath(gvku.Path, true), gvku.GetVal())
+		}
+	*/
 
 	// prepare the input data to compare against the response data
 	x1, err := processSpecData(rootPath, specData)
@@ -358,7 +333,7 @@ func processCreateK8s(mg resource.Managed, rootPath *gnmi.Path, specData interfa
 	switch x := x1.(type) {
 	case map[string]interface{}:
 		x1 := x[rootPath.GetElem()[len(rootPath.GetElem())-1].GetName()]
-		fmt.Printf("processCreate data %v, rootPath: %s\n", x1, yparser.GnmiPath2XPath(rootPath, true))
+		//fmt.Printf("processCreate data %v, rootPath: %s\n", x1, yparser.GnmiPath2XPath(rootPath, true))
 		gnmiUpdate, err := yparser.GetUpdatesFromJSON(rootPath, x1, deviceSchema)
 		if err != nil {
 			return nil, err

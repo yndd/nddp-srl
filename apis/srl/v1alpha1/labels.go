@@ -22,6 +22,7 @@ package v1alpha1
 const (
 	LabelNddaDeploymentPolicy string = "ndda-deployment-policy" // planned or active
 	LabelNddaOwner            string = "ndda-owner"             // represented as org.depl.az.nddokind.crname
+	LabelNddaOwnerGeneration  string = "ndda-owner-generation"
 	LabelNddaDevice           string = "ndda-device"
 	LabelNddaItfce            string = "ndda-interface"
 	LabelNddaSubInterface     string = "ndda-subinterface"

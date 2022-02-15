@@ -75,8 +75,12 @@ var startCmd = &cobra.Command{
 			// Only use a logr.Logger when debug is on
 			ctrl.SetLogger(zlog)
 		}
+
 		if profiler {
-			startProfiling()
+			defer profile.Start().Stop()
+			go func() {
+				http.ListenAndServe(":8000", nil)
+			}()
 		}
 
 		zlog.Info("create manager")
@@ -166,7 +170,7 @@ func init() {
 	startCmd.Flags().BoolVarP(&enableLeaderElection, "leader-elect", "l", false, "Enable leader election for controller manager. "+
 		"Enabling this will ensure there is only one active controller manager.")
 	startCmd.Flags().IntVarP(&concurrency, "concurrency", "", 1, "Number of items to process simultaneously")
-	startCmd.Flags().DurationVarP(&pollInterval, "poll-interval", "", 1*time.Minute, "Poll interval controls how often an individual resource should be checked for drift.")
+	startCmd.Flags().DurationVarP(&pollInterval, "poll-interval", "", 10*time.Minute, "Poll interval controls how often an individual resource should be checked for drift.")
 	startCmd.Flags().StringVarP(&namespace, "namespace", "n", os.Getenv("POD_NAMESPACE"), "Namespace used to unpack and run packages.")
 	startCmd.Flags().StringVarP(&podname, "podname", "", os.Getenv("POD_NAME"), "Name from the pod")
 	startCmd.Flags().StringVarP(&grpcServerAddress, "grpc-server-address", "s", "", "The address of the grpc server binds to.")
@@ -196,10 +200,3 @@ func getGnmiServerAddress(podname string) string {
 	return pkgmetav1.PrefixGnmiService + "-" + newName + "." + pkgmetav1.NamespaceLocalK8sDNS + strconv.Itoa((pkgmetav1.GnmiServerPort))
 }
 */
-
-func startProfiling() {
-	defer profile.Start().Stop()
-	go func() {
-		http.ListenAndServe(":8000", nil)
-	}()
-}

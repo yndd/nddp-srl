@@ -25,9 +25,85 @@ import (
 	"github.com/yndd/nddp-srl/internal/shared"
 	systemv1alpha1 "github.com/yndd/nddp-system/apis/system/v1alpha1"
 	"github.com/yndd/nddp-system/pkg/gvkresource"
+	"github.com/yndd/nddp-system/pkg/transaction"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
+
+func (r *reconciler) initExhausted() error {
+	crDeviceName := shared.GetCrDeviceName(r.namespace, r.target.Config.Name)
+	crSystemDeviceName := shared.GetCrSystemDeviceName(crDeviceName)
+
+	n := &gnmi.Notification{
+		Timestamp: time.Now().UnixNano(),
+		Prefix:    &gnmi.Path{Target: crSystemDeviceName},
+		Update: []*gnmi.Update{
+			{
+				Path: &gnmi.Path{
+					Elem: []*gnmi.PathElem{{Name: "exhausted"}},
+				},
+				Val: &gnmi.TypedValue{Value: &gnmi.TypedValue_IntVal{IntVal: 0}},
+			},
+		},
+	}
+
+	if err := r.cache.GnmiUpdate(crSystemDeviceName, n); err != nil {
+		return errors.Wrap(err, "init exhausted failed")
+	}
+	return nil
+}
+
+func (r *reconciler) setExhausted(v int64) error {
+	crDeviceName := shared.GetCrDeviceName(r.namespace, r.target.Config.Name)
+	crSystemDeviceName := shared.GetCrSystemDeviceName(crDeviceName)
+
+	n := &gnmi.Notification{
+		Timestamp: time.Now().UnixNano(),
+		Prefix:    &gnmi.Path{Target: crSystemDeviceName},
+		Update: []*gnmi.Update{
+			{
+				Path: &gnmi.Path{
+					Elem: []*gnmi.PathElem{{Name: "exhausted"}},
+				},
+				Val: &gnmi.TypedValue{Value: &gnmi.TypedValue_IntVal{IntVal: v}},
+			},
+		},
+	}
+
+	if err := r.cache.GnmiUpdate(crSystemDeviceName, n); err != nil {
+		return errors.Wrap(err, "set exhausted failed")
+	}
+	return nil
+}
+
+func (r *reconciler) getExhausted() (int64, error) {
+	crDeviceName := shared.GetCrDeviceName(r.namespace, r.target.Config.Name)
+	crSystemDeviceName := shared.GetCrSystemDeviceName(crDeviceName)
+
+	path := &gnmi.Path{
+		Elem: []*gnmi.PathElem{{Name: "exhausted"}},
+	}
+
+	n, err := r.cache.Query(crSystemDeviceName, &gnmi.Path{Target: crSystemDeviceName}, path)
+	if err != nil {
+		return 0, err
+	}
+	if n != nil {
+		for _, u := range n.GetUpdate() {
+			val, err := yparser.GetValue(u.GetVal())
+			if err != nil {
+				return 0, err
+			}
+			switch v := val.(type) {
+			case int64:
+				return v, nil
+			}
+		}
+		return 0, errors.New("unknown type in cache")
+	}
+
+	return 0, nil
+}
 
 func (r *reconciler) setUpdateStatus(status bool) error {
 	crDeviceName := shared.GetCrDeviceName(r.namespace, r.target.Config.Name)
@@ -79,6 +155,21 @@ func (r *reconciler) getUpdateStatus() (bool, error) {
 	}
 
 	return false, nil
+}
+
+func (r *reconciler) getResource(gvkResourceName string) (*systemv1alpha1.Gvk, error) {
+	crDeviceName := shared.GetCrDeviceName(r.namespace, r.target.Config.Name)
+	crSystemDeviceName := shared.GetCrSystemDeviceName(crDeviceName)
+
+	rl, err := r.cache.GetJson(crSystemDeviceName,
+		&gnmi.Path{Target: crSystemDeviceName},
+		&gnmi.Path{Elem: []*gnmi.PathElem{{Name: "gvk", Key: map[string]string{"name": gvkResourceName}}}},
+		r.nddpSchema)
+	if err != nil {
+		return nil, status.Error(codes.Internal, err.Error())
+	}
+
+	return gvkresource.GetResource(rl)
 }
 
 func (r *reconciler) getResourceList() ([]*systemv1alpha1.Gvk, error) {
@@ -147,6 +238,67 @@ func (r *reconciler) updateResourceStatus(resourceGvkName string, status systemv
 					},
 				},
 				Val: &gnmi.TypedValue{Value: &gnmi.TypedValue_StringVal{StringVal: string(status)}},
+			},
+		},
+	}
+
+	if err := r.cache.GnmiUpdate(crSystemDeviceName, n); err != nil {
+		return errors.Wrap(err, "resource update failed in cache")
+	}
+	return nil
+}
+
+func (r *reconciler) getTransactionList() ([]*systemv1alpha1.Transaction, error) {
+	crDeviceName := shared.GetCrDeviceName(r.namespace, r.target.Config.Name)
+	crSystemDeviceName := shared.GetCrSystemDeviceName(crDeviceName)
+
+	rl, err := r.cache.GetJson(crSystemDeviceName,
+		&gnmi.Path{Target: crSystemDeviceName},
+		&gnmi.Path{Elem: []*gnmi.PathElem{{Name: "transaction"}}},
+		r.nddpSchema)
+	if err != nil {
+		return nil, status.Error(codes.Internal, err.Error())
+	}
+
+	return transaction.GetTransactionList(rl)
+}
+
+func (r *reconciler) updateTransactionStatus(trName string, status systemv1alpha1.E_TransactionStatus) error {
+	crDeviceName := shared.GetCrDeviceName(r.namespace, r.target.Config.Name)
+	crSystemDeviceName := shared.GetCrSystemDeviceName(crDeviceName)
+
+	n := &gnmi.Notification{
+		Timestamp: time.Now().UnixNano(),
+		Prefix:    &gnmi.Path{Target: crSystemDeviceName},
+		Update: []*gnmi.Update{
+			{
+				Path: &gnmi.Path{
+					Elem: []*gnmi.PathElem{
+						{Name: "transaction", Key: map[string]string{"name": trName}},
+						{Name: "status"},
+					},
+				},
+				Val: &gnmi.TypedValue{Value: &gnmi.TypedValue_StringVal{StringVal: string(status)}},
+			},
+		},
+	}
+
+	if err := r.cache.GnmiUpdate(crSystemDeviceName, n); err != nil {
+		return errors.Wrap(err, "transaction update failed in cache")
+	}
+	return nil
+}
+
+func (r *reconciler) deleteTransaction(trName string) error {
+	crDeviceName := shared.GetCrDeviceName(r.namespace, r.target.Config.Name)
+	crSystemDeviceName := shared.GetCrSystemDeviceName(crDeviceName)
+
+	n := &gnmi.Notification{
+		Timestamp: time.Now().UnixNano(),
+		Prefix:    &gnmi.Path{Target: crSystemDeviceName},
+		Delete: []*gnmi.Path{
+			{
+				Elem: []*gnmi.PathElem{{Name: "transaction", Key: map[string]string{"name": trName}}},
 			},
 		},
 	}

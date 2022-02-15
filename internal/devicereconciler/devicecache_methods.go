@@ -226,7 +226,7 @@ func (r *reconciler) getSpecdata(resource *systemv1alpha1.Gvk) (interface{}, err
 		&gnmi.Path{Target: crSystemDeviceName},
 		&gnmi.Path{
 			Elem: []*gnmi.PathElem{
-				{Name: "gvk", Key: map[string]string{"name": *resource.Name}},
+				{Name: "gvk", Key: map[string]string{"name": resource.Name}},
 			},
 		},
 		r.nddpSchema)
@@ -234,7 +234,7 @@ func (r *reconciler) getSpecdata(resource *systemv1alpha1.Gvk) (interface{}, err
 		return nil, err
 	}
 	// remove the rootPath data
-	rootPath, err := xpath.ToGNMIPath(*resource.Rootpath)
+	rootPath, err := xpath.ToGNMIPath(resource.Rootpath)
 	if err != nil {
 		return nil, err
 	}
@@ -281,7 +281,7 @@ func getDataFromRootPath(path *gnmi.Path, x1 interface{}) interface{} {
 func (r *reconciler) getCachedata(resource *systemv1alpha1.Gvk) (interface{}, error) {
 	crDeviceName := shared.GetCrDeviceName(r.namespace, r.target.Config.Name)
 
-	rootPath, err := xpath.ToGNMIPath(*resource.Rootpath)
+	rootPath, err := xpath.ToGNMIPath(resource.Rootpath)
 	if err != nil {
 		return nil, err
 	}
@@ -297,7 +297,7 @@ func (r *reconciler) getCachedata(resource *systemv1alpha1.Gvk) (interface{}, er
 }
 
 func (r *reconciler) getUpdates(resource *systemv1alpha1.Gvk) (*gnmi.Update, error) {
-	rootPath, err := xpath.ToGNMIPath(*resource.Rootpath)
+	rootPath, err := xpath.ToGNMIPath(resource.Rootpath)
 	if err != nil {
 		return nil, err
 	}
@@ -336,7 +336,7 @@ func (r *reconciler) getUpdates(resource *systemv1alpha1.Gvk) (*gnmi.Update, err
 }
 
 func (r *reconciler) processUpdates(resource *systemv1alpha1.Gvk) ([]*gnmi.Path, []*gnmi.Update, error) {
-	rootPath, err := xpath.ToGNMIPath(*resource.Rootpath)
+	rootPath, err := xpath.ToGNMIPath(resource.Rootpath)
 	if err != nil {
 		return nil, nil, err
 	}

@@ -52,6 +52,7 @@ type SystemNetworkinstanceProtocolsEvpnEsisBgpinstanceEsi interface {
 	ListResources(ctx context.Context, mg resource.Managed, resources map[string]map[string]interface{}) error
 	ValidateResources(ctx context.Context, mg resource.Managed, deviceName string, resources map[string]map[string]interface{}) error
 	DeleteResources(ctx context.Context, mg resource.Managed, resources map[string]map[string]interface{}) error
+	ListResourcesByTransaction(ctx context.Context, cr srlv1alpha1.IFSrlTransaction, resources map[string]map[string]map[string]interface{}) error
 }
 
 func NewSystemNetworkinstanceProtocolsEvpnEsisBgpinstanceEsi(c resource.ClientApplicator, p SystemNetworkinstanceProtocolsEvpnEsisBgpinstance, key string) SystemNetworkinstanceProtocolsEvpnEsisBgpinstanceEsi {
@@ -162,6 +163,7 @@ func (x *systemnetworkinstanceprotocolsevpnesisbgpinstanceesi) buildCR(mg resour
 
 	labels[srlv1alpha1.LabelNddaDeploymentPolicy] = string(mg.GetDeploymentPolicy())
 	labels[srlv1alpha1.LabelNddaOwner] = odns.GetOdnsResourceKindName(mg.GetName(), strings.ToLower(mg.GetObjectKind().GroupVersionKind().Kind))
+	labels[srlv1alpha1.LabelNddaOwnerGeneration] = mg.GetGenerateName()
 	labels[srlv1alpha1.LabelNddaDevice] = deviceName
 	//labels[srlv1alpha1.LabelNddaItfce] = itfceName
 
@@ -183,7 +185,7 @@ func (x *systemnetworkinstanceprotocolsevpnesisbgpinstanceesi) buildCR(mg resour
 					Name: deviceName,
 				},
 			},
-			BgpInstanceId: &parent5Key0,
+			BgpInstanceId: &x.parent.GetKey()[0],
 			//1
 			SystemNetworkinstanceProtocolsEvpnEsisBgpinstanceEsi: x.SystemNetworkinstanceProtocolsEvpnEsisBgpinstanceEsi,
 		},
@@ -256,5 +258,32 @@ func (x *systemnetworkinstanceprotocolsevpnesisbgpinstanceesi) DeleteResources(c
 
 	// children
 
+	return nil
+}
+
+func (x *systemnetworkinstanceprotocolsevpnesisbgpinstanceesi) ListResourcesByTransaction(ctx context.Context, cr srlv1alpha1.IFSrlTransaction, resources map[string]map[string]map[string]interface{}) error {
+	// options list all resources belonging to the transaction based on transaction owner and generation
+	opts := []client.ListOption{
+		client.MatchingLabels{srlv1alpha1.LabelNddaOwner: cr.GetName()},
+		client.MatchingLabels{srlv1alpha1.LabelNddaOwnerGeneration: cr.GetOwnerGeneration()},
+	}
+	list := x.newSystemNetworkinstanceProtocolsEvpnEsisBgpinstanceEsiList()
+	if err := x.client.List(ctx, list, opts...); err != nil {
+		return err
+	}
+
+	for _, i := range list.GetSystemNetworkinstanceProtocolsEvpnEsisBgpinstanceEsis() {
+		deviceName := i.GetLabels()[srlv1alpha1.LabelNddaDevice]
+		if _, ok := resources[deviceName]; !ok {
+			resources[deviceName] = make(map[string]map[string]interface{})
+		}
+
+		if _, ok := resources[deviceName][i.GetObjectKind().GroupVersionKind().Kind]; !ok {
+			resources[deviceName][i.GetObjectKind().GroupVersionKind().Kind] = make(map[string]interface{})
+		}
+		resources[deviceName][i.GetObjectKind().GroupVersionKind().Kind][i.GetName()] = "dummy"
+	}
+
+	// children
 	return nil
 }

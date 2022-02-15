@@ -24,6 +24,7 @@ import (
 	//"github.com/yndd/ndda-network/internal/controllers/network"
 	"github.com/yndd/nddp-srl/internal/controllers/device"
 	"github.com/yndd/nddp-srl/internal/controllers/srl"
+	"github.com/yndd/nddp-srl/internal/controllers/transaction"
 	"github.com/yndd/nddp-srl/internal/shared"
 )
 
@@ -65,6 +66,7 @@ func Setup(mgr ctrl.Manager, option controller.Options, nddcopts *shared.NddCont
 	}
 	for _, setup := range []func(ctrl.Manager, controller.Options, *shared.NddControllerOptions) error{
 		device.Setup,
+		transaction.Setup,
 	} {
 		if err := setup(mgr, option, nddcopts); err != nil {
 			return nil, err

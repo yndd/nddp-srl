@@ -203,10 +203,10 @@ func (d *srl) GetConfig(ctx context.Context) (map[string]interface{}, error) {
 	u, err := gnmic.HandleGetResponse(rsp)
 	if err != nil {
 		d.log.Debug(errGnmiHandleGetResponse, "error", err)
-		return nil, errors.Wrap(err, errGnmiHandleGetResponse)
+		return nil, err
 	}
 	for _, update := range u {
-		d.log.Debug("GetConfig", "response", update)
+		//d.log.Debug("GetConfig", "response", update)
 		return update.Values, nil
 	}
 	return nil, nil
@@ -230,10 +230,10 @@ func (d *srl) Get(ctx context.Context, p *string) (map[string]interface{}, error
 	u, err := gnmic.HandleGetResponse(rsp)
 	if err != nil {
 		d.log.Debug(errGnmiHandleGetResponse, "error", err)
-		return nil, errors.Wrap(err, errGnmiHandleGetResponse)
+		return nil, err
 	}
 	for _, update := range u {
-		d.log.Debug("GetConfig", "response", update)
+		//d.log.Debug("GetConfig", "response", update)
 		return update.Values, nil
 	}
 	return nil, nil
@@ -257,10 +257,10 @@ func (d *srl) GetGnmi(ctx context.Context, p []*gnmi.Path) (map[string]interface
 	u, err := gnmic.HandleGetResponse(rsp)
 	if err != nil {
 		d.log.Debug(errGnmiHandleGetResponse, "error", err)
-		return nil, errors.Wrap(err, errGnmiHandleGetResponse)
+		return nil, err
 	}
 	for _, update := range u {
-		d.log.Debug("GetConfig", "response", update)
+		//d.log.Debug("GetConfig", "response", update)
 		return update.Values, nil
 	}
 	return nil, nil
@@ -282,9 +282,9 @@ func (d *srl) UpdateGnmi(ctx context.Context, u []*gnmi.Update) (*gnmi.SetRespon
 	resp, err := d.target.Set(ctx, req)
 	if err != nil {
 		d.log.Debug(errGnmiSet, "error", err)
-		return nil, errors.Wrap(err, errGnmiSet)
+		return nil, err
 	}
-	d.log.Debug("update response:", "resp", resp)
+	//d.log.Debug("update response:", "resp", resp)
 	return resp, nil
 }
 
@@ -303,9 +303,9 @@ func (d *srl) DeleteGnmi(ctx context.Context, p []*gnmi.Path) (*gnmi.SetResponse
 	resp, err := d.target.Set(ctx, req)
 	if err != nil {
 		d.log.Debug(errGnmiSet, "error", err)
-		return nil, errors.Wrap(err, errGnmiSet)
+		return nil, err
 	}
-	d.log.Debug("delete response:", "resp", resp)
+	//d.log.Debug("delete response:", "resp", resp)
 
 	return resp, nil
 }
@@ -327,8 +327,8 @@ func (d *srl) SetGnmi(ctx context.Context, u []*gnmi.Update, p []*gnmi.Path) (*g
 	resp, err := d.target.Set(ctx, req)
 	if err != nil {
 		d.log.Debug(errGnmiSet, "error", err)
-		return nil, errors.Wrap(err, errGnmiSet)
+		return nil, err
 	}
-	d.log.Debug("set response:", "resp", resp)
+	//d.log.Debug("set response:", "resp", resp)
 	return resp, nil
 }

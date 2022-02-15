@@ -21,6 +21,8 @@ import (
 	"fmt"
 
 	"github.com/yndd/nddo-runtime/pkg/resource"
+
+	srlv1alpha1 "github.com/yndd/nddp-srl/apis/srl/v1alpha1"
 )
 
 type Schema interface {
@@ -34,6 +36,7 @@ type Schema interface {
 	ListResources(ctx context.Context, mg resource.Managed) (map[string]map[string]interface{}, error)
 	ValidateResources(ctx context.Context, mg resource.Managed, resources map[string]map[string]interface{}) (map[string]map[string]interface{}, error)
 	DeleteResources(ctx context.Context, mg resource.Managed, resources map[string]map[string]interface{}) error
+	ListResourcesByTransaction(ctx context.Context, cr srlv1alpha1.IFSrlTransaction) (map[string]map[string]map[string]interface{}, error)
 }
 
 func NewSchema(c resource.ClientApplicator) Schema {
@@ -114,4 +117,15 @@ func (x *schema) DeleteResources(ctx context.Context, mg resource.Managed, resou
 		}
 	}
 	return nil
+}
+
+// first entry is device, 2nd: resourceKind, 3rd: resourceName
+func (x *schema) ListResourcesByTransaction(ctx context.Context, cr srlv1alpha1.IFSrlTransaction) (map[string]map[string]map[string]interface{}, error) {
+	resources := make(map[string]map[string]map[string]interface{})
+	for _, d := range x.GetDevices() {
+		if err := d.ListResourcesByTransaction(ctx, cr, resources); err != nil {
+			return nil, err
+		}
+	}
+	return resources, nil
 }

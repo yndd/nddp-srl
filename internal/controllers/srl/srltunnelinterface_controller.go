@@ -20,7 +20,8 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"strings"
+
+	//"strings"
 	"time"
 
 	"github.com/karimra/gnmic/target"
@@ -80,6 +81,7 @@ func SetupTunnelinterface(mgr ctrl.Manager, o controller.Options, nddcopts *shar
 
 	r := managed.NewReconciler(mgr,
 		resource.ManagedKind(srlv1alpha1.TunnelinterfaceGroupVersionKind),
+		managed.WithPollInterval(nddcopts.Poll),
 		managed.WithExternalConnecter(&connectorTunnelinterface{
 			log:          nddcopts.Logger,
 			kube:         mgr.GetClient(),
@@ -190,7 +192,7 @@ type validatorTunnelinterface struct {
 
 func (v *validatorTunnelinterface) ValidateLeafRef(ctx context.Context, mg resource.Managed, cfg []byte) (managed.ValidateLeafRefObservation, error) {
 	log := v.log.WithValues("resource", mg.GetName())
-	log.Debug("ValidateLeafRef...")
+	//log.Debug("ValidateLeafRef...")
 
 	// json unmarshal the resource
 	cr, ok := mg.(*srlv1alpha1.SrlTunnelinterface)
@@ -240,8 +242,8 @@ func (v *validatorTunnelinterface) ValidateLeafRef(ctx context.Context, mg resou
 				"Value", r.Value,
 			)
 		}
-		log.Debug("Input  Spec  ", "data", x1)
-		log.Debug("Latest Config", "data", x2)
+		//log.Debug("Input  Spec  ", "data", x1)
+		//log.Debug("Latest Config", "data", x2)
 
 		return managed.ValidateLeafRefObservation{
 			Success:          false,
@@ -270,7 +272,7 @@ func (v *validatorTunnelinterface) ValidateLeafRef(ctx context.Context, mg resou
 
 func (v *validatorTunnelinterface) ValidateParentDependency(ctx context.Context, mg resource.Managed, cfg []byte) (managed.ValidateParentDependencyObservation, error) {
 	log := v.log.WithValues("resource", mg.GetName())
-	log.Debug("ValidateParentDependency...")
+	//log.Debug("ValidateParentDependency...")
 
 	dependencyLeafRef := v.y.GetParentDependency(mg)
 
@@ -288,7 +290,7 @@ func (v *validatorTunnelinterface) ValidateParentDependency(ctx context.Context,
 	}
 	if !success {
 		log.Debug("ValidateParentDependency failed", "resultParentValidation", resultValidation)
-		log.Debug("Latest Config", "data", x1)
+		//log.Debug("Latest Config", "data", x1)
 		return managed.ValidateParentDependencyObservation{
 			Success:          false,
 			ResolvedLeafRefs: resultValidation}, nil
@@ -302,8 +304,8 @@ func (v *validatorTunnelinterface) ValidateParentDependency(ctx context.Context,
 // ValidateResourceIndexes validates if the indexes of a resource got changed
 // if so we need to delete the original resource, because it will be dangling if we dont delete it
 func (v *validatorTunnelinterface) ValidateResourceIndexes(ctx context.Context, mg resource.Managed) (managed.ValidateResourceIndexesObservation, error) {
-	log := v.log.WithValues("resource", mg.GetName())
-	log.Debug("ValidateResourceIndexes ...")
+	//log := v.log.WithValues("resource", mg.GetName())
+	//log.Debug("ValidateResourceIndexes ...")
 
 	rootPath := v.y.GetRootPath(mg)
 	origResourceIndex := mg.GetResourceIndexes()
@@ -311,7 +313,7 @@ func (v *validatorTunnelinterface) ValidateResourceIndexes(ctx context.Context, 
 	// we call the CompareConfigPathsWithResourceKeys irrespective is the get resource index returns nil
 	changed, deletPaths, newResourceIndex := yparser.CompareGnmiPathsWithResourceKeys(rootPath[0], origResourceIndex)
 	if changed {
-		log.Debug("ValidateResourceIndexes changed", "indexes", newResourceIndex, "deletPaths", deletPaths[0])
+		//log.Debug("ValidateResourceIndexes changed", "indexes", newResourceIndex, "deletPaths", deletPaths[0])
 		return managed.ValidateResourceIndexesObservation{Changed: true, ResourceDeletes: deletPaths, ResourceIndexes: newResourceIndex}, nil
 	}
 
@@ -338,7 +340,7 @@ type connectorTunnelinterface struct {
 // A resource is mapped to a single target
 func (c *connectorTunnelinterface) Connect(ctx context.Context, mg resource.Managed) (managed.ExternalClient, error) {
 	log := c.log.WithValues("resource", mg.GetName())
-	log.Debug("Connect")
+	//log.Debug("Connect")
 
 	cr, ok := mg.(*srlv1alpha1.SrlTunnelinterface)
 	if !ok {
@@ -399,7 +401,7 @@ func (e *externalTunnelinterface) Close() {
 
 func (e *externalTunnelinterface) Observe(ctx context.Context, mg resource.Managed) (managed.ExternalObservation, error) {
 	log := e.log.WithValues("Resource", mg.GetName())
-	log.Debug("Observing ...")
+	//log.Debug("Observing ...")
 
 	cr, ok := mg.(*srlv1alpha1.SrlTunnelinterface)
 	if !ok {
@@ -411,7 +413,10 @@ func (e *externalTunnelinterface) Observe(ctx context.Context, mg resource.Manag
 	hierElements := e.deviceSchema.GetHierarchicalResourcesLocal(true, rootPath[0], &gnmi.Path{}, make([]*gnmi.Path, 0))
 	//log.Debug("Observing hierElements ...", "Path", yparser.GnmiPath2XPath(rootPath[0], false), "hierElements", hierElements)
 
-	gvkName := gvkresource.GetGvkName(mg)
+	gvkTransaction, err := gvkresource.GetGvkTransaction(mg)
+	if err != nil {
+		return managed.ExternalObservation{}, err
+	}
 
 	// gnmi get request
 	req := &gnmi.GetRequest{
@@ -422,7 +427,7 @@ func (e *externalTunnelinterface) Observe(ctx context.Context, mg resource.Manag
 		//Type:     gnmi.GetRequest_DataType(gnmi.GetRequest_STATE),
 		Extension: []*gnmi_ext.Extension{
 			{Ext: &gnmi_ext.Extension_RegisteredExt{
-				RegisteredExt: &gnmi_ext.RegisteredExtension{Id: gnmi_ext.ExtensionID_EID_EXPERIMENTAL, Msg: []byte(gvkName)}}},
+				RegisteredExt: &gnmi_ext.RegisteredExtension{Id: gnmi_ext.ExtensionID_EID_EXPERIMENTAL, Msg: []byte(gvkTransaction)}}},
 		},
 	}
 
@@ -432,11 +437,23 @@ func (e *externalTunnelinterface) Observe(ctx context.Context, mg resource.Manag
 	if err != nil {
 		if er, ok := status.FromError(err); ok {
 			switch er.Code() {
-			case codes.Unavailable, codes.ResourceExhausted:
+			case codes.ResourceExhausted:
+				// we use this to signal the device or cache is exhausted
+				return managed.ExternalObservation{
+					Ready:            false,
+					Exhausted:        true,
+					ResourceExists:   false,
+					ActionExecuted:   false,
+					ResourceSuccess:  false,
+					ResourceHasData:  false,
+					ResourceUpToDate: false,
+				}, nil
+			case codes.Unavailable:
 				// we use this to signal not ready
 				return managed.ExternalObservation{
 					Ready:            false,
 					ResourceExists:   false,
+					ActionExecuted:   false,
 					ResourceSuccess:  false,
 					ResourceHasData:  false,
 					ResourceUpToDate: false,
@@ -444,8 +461,21 @@ func (e *externalTunnelinterface) Observe(ctx context.Context, mg resource.Manag
 			case codes.NotFound:
 				// the k8s resource does not exists but the data can still exist
 				// if data exists it means we go from UMR -> MR
-				//log.Debug("observing when using gnmic: resource does not exist")
+				log.Debug("observing when using gnmic: resource does not exist")
 				exists = false
+			case codes.AlreadyExists:
+				// the system cache has the resource but the action did not complete so we should skip the next reconcilation
+				// loop and wait
+				log.Debug("observing when using gnmic: resource already Exists")
+				return managed.ExternalObservation{
+					Ready:            true,
+					Exhausted:        false,
+					ResourceExists:   true,
+					ActionExecuted:   false,
+					ResourceSuccess:  true,
+					ResourceHasData:  false,
+					ResourceUpToDate: false,
+				}, nil
 			case codes.FailedPrecondition:
 				// the k8s resource exists but is in failed status, compare the response spec with current spec
 				// if the specs are equal return observation.ResponseSuccess -> False
@@ -455,12 +485,13 @@ func (e *externalTunnelinterface) Observe(ctx context.Context, mg resource.Manag
 				if err != nil {
 					return managed.ExternalObservation{}, err
 				}
-				if !failedObserve.delta {
+				if failedObserve.upToDate {
 					// there is no difference between the previous spec and the current spec, so we dont retry
 					// given the previous attempt failed
 					return managed.ExternalObservation{
 						Ready:            true,
 						ResourceExists:   true,
+						ActionExecuted:   true,
 						ResourceSuccess:  false,
 						ResourceHasData:  false,
 						ResourceUpToDate: false,
@@ -470,60 +501,67 @@ func (e *externalTunnelinterface) Observe(ctx context.Context, mg resource.Manag
 					return managed.ExternalObservation{
 						Ready:            true,
 						ResourceExists:   true,
+						ActionExecuted:   true,
 						ResourceSuccess:  true,
 						ResourceHasData:  true,
 						ResourceUpToDate: false,
 					}, nil
 				}
-			}
-		} else {
-			// WORKAROUND WAITING FOR KARIM TO REMOVE THE ERROR WRAP In GNMIC
-			switch {
-			case strings.Contains(err.Error(), "Unavailable"):
-				// we use this to signal not ready
-				return managed.ExternalObservation{
-					Ready:            false,
-					ResourceExists:   false,
-					ResourceSuccess:  false,
-					ResourceHasData:  false,
-					ResourceUpToDate: false,
-				}, nil
-			case strings.Contains(err.Error(), "NotFound"):
-				//log.Debug("observing: resource does not exist")
-				exists = false
-			case strings.Contains(err.Error(), "Failed"):
-				//log.Debug("observing: resource failed")
-				// the k8s resource exists but is in failed status, compare the response spec with current spec
-				// if the specs are equal return observation.ResponseSuccess -> False
-				// if the specs are not equal follow the regular procedure
-				failedObserve, err := processObserve(rootPath[0], hierElements, &cr.Spec, resp, e.deviceSchema)
-				if err != nil {
-					return managed.ExternalObservation{}, err
-				}
-				if !failedObserve.delta {
-					// there is no difference between the previous spec and the current spec, so we dont retry
-					// given the previous attempt failed
-					return managed.ExternalObservation{
-						Ready:            true,
-						ResourceExists:   true,
-						ResourceSuccess:  false,
-						ResourceHasData:  false,
-						ResourceUpToDate: false,
-					}, nil
-				} else {
-					// this should trigger an update
-					return managed.ExternalObservation{
-						Ready:            true,
-						ResourceExists:   true,
-						ResourceSuccess:  true,
-						ResourceHasData:  true,
-						ResourceUpToDate: false,
-					}, nil
-				}
-			default:
-				return managed.ExternalObservation{}, errors.Wrap(err, errReadInterfaceSubinterface)
 			}
 		}
+		/*
+			else {
+				// WORKAROUND WAITING FOR KARIM TO REMOVE THE ERROR WRAP In GNMIC
+				switch {
+				case strings.Contains(err.Error(), "Unavailable"):
+					// we use this to signal not ready
+					return managed.ExternalObservation{
+						Ready:            false,
+						ResourceExists:   false,
+						ActionExecuted:   true,
+						ResourceSuccess:  false,
+						ResourceHasData:  false,
+						ResourceUpToDate: false,
+					}, nil
+				case strings.Contains(err.Error(), "NotFound"):
+					//log.Debug("observing: resource does not exist")
+					exists = false
+				case strings.Contains(err.Error(), "Failed"):
+					//log.Debug("observing: resource failed")
+					// the k8s resource exists but is in failed status, compare the response spec with current spec
+					// if the specs are equal return observation.ResponseSuccess -> False
+					// if the specs are not equal follow the regular procedure
+					failedObserve, err := processObserve(rootPath[0], hierElements, &cr.Spec, resp, e.deviceSchema)
+					if err != nil {
+						return managed.ExternalObservation{}, err
+					}
+					if failedObserve.upToDate {
+						// there is no difference between the previous spec and the current spec, so we dont retry
+						// given the previous attempt failed
+						return managed.ExternalObservation{
+							Ready:            true,
+							ResourceExists:   true,
+							ActionExecuted:   true,
+							ResourceSuccess:  false,
+							ResourceHasData:  false,
+							ResourceUpToDate: false,
+						}, nil
+					} else {
+						// this should trigger an update
+						return managed.ExternalObservation{
+							Ready:            true,
+							ResourceExists:   true,
+							ActionExecuted:   true,
+							ResourceSuccess:  true,
+							ResourceHasData:  true,
+							ResourceUpToDate: false,
+						}, nil
+					}
+				default:
+					return managed.ExternalObservation{}, errors.Wrap(err, errReadInterfaceSubinterface)
+				}
+			}
+		*/
 	}
 
 	// processObserve
@@ -546,6 +584,7 @@ func (e *externalTunnelinterface) Observe(ctx context.Context, mg resource.Manag
 		return managed.ExternalObservation{
 			Ready:            true,
 			ResourceExists:   exists,
+			ActionExecuted:   true,
 			ResourceSuccess:  true,
 			ResourceHasData:  false,
 			ResourceUpToDate: false,
@@ -553,12 +592,13 @@ func (e *externalTunnelinterface) Observe(ctx context.Context, mg resource.Manag
 	}
 	// Data exists
 
-	if observe.delta {
+	if !observe.upToDate {
 		// resource is NOT up to date
 		log.Debug("Observing Response: resource NOT up to date", "Observe", observe, "exists", exists, "Response", resp)
 		return managed.ExternalObservation{
 			Ready:            true,
 			ResourceExists:   exists,
+			ActionExecuted:   true,
 			ResourceSuccess:  true,
 			ResourceHasData:  true,
 			ResourceUpToDate: false,
@@ -571,6 +611,7 @@ func (e *externalTunnelinterface) Observe(ctx context.Context, mg resource.Manag
 	return managed.ExternalObservation{
 		Ready:            true,
 		ResourceExists:   exists,
+		ActionExecuted:   true,
 		ResourceSuccess:  true,
 		ResourceHasData:  true,
 		ResourceUpToDate: true,
@@ -578,8 +619,8 @@ func (e *externalTunnelinterface) Observe(ctx context.Context, mg resource.Manag
 }
 
 func (e *externalTunnelinterface) Create(ctx context.Context, mg resource.Managed) error {
-	log := e.log.WithValues("Resource", mg.GetName())
-	log.Debug("Creating ...")
+	//log := e.log.WithValues("Resource", mg.GetName())
+	//log.Debug("Creating ...")
 
 	cr, ok := mg.(*srlv1alpha1.SrlTunnelinterface)
 	if !ok {
@@ -624,8 +665,8 @@ func (e *externalTunnelinterface) Create(ctx context.Context, mg resource.Manage
 }
 
 func (e *externalTunnelinterface) Update(ctx context.Context, mg resource.Managed, obs managed.ExternalObservation) error {
-	log := e.log.WithValues("Resource", mg.GetName())
-	log.Debug("Updating ...")
+	//log := e.log.WithValues("Resource", mg.GetName())
+	//log.Debug("Updating ...")
 
 	cr, ok := mg.(*srlv1alpha1.SrlTunnelinterface)
 	if !ok {
@@ -661,8 +702,8 @@ func (e *externalTunnelinterface) Update(ctx context.Context, mg resource.Manage
 }
 
 func (e *externalTunnelinterface) Delete(ctx context.Context, mg resource.Managed) error {
-	log := e.log.WithValues("Resource", mg.GetName())
-	log.Debug("Deleting ...")
+	//log := e.log.WithValues("Resource", mg.GetName())
+	//log.Debug("Deleting ...")
 
 	// get the rootpath of the resource
 	rootPath := e.y.GetRootPath(mg)
@@ -697,7 +738,7 @@ func (e *externalTunnelinterface) GetTarget() []string {
 }
 
 func (e *externalTunnelinterface) GetConfig(ctx context.Context, mg resource.Managed) ([]byte, error) {
-	e.log.Debug("Get Config ...")
+	//e.log.Debug("Get Config ...")
 	req := &gnmi.GetRequest{
 		Prefix: &gnmi.Path{Target: shared.GetCrDeviceName(mg.GetNamespace(), mg.GetNetworkNodeReference().Name)},
 		Path: []*gnmi.Path{
@@ -768,7 +809,7 @@ func (e *externalTunnelinterface) GetResourceName(ctx context.Context, mg resour
 		return "", errors.Wrap(err, errJSONUnMarshal)
 	}
 
-	e.log.Debug("Get ResourceName Response", "remotePath", yparser.GnmiPath2XPath(path, true), "ResourceName", resourceName)
+	//e.log.Debug("Get ResourceName Response", "remotePath", yparser.GnmiPath2XPath(path, true), "ResourceName", resourceName)
 
 	return resourceName.Name, nil
 }

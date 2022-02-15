@@ -229,6 +229,15 @@ func (l *SrlSystemNtpList) GetItems() []resource.Managed {
 	return items
 }
 
+// GetItems of this SrlTransactionList.
+func (l *SrlTransactionList) GetItems() []resource.Managed {
+	items := make([]resource.Managed, len(l.Items))
+	for i := range l.Items {
+		items[i] = &l.Items[i]
+	}
+	return items
+}
+
 // GetItems of this SrlTunnelinterfaceList.
 func (l *SrlTunnelinterfaceList) GetItems() []resource.Managed {
 	items := make([]resource.Managed, len(l.Items))
