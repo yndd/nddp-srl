@@ -164,7 +164,7 @@ func (x *tunnelinterfacevxlaninterface) buildCR(mg resource.Managed, deviceName 
 
 	labels[srlv1alpha1.LabelNddaDeploymentPolicy] = string(mg.GetDeploymentPolicy())
 	labels[srlv1alpha1.LabelNddaOwner] = odns.GetOdnsResourceKindName(mg.GetName(), strings.ToLower(mg.GetObjectKind().GroupVersionKind().Kind))
-	labels[srlv1alpha1.LabelNddaOwnerGeneration] = mg.GetGenerateName()
+	labels[srlv1alpha1.LabelNddaOwnerGeneration] = strconv.Itoa(int(mg.GetGeneration()))
 	labels[srlv1alpha1.LabelNddaDevice] = deviceName
 	//labels[srlv1alpha1.LabelNddaItfce] = itfceName
 
