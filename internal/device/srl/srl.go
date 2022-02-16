@@ -132,7 +132,7 @@ func (d *srl) Discover(ctx context.Context) (*ndrv1.DeviceDetails, error) {
 
 	chassisType := chassis["type"]
 	chassisSerial := chassis["serial-number"]
-	chassisMac := chassis["mac-address"]
+	chassisMac := chassis["hw-mac-address"]
 
 	d.log.Debug("set hardware type...")
 	devDetails.Kind = utils.StringPtr(fmt.Sprintf("%v", chassisType))
@@ -155,7 +155,7 @@ func (d *srl) GetConfig(ctx context.Context) (map[string]interface{}, error) {
 
 // Get gathers device config based on a *string path
 func (d *srl) GetFrom(ctx context.Context, p *string, from string) (map[string]interface{}, error) {
-	req, err := gnmic.CreateGetRequest(p, utils.StringPtr("CONFIG"), utils.StringPtr(encoding))
+	req, err := gnmic.CreateGetRequest(p, utils.StringPtr(from), utils.StringPtr(encoding))
 	if err != nil {
 		d.log.Debug(errGnmiCreateGetRequest, "error", err)
 		return nil, errors.Wrap(err, errGnmiCreateGetRequest)
