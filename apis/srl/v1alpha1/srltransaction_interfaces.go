@@ -50,7 +50,6 @@ type IFSrlTransaction interface {
 	GetCondition(ct nddv1.ConditionKind) nddv1.Condition
 	SetConditions(c ...nddv1.Condition)
 	// getters
-	GetOwnerKind() string
 	GetOwnerGeneration() string
 }
 
@@ -62,10 +61,6 @@ func (x *SrlTransaction) GetCondition(ct nddv1.ConditionKind) nddv1.Condition {
 // SetConditions
 func (x *SrlTransaction) SetConditions(c ...nddv1.Condition) {
 	x.Status.SetConditions(c...)
-}
-
-func (x *SrlTransaction) GetOwnerKind() string {
-	return *x.Spec.OwnerKind
 }
 
 func (x *SrlTransaction) GetOwnerGeneration() string {

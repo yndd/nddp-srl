@@ -18,6 +18,7 @@ package devicereconciler
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/google/gnxi/utils/xpath"
 	"github.com/openconfig/gnmi/proto/gnmi"
@@ -102,6 +103,7 @@ func (r *reconciler) ReconcileTransaction(ctx context.Context, t *systemv1alpha1
 	case systemv1alpha1.E_TransactionAction_Create:
 		updResources := make([]*systemv1alpha1.Gvk, 0)
 		updates := make([]*gnmi.Update, 0)
+		log.Debug("reconcile tranasaction", "gvk list", t.Gvk)
 		for _, gvkName := range t.Gvk {
 			resource, err := r.getResource(gvkName)
 			if err != nil {
@@ -115,6 +117,10 @@ func (r *reconciler) ReconcileTransaction(ctx context.Context, t *systemv1alpha1
 				return err
 			}
 			updates = append(updates, resUpdate)
+		}
+		//debug
+		for _, upd := range updates {
+			fmt.Printf("Updates: path: %s, data: %v\n", yparser.GnmiPath2XPath(upd.GetPath(), true), upd.GetVal())
 		}
 
 		if len(updates) > 0 {

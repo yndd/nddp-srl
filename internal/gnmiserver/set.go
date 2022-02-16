@@ -47,8 +47,13 @@ func (s *server) Set(ctx context.Context, req *gnmi.SetRequest) (*gnmi.SetRespon
 	log := s.log.WithValues("numUpdates", numUpdates, "numReplaces", numReplaces, "numDeletes", numDeletes)
 	prefix := req.GetPrefix()
 
+	transaction := false
 	if numReplaces > 0 {
 		log.Debug("Set Replace", "target", prefix.Target, "Path", yparser.GnmiPath2XPath(req.GetReplace()[0].GetPath(), true))
+		// check if the update is a transaction or not -> determines if the individual reconciler has to run
+		if req.GetReplace()[0].GetPath().GetElem()[0].GetName() == "transaction" {
+			transaction = true
+		}
 		// delete the cache first and after update it, since the gvk entry comes first
 		if err := s.DeleteCache(prefix, req.GetReplace()[0].GetPath()); err != nil {
 			return nil, status.Errorf(codes.Internal, err.Error())
@@ -63,6 +68,10 @@ func (s *server) Set(ctx context.Context, req *gnmi.SetRequest) (*gnmi.SetRespon
 
 	if numUpdates > 0 {
 		log.Debug("Set Update", "target", prefix.Target, "Path", yparser.GnmiPath2XPath(req.GetUpdate()[0].GetPath(), true))
+		// check if the update is a transaction or not -> determines if the individual reconciler has to run
+		if req.GetReplace()[0].GetPath().GetElem()[0].GetName() == "transaction" {
+			transaction = true
+		}
 		for _, u := range req.GetUpdate() {
 			if err := s.UpdateCache(prefix, u); err != nil {
 				return nil, status.Errorf(codes.Internal, err.Error())
@@ -72,6 +81,10 @@ func (s *server) Set(ctx context.Context, req *gnmi.SetRequest) (*gnmi.SetRespon
 
 	if numDeletes > 0 {
 		log.Debug("Set Delete", "target", prefix.Target, "Path", yparser.GnmiPath2XPath(req.GetDelete()[0], true))
+		// check if the update is a transaction or not -> determines if the individual reconciler has to run
+		if req.GetDelete()[0].GetElem()[0].GetName() == "transaction" {
+			transaction = true
+		}
 		for _, p := range req.GetDelete() {
 			if err := s.DeleteCache(prefix, p); err != nil {
 				return nil, status.Errorf(codes.InvalidArgument, err.Error())
@@ -80,8 +93,11 @@ func (s *server) Set(ctx context.Context, req *gnmi.SetRequest) (*gnmi.SetRespon
 	}
 
 	// set the status in the cache to indicate there is work for the reconciler
-	if err := s.setUpdateStatus(req); err != nil {
-		return nil, status.Errorf(codes.FailedPrecondition, err.Error())
+	// only if the
+	if !transaction {
+		if err := s.setUpdateStatus(req); err != nil {
+			return nil, status.Errorf(codes.FailedPrecondition, err.Error())
+		}
 	}
 
 	return &gnmi.SetResponse{

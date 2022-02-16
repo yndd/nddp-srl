@@ -215,8 +215,9 @@ func (r *Reconciler) Reconcile(ctx context.Context, req reconcile.Request) (reco
 	// we walk over the system resource cache and if the transaction macthes we delete the entries from the k8s api resourcelist
 	// if the transaction is complete we should have no entries any longer in the k8s resourceList
 	allDeviceTransactionsComplete := true
-	gvkList := make([]string, 0)
 	for deviceName, deviceCrs := range resources {
+		// initialize the gvkList per device
+		gvkList := make([]string, 0)
 		// create a gnmi client per device to interact with the cache
 		cl, err := r.getGnmiClient(ctx, deviceName)
 		if err != nil {
@@ -237,6 +238,7 @@ func (r *Reconciler) Reconcile(ctx context.Context, req reconcile.Request) (reco
 		if err != nil {
 			return reconcile.Result{RequeueAfter: shortWait}, err
 		}
+		log.Debug("Transaction gvkResourceList", "device", deviceName, "gvkResourceList", gvkResourceList)
 
 		// check if the transaction list is complete
 		// loop over the gvk list from the cache and check if the resource exists; if so delete it from the k8s transaction resourceList
@@ -245,6 +247,15 @@ func (r *Reconciler) Reconcile(ctx context.Context, req reconcile.Request) (reco
 			if err != nil {
 				return reconcile.Result{RequeueAfter: shortWait}, err
 			}
+			log.Debug("Transaction information",
+				"device", deviceName,
+				"gvkResource.Transaction", gvkResource.Transaction,
+				"transactionName", t.GetName(),
+				"gvkResource.Transactiongeneration", gvkResource.Transactiongeneration,
+				"transactionOwnerGeneration", t.GetOwnerGeneration(),
+				"gvk.NameSpace", gvk.NameSpace,
+				"transactionNamespace", t.GetNamespace(),
+			)
 			if gvkResource.Transaction == t.GetName() && gvkResource.Transactiongeneration == t.GetOwnerGeneration() && gvk.NameSpace == t.GetNamespace() {
 				// check the kind
 				if deviceCrNames, ok := deviceCrs[gvk.Kind]; ok {
