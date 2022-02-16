@@ -100,136 +100,88 @@ func (d *srl) Discover(ctx context.Context) (*ndrv1.DeviceDetails, error) {
 	d.log.Debug("Discover SRL details ...")
 	var err error
 	var p string
-	var req *gnmi.GetRequest
-	var rsp *gnmi.GetResponse
 	devDetails := &ndrv1.DeviceDetails{
 		Type: nddv1.DeviceTypePtr(DeviceType),
 	}
 
+	// get version
 	p = "/system/app-management/application[name=idb_server]"
-	req, err = gnmic.CreateGetRequest(&p, utils.StringPtr(State), utils.StringPtr(encoding))
+	data, err := d.GetFrom(ctx, &p, State)
 	if err != nil {
 		d.log.Debug(errGnmiCreateGetRequest, "error", err)
 		return nil, errors.Wrap(err, errGnmiCreateGetRequest)
 	}
-	rsp, err = d.target.Get(ctx, req)
-	if err != nil {
-		d.log.Debug(errGnmiGet, "error", err)
-		return nil, errors.Wrap(err, errGnmiGet)
-	}
-	u, err := gnmic.HandleGetResponse(rsp)
-	if err != nil {
-		d.log.Debug(errGnmiHandleGetResponse, "error", err)
-		return nil, errors.Wrap(err, errGnmiHandleGetResponse)
-	}
-	for _, update := range u {
-		// we expect a single response in the get since we target the explicit resource
-		switch x := update.Values["application"].(type) {
-		case map[string]interface{}:
-			for k, v := range x {
-				sk := strings.Split(k, ":")[len(strings.Split(k, ":"))-1]
-				switch sk {
-				case "version":
-					d.log.Info("set sw version type...")
-					devDetails.SwVersion = &strings.Split(fmt.Sprintf("%v", v), "-")[0]
-				}
-			}
-		}
-		d.log.Debug("gnmi idb application information", "update response", update)
-	}
+
+	version := data["application"].(map[string]interface{})["version"]
+
+	d.log.Info("set sw version type...")
+	devDetails.SwVersion = &strings.Split(fmt.Sprintf("%v", version), "-")[0]
+
+	d.log.Debug("gnmi idb application information", "update response", data)
 	d.log.Debug("Device details", "sw version", devDetails.SwVersion)
 
+	// Get chassis details
 	p = "/platform/chassis"
-	req, err = gnmic.CreateGetRequest(&p, utils.StringPtr(State), utils.StringPtr(encoding))
+	data, err = d.GetFrom(ctx, &p, State)
 	if err != nil {
 		d.log.Debug(errGnmiCreateGetRequest, "error", err)
 		return nil, errors.Wrap(err, errGnmiCreateGetRequest)
 	}
-	rsp, err = d.target.Get(ctx, req)
-	if err != nil {
-		d.log.Debug(errGnmiGet, "error", err)
-		return nil, errors.Wrap(err, errGnmiGet)
-	}
 
-	u, err = gnmic.HandleGetResponse(rsp)
-	if err != nil {
-		d.log.Debug(errGnmiHandleGetResponse, "error", err)
-		return nil, errors.Wrap(err, errGnmiHandleGetResponse)
-	}
-	for _, update := range u {
-		// we expect a single response in the get since we target the explicit resource
-		switch x := update.Values["chassis"].(type) {
-		case map[string]interface{}:
-			for k, v := range x {
-				sk := strings.Split(k, ":")[len(strings.Split(k, ":"))-1]
-				switch sk {
-				case "type":
-					d.log.Debug("set hardware type...")
-					devDetails.Kind = utils.StringPtr(fmt.Sprintf("%v", v))
-				case "serial-number":
-					d.log.Debug("set serial number...")
-					devDetails.SerialNumber = utils.StringPtr(fmt.Sprintf("%v", v))
-				case "mac-address":
-					d.log.Debug("set mac address...")
-					devDetails.MacAddress = utils.StringPtr(fmt.Sprintf("%v", v))
-				default:
-				}
-			}
-		}
-		d.log.Debug("gnmi platform information", "update response", update)
-	}
+	chassis := data["chassis"].(map[string]interface{})
+
+	chassisType := chassis["type"]
+	chassisSerial := chassis["serial-number"]
+	chassisMac := chassis["mac-address"]
+
+	d.log.Debug("set hardware type...")
+	devDetails.Kind = utils.StringPtr(fmt.Sprintf("%v", chassisType))
+	d.log.Debug("set serial number...")
+	devDetails.SerialNumber = utils.StringPtr(fmt.Sprintf("%v", chassisSerial))
+	d.log.Debug("set mac address...")
+	devDetails.MacAddress = utils.StringPtr(fmt.Sprintf("%v", chassisMac))
+
+	d.log.Debug("gnmi platform information", "update response", data)
 	d.log.Debug("Device details", "device details", devDetails)
 
 	return devDetails, nil
 }
 
+// GetConfig gathers the entire config of the device
 func (d *srl) GetConfig(ctx context.Context) (map[string]interface{}, error) {
-	var err error
-	var p string
-	var req *gnmi.GetRequest
-	var rsp *gnmi.GetResponse
+	var p = "/"
+	return d.GetFrom(ctx, &p, Configuration)
+}
 
-	p = "/"
-	req, err = gnmic.CreateGetRequest(&p, utils.StringPtr(Configuration), utils.StringPtr("JSON_IETF"))
+// Get gathers device config based on a *string path
+func (d *srl) GetFrom(ctx context.Context, p *string, from string) (map[string]interface{}, error) {
+	req, err := gnmic.CreateGetRequest(p, utils.StringPtr("CONFIG"), utils.StringPtr(encoding))
 	if err != nil {
 		d.log.Debug(errGnmiCreateGetRequest, "error", err)
 		return nil, errors.Wrap(err, errGnmiCreateGetRequest)
 	}
-	rsp, err = d.target.Get(ctx, req)
-	if err != nil {
-		d.log.Debug(errGnmiGet, "error", err)
-		return nil, errors.Wrap(err, errGnmiGet)
-	}
-	u, err := gnmic.HandleGetResponse(rsp)
-	if err != nil {
-		d.log.Debug(errGnmiHandleGetResponse, "error", err)
-		return nil, err
-	}
-	for _, update := range u {
-		//d.log.Debug("GetConfig", "response", update)
-		return update.Values, nil
-	}
-	return nil, nil
+	return d.gnmiGatherSingle(ctx, req)
 }
 
+// Get gathers device config based on a *string path
 func (d *srl) Get(ctx context.Context, p *string) (map[string]interface{}, error) {
-	var err error
-	var req *gnmi.GetRequest
-	var rsp *gnmi.GetResponse
+	return d.GetFrom(ctx, p, Configuration)
+}
 
-	req, err = gnmic.CreateGetRequest(p, utils.StringPtr("CONFIG"), utils.StringPtr("JSON_IETF"))
+// GetGnmi gathers config data of a given *gnmi.Path
+func (d *srl) GetGnmi(ctx context.Context, p []*gnmi.Path) (map[string]interface{}, error) {
+	req, err := gnmic.CreateConfigGetRequest(p, utils.StringPtr("CONFIG"), utils.StringPtr(encoding))
 	if err != nil {
 		d.log.Debug(errGnmiCreateGetRequest, "error", err)
 		return nil, errors.Wrap(err, errGnmiCreateGetRequest)
 	}
-	rsp, err = d.target.Get(ctx, req)
+	return d.gnmiGatherSingle(ctx, req)
+}
+
+// gnmiGatherSingle takes a given *gnmi.GetRequest and the error variable from its creation. It evaluates the error and continues to gather the data.
+func (d *srl) gnmiGatherSingle(ctx context.Context, req *gnmi.GetRequest) (map[string]interface{}, error) {
+	u, err := d.gnmiExecGetRequest(ctx, req)
 	if err != nil {
-		d.log.Debug(errGnmiGet, "error", err)
-		return nil, errors.Wrap(err, errGnmiGet)
-	}
-	u, err := gnmic.HandleGetResponse(rsp)
-	if err != nil {
-		d.log.Debug(errGnmiHandleGetResponse, "error", err)
 		return nil, err
 	}
 	for _, update := range u {
@@ -239,17 +191,8 @@ func (d *srl) Get(ctx context.Context, p *string) (map[string]interface{}, error
 	return nil, nil
 }
 
-func (d *srl) GetGnmi(ctx context.Context, p []*gnmi.Path) (map[string]interface{}, error) {
-	var err error
-	var req *gnmi.GetRequest
-	var rsp *gnmi.GetResponse
-
-	req, err = gnmic.CreateConfigGetRequest(p, utils.StringPtr("CONFIG"), utils.StringPtr("JSON_IETF"))
-	if err != nil {
-		d.log.Debug(errGnmiCreateGetRequest, "error", err)
-		return nil, errors.Wrap(err, errGnmiCreateGetRequest)
-	}
-	rsp, err = d.target.Get(ctx, req)
+func (d *srl) gnmiExecGetRequest(ctx context.Context, req *gnmi.GetRequest) ([]gnmic.Update, error) {
+	rsp, err := d.target.Get(ctx, req)
 	if err != nil {
 		d.log.Debug(errGnmiGet, "error", err)
 		return nil, errors.Wrap(err, errGnmiGet)
@@ -259,11 +202,7 @@ func (d *srl) GetGnmi(ctx context.Context, p []*gnmi.Path) (map[string]interface
 		d.log.Debug(errGnmiHandleGetResponse, "error", err)
 		return nil, err
 	}
-	for _, update := range u {
-		//d.log.Debug("GetConfig", "response", update)
-		return update.Values, nil
-	}
-	return nil, nil
+	return u, nil
 }
 
 func (d *srl) UpdateGnmi(ctx context.Context, u []*gnmi.Update) (*gnmi.SetResponse, error) {
