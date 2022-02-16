@@ -91,6 +91,11 @@ package-build: ## build ndd package.
 package-push: ## build ndd package.
 	cd package;kubectl ndd package push ${PKG};cd ..
 
+install: manifests ## Install CRDs into the K8s cluster specified in ~/.kube/config.
+	cat config/crd/bases/* | kubectl apply -f -
+
+manifests: controller-gen ## Generate WebhookConfiguration, ClusterRole and CustomResourceDefinition objects.
+	$(CONTROLLER_GEN) $(CRD_OPTIONS) rbac:roleName=manager-role webhook paths="./..." output:crd:artifacts:config=config/crd/bases
 
 CONTROLLER_GEN = $(shell pwd)/bin/controller-gen
 controller-gen: ## Download controller-gen locally if necessary.
@@ -100,3 +105,16 @@ NDD_GEN = $(shell pwd)/bin/ndd-gen
 ndd-gen: ## Download ndd-gen locally if necessary.
 	$(call go-get-tool,$(NDD_GEN),github.com/yndd/ndd-tools/cmd/ndd-gen@v0.1.13)
 
+# go-get-tool will 'go get' any package $2 and install it to $1.
+PROJECT_DIR := $(shell dirname $(abspath $(lastword $(MAKEFILE_LIST))))
+define go-get-tool
+@[ -f $(1) ] || { \
+set -e ;\
+TMP_DIR=$$(mktemp -d) ;\
+cd $$TMP_DIR ;\
+go mod init tmp ;\
+echo "Downloading $(2)" ;\
+GOBIN=$(PROJECT_DIR)/bin go get $(2) ;\
+rm -rf $$TMP_DIR ;\
+}
+endef
