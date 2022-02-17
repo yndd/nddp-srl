@@ -20,9 +20,11 @@ import (
 	"context"
 	"fmt"
 	"strconv"
+	"strings"
 
 	"github.com/yndd/ndd-runtime/pkg/meta"
 	"github.com/yndd/ndd-runtime/pkg/utils"
+	"github.com/yndd/nddo-runtime/pkg/odns"
 	"github.com/yndd/nddo-runtime/pkg/resource"
 
 	srlv1alpha1 "github.com/yndd/nddp-srl/apis/srl/v1alpha1"
@@ -147,7 +149,7 @@ func (x *schema) buildCR(mg resource.Managed) *srlv1alpha1.SrlTransaction {
 
 	return &srlv1alpha1.SrlTransaction{
 		ObjectMeta: metav1.ObjectMeta{
-			Name:            mg.GetName(),
+			Name:            odns.GetOdnsResourceKindName(mg.GetName(), strings.ToLower(mg.GetObjectKind().GroupVersionKind().Kind)),
 			Namespace:       namespace,
 			OwnerReferences: []metav1.OwnerReference{meta.AsController(meta.TypedReferenceTo(mg, mg.GetObjectKind().GroupVersionKind()))},
 		},

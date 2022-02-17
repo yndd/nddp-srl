@@ -93,12 +93,10 @@ func (r *reconciler) ReconcileTransaction(ctx context.Context, t *systemv1alpha1
 				//log.Debug("gnmi delete success", "Paths", delPaths)
 
 				// delete resources from the system cache
-				// we dont delete the resource from the cache since the individual controllers should take care
-				/*
-					for _, resource := range delResources {
-						r.deleteResource(resource.Name)
-					}
-				*/
+				for _, resource := range delResources {
+					r.deleteResource(resource.Name)
+				}
+
 				// delete the transaction from the system cache
 				r.deleteTransaction(t.Name)
 			}
