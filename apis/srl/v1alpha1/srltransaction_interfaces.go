@@ -66,3 +66,19 @@ func (x *SrlTransaction) SetConditions(c ...nddv1.Condition) {
 func (x *SrlTransaction) GetOwnerGeneration() string {
 	return *x.Spec.OwnerGeneration
 }
+
+func (x *SrlTransaction) GetDeviceCondition(d string, ct nddv1.ConditionKind) nddv1.Condition {
+	if x.Status.Device == nil {
+		return nddv1.Condition{}
+	}
+	dev := x.Status.Device[d]
+	return dev.GetCondition(ct)
+}
+
+func (x *SrlTransaction) SetDeviceConditions(d string, c ...nddv1.Condition) {
+	if x.Status.Device == nil {
+		x.Status.Device = make(map[string]nddv1.ConditionedStatus)
+	}
+	dev := x.Status.Device[d]
+	dev.SetConditions(c...)
+}

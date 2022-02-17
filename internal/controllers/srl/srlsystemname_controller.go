@@ -460,12 +460,10 @@ func (e *externalSystemName) Observe(ctx context.Context, mg resource.Managed) (
 			case codes.NotFound:
 				// the k8s resource does not exists but the data can still exist
 				// if data exists it means we go from UMR -> MR
-				log.Debug("observing when using gnmic: resource does not exist")
 				exists = false
 			case codes.AlreadyExists:
 				// the system cache has the resource but the action did not complete so we should skip the next reconcilation
 				// loop and wait
-				log.Debug("observing when using gnmic: resource already Exists")
 				return managed.ExternalObservation{
 					Ready:            true,
 					Exhausted:        false,

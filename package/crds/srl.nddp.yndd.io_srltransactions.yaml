@@ -52,32 +52,6 @@ spec:
           spec:
             description: A TransactionSpec defines the desired state of a Transaction.
             properties:
-              active:
-                default: true
-                description: Active specifies if the managed resource is active or
-                  not
-                type: boolean
-              deletionPolicy:
-                default: Delete
-                description: DeletionPolicy specifies what will happen to the underlying
-                  external when this managed resource is deleted - either "Delete"
-                  or "Orphan" the external resource.
-                enum:
-                - Orphan
-                - Delete
-                type: string
-              networkNodeRef:
-                default:
-                  name: default
-                description: NetworkNodeReference specifies which network node will
-                  be used to create, observe, update, and delete this managed resource
-                properties:
-                  name:
-                    description: Name of the referenced object.
-                    type: string
-                required:
-                - name
-                type: object
               owner-generation:
                 type: string
               owner-kind:
@@ -119,23 +93,48 @@ spec:
                   - status
                   type: object
                 type: array
-              externalLeafRefs:
-                description: ExternalLeafRefs tracks the external resources this resource
-                  is dependent upon
-                items:
-                  type: string
-                type: array
-              resourceIndexes:
+              device:
                 additionalProperties:
-                  type: string
-                description: ResourceIndexes tracks the indexes that or used by the
-                  resource
+                  description: A ConditionedStatus reflects the observed status of
+                    a resource. Only one condition of each kind may exist.
+                  properties:
+                    conditions:
+                      description: Conditions of the resource.
+                      items:
+                        description: A Condition that may apply to a resource
+                        properties:
+                          kind:
+                            description: Type of this condition. At most one of each
+                              condition type may apply to a resource at any point
+                              in time.
+                            type: string
+                          lastTransitionTime:
+                            description: LastTransitionTime is the last time this
+                              condition transitioned from one status to another.
+                            format: date-time
+                            type: string
+                          message:
+                            description: A Message containing details about this condition's
+                              last transition from one status to another, if any.
+                            type: string
+                          reason:
+                            description: A Reason for this condition's last transition
+                              from one status to another.
+                            type: string
+                          status:
+                            description: Status of this condition; is it currently
+                              True, False, or Unknown?
+                            type: string
+                        required:
+                        - kind
+                        - lastTransitionTime
+                        - reason
+                        - status
+                        type: object
+                      type: array
+                  type: object
+                description: conditionsStatus per device
                 type: object
-              target:
-                description: Target used by the resource
-                items:
-                  type: string
-                type: array
             type: object
         type: object
     served: true

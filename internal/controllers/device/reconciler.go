@@ -212,7 +212,7 @@ func (r *Reconciler) Reconcile(ctx context.Context, req reconcile.Request) (reco
 	// the network node details and build the credentials for communicating
 	// to the network node.
 	creds, err := r.validateCredentials(ctx, nn)
-	log.Debug("Network node creds", "creds", creds, "err", err)
+	//log.Debug("Network node creds", "creds", creds, "err", err)
 	if err != nil || creds == nil {
 
 		// CHECK IF A DEVICEDRIVER WAS ALREDY RUNNING -> IF SO STOP IT

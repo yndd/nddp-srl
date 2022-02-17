@@ -43,8 +43,8 @@ type Credentials struct {
 }
 
 func (r *Reconciler) validateCredentials(ctx context.Context, nn ndddvrv1.Nn) (creds *Credentials, err error) {
-	log := r.log.WithValues("namespace", nn.GetNamespace(), "credentialsName", nn.GetTargetCredentialsName(), "targetAddress", nn.GetTargetAddress())
-	log.Debug("Credentials Validation")
+	//log := r.log.WithValues("namespace", nn.GetNamespace(), "credentialsName", nn.GetTargetCredentialsName(), "targetAddress", nn.GetTargetAddress())
+	//log.Debug("Credentials Validation")
 	// Retrieve the secret from Kubernetes for this network node
 
 	credsSecret, err := r.getSecret(ctx, nn)
@@ -62,7 +62,7 @@ func (r *Reconciler) validateCredentials(ctx context.Context, nn ndddvrv1.Nn) (c
 		Password: strings.TrimSuffix(string(credsSecret.Data["password"]), "\n"),
 	}
 
-	log.Debug("Credentials", "creds", creds)
+	//log.Debug("Credentials", "creds", creds)
 
 	if creds.Username == "" {
 		return nil, errors.New(errMissingUsername)

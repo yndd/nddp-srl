@@ -212,16 +212,16 @@ func (d *deviceDriver) startDeviceChangeHandler() error {
 	for {
 		select {
 		case du := <-d.deviceDriverRequestCh:
-			d.log.Debug("device driver handler", "action", du.Action, "target", du.TargetConfig.Name, "address", du.TargetConfig.Address)
+			//d.log.Debug("device driver handler", "action", du.Action, "target", du.TargetConfig.Name, "address", du.TargetConfig.Address)
 			crDeviceName := shared.GetCrDeviceName(du.Namespace, du.TargetConfig.Name)
 			switch du.Action {
 			case shared.DeviceStatus:
-				d.log.Debug("status", "deviceName", crDeviceName, "devices", d.devices)
+				//d.log.Debug("status", "deviceName", crDeviceName, "devices", d.devices)
 				if _, ok := d.devices[crDeviceName]; !ok {
 					d.deviceDriverResponseCh <- shared.DeviceResponse{
 						Exists: false,
 						Error:  nil}
-					d.log.Debug("device status does not exist")
+					//d.log.Debug("device status does not exist")
 				} else {
 					d.deviceDriverResponseCh <- shared.DeviceResponse{
 						Exists:        true,
@@ -229,7 +229,7 @@ func (d *deviceDriver) startDeviceChangeHandler() error {
 						TargetConfig:  d.devices[crDeviceName].target.Config,
 						DeviceDetails: d.devices[crDeviceName].deviceDetails,
 					}
-					d.log.Debug("device status exists")
+					//d.log.Debug("device status exists")
 				}
 			case shared.DeviceStart:
 				if err := d.createDevice(du); err != nil {

@@ -26,14 +26,13 @@ import (
 
 // A TransactionSpec defines the desired state of a Transaction.
 type TransactionSpec struct {
-	nddv1.ResourceSpec `json:",inline"`
-	OwnerKind          *string `json:"owner-kind,omitempty"`
-	OwnerGeneration    *string `json:"owner-generation,omitempty"`
+	OwnerKind       *string `json:"owner-kind,omitempty"`
+	OwnerGeneration *string `json:"owner-generation,omitempty"`
 }
 
 // A TransactionStatus represents the observed state of a Transaction.
 type TransactionStatus struct {
-	nddv1.ResourceStatus `json:",inline"`
+	nddv1.TransactionResourceStatus `json:",inline"`
 }
 
 // +kubebuilder:object:root=true
