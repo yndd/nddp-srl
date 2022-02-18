@@ -50,6 +50,7 @@ type Bfd interface {
 	// methods schema
 	Print(key string, n int)
 	DeploySchema(ctx context.Context, mg resource.Managed, deviceName string, labels map[string]string) error
+	DestroySchema(ctx context.Context, mg resource.Managed, deviceName string, labels map[string]string) error
 	InitializeDummySchema()
 	ListResources(ctx context.Context, mg resource.Managed, resources map[string]map[string]interface{}) error
 	ValidateResources(ctx context.Context, mg resource.Managed, deviceName string, resources map[string]map[string]interface{}) error
@@ -161,6 +162,17 @@ func (x *bfd) DeploySchema(ctx context.Context, mg resource.Managed, deviceName 
 	if x.Get() != nil {
 		o := x.buildCR(mg, deviceName, labels)
 		if err := x.client.Apply(ctx, o); err != nil {
+			return errors.Wrap(err, errCreateBfd)
+		}
+	}
+
+	return nil
+}
+
+func (x *bfd) DestroySchema(ctx context.Context, mg resource.Managed, deviceName string, labels map[string]string) error {
+	if x.Get() != nil {
+		o := x.buildCR(mg, deviceName, labels)
+		if err := x.client.Delete(ctx, o); err != nil {
 			return errors.Wrap(err, errCreateBfd)
 		}
 	}

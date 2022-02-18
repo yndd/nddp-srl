@@ -50,6 +50,7 @@ type NetworkinstanceProtocolsOspf interface {
 	// methods schema
 	Print(key string, n int)
 	DeploySchema(ctx context.Context, mg resource.Managed, deviceName string, labels map[string]string) error
+	DestroySchema(ctx context.Context, mg resource.Managed, deviceName string, labels map[string]string) error
 	InitializeDummySchema()
 	ListResources(ctx context.Context, mg resource.Managed, resources map[string]map[string]interface{}) error
 	ValidateResources(ctx context.Context, mg resource.Managed, deviceName string, resources map[string]map[string]interface{}) error
@@ -163,6 +164,17 @@ func (x *networkinstanceprotocolsospf) DeploySchema(ctx context.Context, mg reso
 	if x.Get() != nil {
 		o := x.buildCR(mg, deviceName, labels)
 		if err := x.client.Apply(ctx, o); err != nil {
+			return errors.Wrap(err, errCreateNetworkinstanceProtocolsOspf)
+		}
+	}
+
+	return nil
+}
+
+func (x *networkinstanceprotocolsospf) DestroySchema(ctx context.Context, mg resource.Managed, deviceName string, labels map[string]string) error {
+	if x.Get() != nil {
+		o := x.buildCR(mg, deviceName, labels)
+		if err := x.client.Delete(ctx, o); err != nil {
 			return errors.Wrap(err, errCreateNetworkinstanceProtocolsOspf)
 		}
 	}

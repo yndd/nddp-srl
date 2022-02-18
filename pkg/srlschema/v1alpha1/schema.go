@@ -39,6 +39,7 @@ type Schema interface {
 	PrintDevices(n string)
 	// methods schema/data
 	DeploySchema(ctx context.Context, mg resource.Managed, labels map[string]string) error
+	DestroySchema(ctx context.Context, mg resource.Managed, labels map[string]string) error
 	InitializeDummySchema()
 	ListResources(ctx context.Context, mg resource.Managed) (map[string]map[string]interface{}, error)
 	ValidateResources(ctx context.Context, mg resource.Managed, resources map[string]map[string]interface{}) (map[string]map[string]interface{}, error)
@@ -93,6 +94,20 @@ func (x *schema) DeploySchema(ctx context.Context, mg resource.Managed, labels m
 	// create a transaction
 	o := x.buildCR(mg)
 	if err := x.client.Apply(ctx, o); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (x *schema) DestroySchema(ctx context.Context, mg resource.Managed, labels map[string]string) error {
+	for deviceName, d := range x.GetDevices() {
+		if err := d.DestroySchema(ctx, mg, deviceName, labels); err != nil {
+			return err
+		}
+	}
+	// delete the transaction
+	o := x.buildCR(mg)
+	if err := x.client.Delete(ctx, o); err != nil {
 		return err
 	}
 	return nil
@@ -155,8 +170,7 @@ func (x *schema) buildCR(mg resource.Managed) *srlv1alpha1.SrlTransaction {
 			OwnerReferences: []metav1.OwnerReference{meta.AsController(meta.TypedReferenceTo(mg, mg.GetObjectKind().GroupVersionKind()))},
 		},
 		Spec: srlv1alpha1.TransactionSpec{
-			OwnerGeneration:      utils.StringPtr(strconv.Itoa(int(mg.GetGeneration()))),
-			OwnerResourceVersion: utils.StringPtr(mg.GetResourceVersion()),
+			OwnerGeneration: utils.StringPtr(strconv.Itoa(int(mg.GetGeneration()))),
 		},
 	}
 }

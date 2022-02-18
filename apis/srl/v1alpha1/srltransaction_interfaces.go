@@ -65,10 +65,16 @@ func (x *SrlTransaction) SetConditions(c ...nddv1.Condition) {
 }
 
 func (x *SrlTransaction) GetOwnerGeneration() string {
+	if x.Spec.OwnerGeneration == nil {
+		return ""
+	}
 	return *x.Spec.OwnerGeneration
 }
 
 func (x *SrlTransaction) GetOwnerResourceVersion() string {
+	if x.Spec.OwnerResourceVersion == nil {
+		return ""
+	}
 	return *x.Spec.OwnerResourceVersion
 }
 

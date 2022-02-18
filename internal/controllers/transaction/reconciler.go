@@ -280,7 +280,7 @@ func (e *externalTransaction) Create(ctx context.Context, tr tresource.Transacti
 		&systemv1alpha1.Transaction{
 			Action:           systemv1alpha1.E_TransactionAction_Create,
 			Generation:       tr.GetOwnerGeneration(),
-			ResourceRevision: tr.GetResourceVersion(),
+			ResourceRevision: tr.GetOwnerResourceVersion(),
 			Name:             tr.GetName(),
 			Gvk:              gvkList,
 			Status:           systemv1alpha1.E_TransactionStatus_Pending,
@@ -308,7 +308,7 @@ func (e *externalTransaction) Delete(ctx context.Context, tr tresource.Transacti
 		&systemv1alpha1.Transaction{
 			Action:           systemv1alpha1.E_TransactionAction_Delete,
 			Generation:       tr.GetOwnerGeneration(),
-			ResourceRevision: tr.GetResourceVersion(),
+			ResourceRevision: tr.GetOwnerResourceVersion(),
 			Name:             tr.GetName(),
 			Gvk:              gvkList,
 			Status:           systemv1alpha1.E_TransactionStatus_Pending,
