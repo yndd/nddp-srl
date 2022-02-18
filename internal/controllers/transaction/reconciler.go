@@ -278,11 +278,12 @@ func (e *externalTransaction) Create(ctx context.Context, tr tresource.Transacti
 
 	updates, err := nddpsystransaction.ProcessTransaction(
 		&systemv1alpha1.Transaction{
-			Action:     systemv1alpha1.E_TransactionAction_Create,
-			Generation: tr.GetOwnerGeneration(),
-			Name:       tr.GetName(),
-			Gvk:        gvkList,
-			Status:     systemv1alpha1.E_TransactionStatus_Pending,
+			Action:           systemv1alpha1.E_TransactionAction_Create,
+			Generation:       tr.GetOwnerGeneration(),
+			ResourceRevision: tr.GetResourceVersion(),
+			Name:             tr.GetName(),
+			Gvk:              gvkList,
+			Status:           systemv1alpha1.E_TransactionStatus_Pending,
 		}, e.nddpSchema,
 	)
 
@@ -305,11 +306,12 @@ func (e *externalTransaction) Delete(ctx context.Context, tr tresource.Transacti
 
 	updates, err := nddpsystransaction.ProcessTransaction(
 		&systemv1alpha1.Transaction{
-			Action:     systemv1alpha1.E_TransactionAction_Delete,
-			Generation: tr.GetOwnerGeneration(),
-			Name:       tr.GetName(),
-			Gvk:        gvkList,
-			Status:     systemv1alpha1.E_TransactionStatus_Pending,
+			Action:           systemv1alpha1.E_TransactionAction_Delete,
+			Generation:       tr.GetOwnerGeneration(),
+			ResourceRevision: tr.GetResourceVersion(),
+			Name:             tr.GetName(),
+			Gvk:              gvkList,
+			Status:           systemv1alpha1.E_TransactionStatus_Pending,
 		}, e.nddpSchema,
 	)
 

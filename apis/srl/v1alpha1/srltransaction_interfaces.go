@@ -51,6 +51,7 @@ type IFSrlTransaction interface {
 	SetConditions(c ...nddv1.Condition)
 	// getters
 	GetOwnerGeneration() string
+	GetOwnerResourceVersion() string
 }
 
 // GetCondition
@@ -65,6 +66,10 @@ func (x *SrlTransaction) SetConditions(c ...nddv1.Condition) {
 
 func (x *SrlTransaction) GetOwnerGeneration() string {
 	return *x.Spec.OwnerGeneration
+}
+
+func (x *SrlTransaction) GetOwnerResourceVersion() string {
+	return *x.Spec.OwnerResourceVersion
 }
 
 func (x *SrlTransaction) GetDeviceCondition(d string, ct nddv1.ConditionKind) nddv1.Condition {

@@ -26,8 +26,9 @@ import (
 
 // A TransactionSpec defines the desired state of a Transaction.
 type TransactionSpec struct {
-	OwnerKind       *string `json:"owner-kind,omitempty"`
-	OwnerGeneration *string `json:"owner-generation,omitempty"`
+	OwnerKind            *string `json:"owner-kind,omitempty"`
+	OwnerGeneration      *string `json:"owner-generation,omitempty"`
+	OwnerResourceVersion *string `json:"owner-resource-version,omitempty"`
 }
 
 // A TransactionStatus represents the observed state of a Transaction.

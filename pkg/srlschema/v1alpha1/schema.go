@@ -155,7 +155,8 @@ func (x *schema) buildCR(mg resource.Managed) *srlv1alpha1.SrlTransaction {
 			OwnerReferences: []metav1.OwnerReference{meta.AsController(meta.TypedReferenceTo(mg, mg.GetObjectKind().GroupVersionKind()))},
 		},
 		Spec: srlv1alpha1.TransactionSpec{
-			OwnerGeneration: utils.StringPtr(strconv.Itoa(int(mg.GetGeneration()))),
+			OwnerGeneration:      utils.StringPtr(strconv.Itoa(int(mg.GetGeneration()))),
+			OwnerResourceVersion: utils.StringPtr(mg.GetResourceVersion()),
 		},
 	}
 }
