@@ -19,16 +19,10 @@ package srlschema
 import (
 	"context"
 	"fmt"
-	"strconv"
-	"strings"
 
-	"github.com/yndd/ndd-runtime/pkg/meta"
-	"github.com/yndd/ndd-runtime/pkg/utils"
-	"github.com/yndd/nddo-runtime/pkg/odns"
 	"github.com/yndd/nddo-runtime/pkg/resource"
 
 	srlv1alpha1 "github.com/yndd/nddp-srl/apis/srl/v1alpha1"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
 type Schema interface {
@@ -89,11 +83,6 @@ func (x *schema) DeploySchema(ctx context.Context, mg resource.Managed, labels m
 			return err
 		}
 	}
-	// create a transaction
-	o := x.buildCR(mg)
-	if err := x.client.Apply(ctx, o); err != nil {
-		return err
-	}
 	return nil
 }
 
@@ -139,22 +128,4 @@ func (x *schema) ListResourcesByTransaction(ctx context.Context, cr srlv1alpha1.
 		}
 	}
 	return resources, nil
-}
-
-func (x *schema) buildCR(mg resource.Managed) *srlv1alpha1.SrlTransaction {
-	namespace := mg.GetNamespace()
-	if namespace == "" {
-		namespace = "default"
-	}
-
-	return &srlv1alpha1.SrlTransaction{
-		ObjectMeta: metav1.ObjectMeta{
-			Name:            odns.GetOdnsResourceKindName(mg.GetName(), strings.ToLower(mg.GetObjectKind().GroupVersionKind().Kind)),
-			Namespace:       namespace,
-			OwnerReferences: []metav1.OwnerReference{meta.AsController(meta.TypedReferenceTo(mg, mg.GetObjectKind().GroupVersionKind()))},
-		},
-		Spec: srlv1alpha1.TransactionSpec{
-			OwnerGeneration: utils.StringPtr(strconv.Itoa(int(mg.GetGeneration()))),
-		},
-	}
 }

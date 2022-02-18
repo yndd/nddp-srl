@@ -17,6 +17,7 @@ limitations under the License.
 package devicereconciler
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/openconfig/gnmi/proto/gnmi"
@@ -225,6 +226,15 @@ func (r *reconciler) deleteResource(resourceGvkName string) error {
 func (r *reconciler) updateResourceStatus(resourceGvkName string, status systemv1alpha1.E_GvkStatus) error {
 	crDeviceName := shared.GetCrDeviceName(r.namespace, r.target.Config.Name)
 	crSystemDeviceName := shared.GetCrSystemDeviceName(crDeviceName)
+
+	if resourceGvkName == "srl.nddp.yndd.io/v1alpha1/SrlSystemNetworkinstanceProtocolsBgpvpn/default/nokia.region1.infrastructure.infra.leaf1" ||
+		resourceGvkName == "srl.nddp.yndd.io/v1alpha1/SrlSystemNetworkinstanceProtocolsBgpvpn/default/nokia.region1.infrastructure.infra.leaf2" {
+		fmt.Printf("updateResourceStatus system-bgp %s\n", status)
+	}
+	if resourceGvkName == "srl.nddp.yndd.io/v1alpha1/SrlNetworkinstanceProtocolsBgp/default/nokia.region1.infrastructure.infra.default-leaf1" ||
+		resourceGvkName == "srl.nddp.yndd.io/v1alpha1/SrlNetworkinstanceProtocolsBgp/default/nokia.region1.infrastructure.infra.default-leaf2" {
+		fmt.Printf("updateResourceStatus protocol-bgp %s\n", status)
+	}
 
 	n := &gnmi.Notification{
 		Timestamp: time.Now().UnixNano(),

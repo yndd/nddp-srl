@@ -267,9 +267,9 @@ func processDeleteK8sResource(mg resource.Managed, rootPath *gnmi.Path, nddpSche
 }
 
 // returns the create using group version kind namespace name
-func processCreateK8sResource(mg resource.Managed, rootPath *gnmi.Path, nddpSchema *yentry.Entry) ([]*gnmi.Update, error) {
+func processCreateK8sResource(mg resource.Managed, rootPath *gnmi.Path, nddpSchema *yentry.Entry, ignoreTransaction bool) ([]*gnmi.Update, error) {
 	var gvkData *systemv1alpha1.Gvk
-	if gvkresource.GetTransaction(mg) != gvkresource.TransactionNone {
+	if !ignoreTransaction && gvkresource.GetTransaction(mg) != gvkresource.TransactionNone {
 		// transaction
 		gvkData = gvkresource.GetK8sResourceTransactionCreate(mg, rootPath)
 	} else {
@@ -306,10 +306,10 @@ func processGvkData(gvkData interface{}) (interface{}, error) {
 // o. marshal/unmarshal data
 // 1. transform the spec data to gnmi updates
 // 2. merge gvk and spec data
-func processCreateK8s(mg resource.Managed, rootPath *gnmi.Path, specData interface{}, deviceSchema, nddpSchema *yentry.Entry) ([]*gnmi.Update, error) {
+func processCreateK8s(mg resource.Managed, rootPath *gnmi.Path, specData interface{}, deviceSchema, nddpSchema *yentry.Entry, ignoreTransaction bool) ([]*gnmi.Update, error) {
 
 	// prepare gvk resource data
-	gvkUpdates, err := processCreateK8sResource(mg, rootPath, nddpSchema)
+	gvkUpdates, err := processCreateK8sResource(mg, rootPath, nddpSchema, ignoreTransaction)
 	if err != nil {
 		return nil, err
 	}

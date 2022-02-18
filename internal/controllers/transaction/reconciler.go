@@ -272,6 +272,10 @@ func (e *externalTransaction) Create(ctx context.Context, tr tresource.Transacti
 	log.Debug("Create ...")
 	crSystemDeviceName := shared.GetCrSystemDeviceName(shared.GetCrDeviceName(tr.GetNamespace(), e.client.Config.Name))
 
+	for _, gvk := range gvkList {
+		log.Debug("Create ...", "gvk", gvk)
+	}
+
 	updates, err := nddpsystransaction.ProcessTransaction(
 		&systemv1alpha1.Transaction{
 			Action:     systemv1alpha1.E_TransactionAction_Create,

@@ -128,7 +128,7 @@ func (s *server) HandleGet(req *gnmi.GetRequest) ([]*gnmi.Update, error) {
 					// transaction does not exist
 					exists = false
 				} else {
-					if gvk.Transaction != gvkt.Transaction || gvk.Transactiongeneration != gvk.Transactiongeneration {
+					if gvk.Transaction != gvkt.Transaction {
 						// transaction does not exist
 						exists = false
 					} else {

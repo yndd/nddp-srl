@@ -18,6 +18,7 @@ package gnmiserver
 
 import (
 	"context"
+	"fmt"
 	"strings"
 	"time"
 
@@ -63,18 +64,37 @@ func (s *server) Set(ctx context.Context, req *gnmi.SetRequest) (*gnmi.SetRespon
 			if err := s.UpdateCache(prefix, u); err != nil {
 				return nil, status.Errorf(codes.Internal, err.Error())
 			}
+			if u.GetPath().GetElem()[0].GetName() == "gvk" &&
+				(u.GetPath().GetElem()[0].GetKey()["name"] == "srl.nddp.yndd.io/v1alpha1/SrlSystemNetworkinstanceProtocolsBgpvpn/default/nokia.region1.infrastructure.infra.leaf1" ||
+					u.GetPath().GetElem()[0].GetKey()["name"] == "srl.nddp.yndd.io/v1alpha1/SrlSystemNetworkinstanceProtocolsBgpvpn/default/nokia.region1.infrastructure.infra.leaf2") {
+
+				fmt.Printf("updateResourceStatus system-bgp %s\n", u.GetVal())
+			}
+			if u.GetPath().GetElem()[0].GetName() == "gvk" &&
+				(u.GetPath().GetElem()[0].GetKey()["name"] == "srl.nddp.yndd.io/v1alpha1/SrlNetworkinstanceProtocolsBgp/default/nokia.region1.infrastructure.infra.default-leaf1" ||
+					u.GetPath().GetElem()[0].GetKey()["name"] == "srl.nddp.yndd.io/v1alpha1/SrlNetworkinstanceProtocolsBgp/default/nokia.region1.infrastructure.infra.default-leaf2") {
+
+				fmt.Printf("updateResourceStatus protocol-bgp %s\n", u.GetVal())
+			}
 		}
 	}
 
 	if numUpdates > 0 {
 		log.Debug("Set Update", "target", prefix.Target, "Path", yparser.GnmiPath2XPath(req.GetUpdate()[0].GetPath(), true))
 		// check if the update is a transaction or not -> determines if the individual reconciler has to run
-		if req.GetReplace()[0].GetPath().GetElem()[0].GetName() == "transaction" {
+		if req.GetUpdate()[0].GetPath().GetElem()[0].GetName() == "transaction" {
 			transaction = true
 		}
+
 		for _, u := range req.GetUpdate() {
 			if err := s.UpdateCache(prefix, u); err != nil {
 				return nil, status.Errorf(codes.Internal, err.Error())
+			}
+			if u.GetPath().GetElem()[0].GetName() == "gvk" &&
+				(u.GetPath().GetElem()[0].GetKey()["name"] == "srl.nddp.yndd.io/v1alpha1/SrlSystemNetworkinstanceProtocolsBgpvpn/default/nokia.region1.infrastructure.infra.leaf1" ||
+					u.GetPath().GetElem()[0].GetKey()["name"] == "srl.nddp.yndd.io/v1alpha1/SrlSystemNetworkinstanceProtocolsBgpvpn/default/nokia.region1.infrastructure.infra.leaf2") {
+
+				fmt.Printf("updateResourceStatus protocol-bgp %s\n", u.GetVal())
 			}
 		}
 	}

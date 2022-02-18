@@ -442,23 +442,23 @@ func (e *externalNetworkinstanceProtocolsOspf) Observe(ctx context.Context, mg r
 			case codes.ResourceExhausted:
 				// we use this to signal the device or cache is exhausted
 				return managed.ExternalObservation{
-					Ready:            false,
-					Exhausted:        true,
-					ResourceExists:   false,
-					ActionExecuted:   false,
-					ResourceSuccess:  false,
-					ResourceHasData:  false,
-					ResourceUpToDate: false,
+					Ready:      false,
+					Exhausted:  true,
+					Exists:     false,
+					Pending:    true,
+					Failed:     true,
+					HasData:    false,
+					IsUpToDate: false,
 				}, nil
 			case codes.Unavailable:
 				// we use this to signal not ready
 				return managed.ExternalObservation{
-					Ready:            false,
-					ResourceExists:   false,
-					ActionExecuted:   false,
-					ResourceSuccess:  false,
-					ResourceHasData:  false,
-					ResourceUpToDate: false,
+					Ready:      false,
+					Exists:     false,
+					Pending:    true,
+					Failed:     true,
+					HasData:    false,
+					IsUpToDate: false,
 				}, nil
 			case codes.NotFound:
 				// the k8s resource does not exists but the data can still exist
@@ -468,13 +468,13 @@ func (e *externalNetworkinstanceProtocolsOspf) Observe(ctx context.Context, mg r
 				// the system cache has the resource but the action did not complete so we should skip the next reconcilation
 				// loop and wait
 				return managed.ExternalObservation{
-					Ready:            true,
-					Exhausted:        false,
-					ResourceExists:   true,
-					ActionExecuted:   false,
-					ResourceSuccess:  true,
-					ResourceHasData:  false,
-					ResourceUpToDate: false,
+					Ready:      true,
+					Exhausted:  false,
+					Exists:     true,
+					Pending:    true,
+					Failed:     false,
+					HasData:    false,
+					IsUpToDate: false,
 				}, nil
 			case codes.FailedPrecondition:
 				// the k8s resource exists but is in failed status, compare the response spec with current spec
@@ -489,79 +489,26 @@ func (e *externalNetworkinstanceProtocolsOspf) Observe(ctx context.Context, mg r
 					// there is no difference between the previous spec and the current spec, so we dont retry
 					// given the previous attempt failed
 					return managed.ExternalObservation{
-						Ready:            true,
-						ResourceExists:   true,
-						ActionExecuted:   true,
-						ResourceSuccess:  false,
-						ResourceHasData:  false,
-						ResourceUpToDate: false,
+						Ready:      true,
+						Exists:     true,
+						Pending:    false,
+						Failed:     true,
+						HasData:    false,
+						IsUpToDate: false,
 					}, nil
 				} else {
 					// this should trigger an update
 					return managed.ExternalObservation{
-						Ready:            true,
-						ResourceExists:   true,
-						ActionExecuted:   true,
-						ResourceSuccess:  true,
-						ResourceHasData:  true,
-						ResourceUpToDate: false,
+						Ready:      true,
+						Exists:     true,
+						Pending:    false,
+						Failed:     false,
+						HasData:    true,
+						IsUpToDate: false,
 					}, nil
 				}
 			}
 		}
-		/*
-			else {
-				// WORKAROUND WAITING FOR KARIM TO REMOVE THE ERROR WRAP In GNMIC
-				switch {
-				case strings.Contains(err.Error(), "Unavailable"):
-					// we use this to signal not ready
-					return managed.ExternalObservation{
-						Ready:            false,
-						ResourceExists:   false,
-						ActionExecuted:   true,
-						ResourceSuccess:  false,
-						ResourceHasData:  false,
-						ResourceUpToDate: false,
-					}, nil
-				case strings.Contains(err.Error(), "NotFound"):
-					//log.Debug("observing: resource does not exist")
-					exists = false
-				case strings.Contains(err.Error(), "Failed"):
-					//log.Debug("observing: resource failed")
-					// the k8s resource exists but is in failed status, compare the response spec with current spec
-					// if the specs are equal return observation.ResponseSuccess -> False
-					// if the specs are not equal follow the regular procedure
-					failedObserve, err := processObserve(rootPath[0], hierElements, &cr.Spec, resp, e.deviceSchema)
-					if err != nil {
-						return managed.ExternalObservation{}, err
-					}
-					if failedObserve.upToDate {
-						// there is no difference between the previous spec and the current spec, so we dont retry
-						// given the previous attempt failed
-						return managed.ExternalObservation{
-							Ready:            true,
-							ResourceExists:   true,
-							ActionExecuted:   true,
-							ResourceSuccess:  false,
-							ResourceHasData:  false,
-							ResourceUpToDate: false,
-						}, nil
-					} else {
-						// this should trigger an update
-						return managed.ExternalObservation{
-							Ready:            true,
-							ResourceExists:   true,
-							ActionExecuted:   true,
-							ResourceSuccess:  true,
-							ResourceHasData:  true,
-							ResourceUpToDate: false,
-						}, nil
-					}
-				default:
-					return managed.ExternalObservation{}, errors.Wrap(err, errReadInterfaceSubinterface)
-				}
-			}
-		*/
 	}
 
 	// processObserve
@@ -582,12 +529,12 @@ func (e *externalNetworkinstanceProtocolsOspf) Observe(ctx context.Context, mg r
 		// No Data exists -> Create it or Delete is complete
 		//log.Debug("Observing Response:", "observe", observe, "exists", exists, "Response", resp)
 		return managed.ExternalObservation{
-			Ready:            true,
-			ResourceExists:   exists,
-			ActionExecuted:   true,
-			ResourceSuccess:  true,
-			ResourceHasData:  false,
-			ResourceUpToDate: false,
+			Ready:      true,
+			Exists:     exists,
+			Pending:    false,
+			Failed:     false,
+			HasData:    false,
+			IsUpToDate: false,
 		}, nil
 	}
 	// Data exists
@@ -596,12 +543,12 @@ func (e *externalNetworkinstanceProtocolsOspf) Observe(ctx context.Context, mg r
 		// resource is NOT up to date
 		log.Debug("Observing Response: resource NOT up to date", "Observe", observe, "exists", exists, "Response", resp)
 		return managed.ExternalObservation{
-			Ready:            true,
-			ResourceExists:   exists,
-			ActionExecuted:   true,
-			ResourceSuccess:  true,
-			ResourceHasData:  true,
-			ResourceUpToDate: false,
+			Ready:      true,
+			Exists:     exists,
+			Pending:    false,
+			Failed:     false,
+			HasData:    true,
+			IsUpToDate: false,
 			//ResourceDeletes:  observe.deletes,
 			//ResourceUpdates:  observe.updates,
 		}, nil
@@ -609,16 +556,16 @@ func (e *externalNetworkinstanceProtocolsOspf) Observe(ctx context.Context, mg r
 	// resource is up to date
 	//log.Debug("Observing Response: resource up to date", "Observe", observe, "Response", resp)
 	return managed.ExternalObservation{
-		Ready:            true,
-		ResourceExists:   exists,
-		ActionExecuted:   true,
-		ResourceSuccess:  true,
-		ResourceHasData:  true,
-		ResourceUpToDate: true,
+		Ready:      true,
+		Exists:     exists,
+		Pending:    false,
+		Failed:     false,
+		HasData:    true,
+		IsUpToDate: true,
 	}, nil
 }
 
-func (e *externalNetworkinstanceProtocolsOspf) Create(ctx context.Context, mg resource.Managed) error {
+func (e *externalNetworkinstanceProtocolsOspf) Create(ctx context.Context, mg resource.Managed, ignoreTransaction bool) error {
 	//log := e.log.WithValues("Resource", mg.GetName())
 	//log.Debug("Creating ...")
 
@@ -634,7 +581,7 @@ func (e *externalNetworkinstanceProtocolsOspf) Create(ctx context.Context, mg re
 	// processCreate
 	// 0. marshal/unmarshal data
 	// 1. transform the spec data to gnmi updates
-	updates, err := processCreateK8s(mg, rootPath[0], &cr.Spec, e.deviceSchema, e.nddpSchema)
+	updates, err := processCreateK8s(mg, rootPath[0], &cr.Spec, e.deviceSchema, e.nddpSchema, ignoreTransaction)
 	if err != nil {
 		return errors.Wrap(err, errCreateObject)
 	}

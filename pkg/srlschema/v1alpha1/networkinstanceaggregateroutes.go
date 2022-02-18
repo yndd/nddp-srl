@@ -281,8 +281,11 @@ func (x *networkinstanceaggregateroutes) DeleteResources(ctx context.Context, mg
 func (x *networkinstanceaggregateroutes) ListResourcesByTransaction(ctx context.Context, cr srlv1alpha1.IFSrlTransaction, resources map[string]map[string]map[string]interface{}) error {
 	// options list all resources belonging to the transaction based on transaction owner and generation
 	opts := []client.ListOption{
-		client.MatchingLabels{srlv1alpha1.LabelNddaOwner: cr.GetName()},
-		client.MatchingLabels{srlv1alpha1.LabelNddaOwnerGeneration: cr.GetOwnerGeneration()},
+		client.InNamespace(cr.GetNamespace()),
+		client.MatchingLabels(map[string]string{
+			srlv1alpha1.LabelNddaOwner: cr.GetName(),
+			//srlv1alpha1.LabelNddaOwnerGeneration: cr.GetOwnerGeneration(),
+		}),
 	}
 	list := x.newNetworkinstanceAggregateroutesList()
 	if err := x.client.List(ctx, list, opts...); err != nil {

@@ -36,26 +36,45 @@ func (r *reconciler) ReconcileTransaction(ctx context.Context, t *systemv1alpha1
 	case systemv1alpha1.E_TransactionAction_Delete:
 		delResources := make([]*systemv1alpha1.Gvk, 0)
 		delPaths := make([]*gnmi.Path, 0)
-		for _, gvkName := range t.Gvk {
-			resource, err := r.getResource(gvkName)
-			if err != nil {
-				return err
-			}
-			delResources = append(delResources, resource)
-			// append delete path to the list
-			path, err := xpath.ToGNMIPath(resource.Rootpath)
-			if err != nil {
-				return err
-			}
-			delPaths = append(delPaths, path)
 
+		resourceList, err := r.getResourceList()
+		if err != nil {
+			return err
 		}
+		for _, resource := range resourceList {
+			if resource.Transaction == t.Name && resource.Transactiongeneration == t.Generation {
+				// append to the resource list of resources needed an update
+				delResources = append(delResources, resource)
+				// append delete path to the list
+				path, err := xpath.ToGNMIPath(resource.Rootpath)
+				if err != nil {
+					return err
+				}
+				delPaths = append(delPaths, path)
+			}
+		}
+
+		/*
+			for _, gvkName := range t.Gvk {
+				resource, err := r.getResource(gvkName)
+				if err != nil {
+					return err
+				}
+				delResources = append(delResources, resource)
+				// append delete path to the list
+				path, err := xpath.ToGNMIPath(resource.Rootpath)
+				if err != nil {
+					return err
+				}
+				delPaths = append(delPaths, path)
+			}
+		*/
 
 		// we delete all the paths on the device in a single transaction
 		// we use the change notification to update the cache
 		murder := false
 		for _, delPath := range delPaths {
-			//log.Debug("Delete", "Path", delPath)
+			log.Debug("Delete", "Path", yparser.GnmiPath2XPath(delPath, true))
 			if delPath == nil {
 				murder = true
 			}
@@ -105,20 +124,40 @@ func (r *reconciler) ReconcileTransaction(ctx context.Context, t *systemv1alpha1
 		updResources := make([]*systemv1alpha1.Gvk, 0)
 		updates := make([]*gnmi.Update, 0)
 		log.Debug("reconcile tranasaction", "gvk list", t.Gvk)
-		for _, gvkName := range t.Gvk {
-			resource, err := r.getResource(gvkName)
-			if err != nil {
-				return err
-			}
-			// append to the resource list of resources needed an update
-			updResources = append(updResources, resource)
-			// get updates which are part of the transaction
-			resUpdate, err := r.getUpdates(resource)
-			if err != nil {
-				return err
-			}
-			updates = append(updates, resUpdate)
+
+		resourceList, err := r.getResourceList()
+		if err != nil {
+			return err
 		}
+		for _, resource := range resourceList {
+			if resource.Transaction == t.Name && resource.Transactiongeneration == t.Generation {
+				// append to the resource list of resources needed an update
+				updResources = append(updResources, resource)
+				// get updates which are part of the transaction
+				resUpdate, err := r.getUpdates(resource)
+				if err != nil {
+					return err
+				}
+				updates = append(updates, resUpdate)
+			}
+		}
+
+		/*
+			for _, gvkName := range t.Gvk {
+				resource, err := r.getResource(gvkName)
+				if err != nil {
+					return err
+				}
+				// append to the resource list of resources needed an update
+				updResources = append(updResources, resource)
+				// get updates which are part of the transaction
+				resUpdate, err := r.getUpdates(resource)
+				if err != nil {
+					return err
+				}
+				updates = append(updates, resUpdate)
+			}
+		*/
 		//debug
 		for _, upd := range updates {
 			fmt.Printf("Updates: path: %s, data: %v\n", yparser.GnmiPath2XPath(upd.GetPath(), true), upd.GetVal())
@@ -162,9 +201,17 @@ func (r *reconciler) ReconcileTransaction(ctx context.Context, t *systemv1alpha1
 
 			// set resource status to success
 			for _, resource := range updResources {
+				fmt.Printf("update resource status resourceName: %s\n", resource.Name)
 				if err := r.updateResourceStatus(resource.Name, systemv1alpha1.E_GvkStatus_Success); err != nil {
 					return err
 				}
+			}
+			for _, resource := range updResources {
+				gvk, err := r.getResource(resource.Name)
+				if err != nil {
+					return err
+				}
+				fmt.Printf("resource status after update resourceName %s, status: %s transaction: %s\n", gvk.Name, gvk.Status, gvk.Transaction)
 			}
 			// set transaction status to success
 			if err := r.updateTransactionStatus(t.Name, systemv1alpha1.E_TransactionStatus_Success); err != nil {

@@ -257,7 +257,7 @@ func (c *collector) handleUpdates(crDeviceName string, resourceList []*systemv1a
 		}
 
 		for _, u := range n.GetUpdate() {
-			c.log.Debug("collector config update", "path", yparser.GnmiPath2XPath(u.GetPath(), true), "value", u.GetVal(), "error", err)
+			c.log.Debug("collector config update", "path", yparser.GnmiPath2XPath(u.GetPath(), true), "value", u.GetVal())
 		}
 
 		if *resourceName != unmanagedResource {
