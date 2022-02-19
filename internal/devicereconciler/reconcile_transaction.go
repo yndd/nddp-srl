@@ -206,13 +206,15 @@ func (r *reconciler) ReconcileTransaction(ctx context.Context, t *systemv1alpha1
 					return err
 				}
 			}
-			for _, resource := range updResources {
-				gvk, err := r.getResource(resource.Name)
-				if err != nil {
-					return err
+			/*
+				for _, resource := range updResources {
+					gvk, err := r.getResource(resource.Name)
+					if err != nil {
+						return err
+					}
+					fmt.Printf("resource status after update resourceName %s, status: %s transaction: %s\n", gvk.Name, gvk.Status, gvk.Transaction)
 				}
-				fmt.Printf("resource status after update resourceName %s, status: %s transaction: %s\n", gvk.Name, gvk.Status, gvk.Transaction)
-			}
+			*/
 			// set transaction status to success
 			if err := r.updateTransactionStatus(t.Name, systemv1alpha1.E_TransactionStatus_Success); err != nil {
 				return err

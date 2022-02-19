@@ -105,13 +105,11 @@ func (x *schema) DestroySchema(ctx context.Context, mg resource.Managed, labels 
 			return err
 		}
 	}
-	// delete the transaction
-	/*
+	// create a transaction
 	o := x.buildCR(mg)
 	if err := x.client.Delete(ctx, o); err != nil {
 		return err
 	}
-	*/
 	return nil
 }
 

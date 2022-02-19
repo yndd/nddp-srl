@@ -152,7 +152,7 @@ func (x *systemname) DestroySchema(ctx context.Context, mg resource.Managed, dev
 	if x.Get() != nil {
 		o := x.buildCR(mg, deviceName, labels)
 		if err := x.client.Delete(ctx, o); err != nil {
-			return errors.Wrap(err, errCreateSystemName)
+			return errors.Wrap(resource.IgnoreNotFound(err), errDeleteSystemName)
 		}
 	}
 

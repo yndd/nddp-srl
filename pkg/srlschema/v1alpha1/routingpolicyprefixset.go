@@ -177,7 +177,7 @@ func (x *routingpolicyprefixset) DestroySchema(ctx context.Context, mg resource.
 	if x.Get() != nil {
 		o := x.buildCR(mg, deviceName, labels)
 		if err := x.client.Delete(ctx, o); err != nil {
-			return errors.Wrap(err, errCreateRoutingpolicyPrefixset)
+			return errors.Wrap(resource.IgnoreNotFound(err), errDeleteRoutingpolicyPrefixset)
 		}
 	}
 

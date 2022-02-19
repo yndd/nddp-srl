@@ -154,7 +154,7 @@ func (x *networkinstanceprotocolslinux) DestroySchema(ctx context.Context, mg re
 	if x.Get() != nil {
 		o := x.buildCR(mg, deviceName, labels)
 		if err := x.client.Delete(ctx, o); err != nil {
-			return errors.Wrap(err, errCreateNetworkinstanceProtocolsLinux)
+			return errors.Wrap(resource.IgnoreNotFound(err), errDeleteNetworkinstanceProtocolsLinux)
 		}
 	}
 

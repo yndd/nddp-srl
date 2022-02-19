@@ -31,6 +31,7 @@ import (
 	"github.com/yndd/nddp-srl/internal/shared"
 	systemv1alpha1 "github.com/yndd/nddp-system/apis/system/v1alpha1"
 	"github.com/yndd/nddp-system/pkg/gvkresource"
+	"github.com/yndd/nddp-system/pkg/transaction"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
@@ -136,8 +137,20 @@ func (s *server) HandleGet(req *gnmi.GetRequest) ([]*gnmi.Update, error) {
 						if gvk.Action == systemv1alpha1.E_GvkAction_TransactionDelete {
 							switch gvk.Status {
 							case systemv1alpha1.E_GvkStatus_Transactionpending:
-								// the transaction is not complete yet so we keep it in this status
-								return nil, status.Error(codes.AlreadyExists, "")
+								// check if the transaction still exists
+								t, err := s.getTransaction(crSystemDeviceName, gvkt.Transaction)
+								if err != nil {
+									return nil, status.Error(codes.Internal, err.Error())
+								}
+								if t != nil {
+									// the transaction is not complete yet so we keep it in this status
+									// to ensure the gvk resource is not deleted
+									return nil, status.Error(codes.AlreadyExists, "")
+
+								}
+								// the transaction no longer exists, we can delete the gvk
+								// we return true so that the controller cleans up the gvk
+								exists = true
 							}
 						} else {
 							switch gvk.Status {
@@ -384,4 +397,19 @@ func (s *server) getExhausted(crSystemDeviceName string) (int64, error) {
 	}
 
 	return 0, nil
+}
+
+func (s *server) getTransaction(crSystemDeviceName, transactionName string) (*systemv1alpha1.Transaction, error) {
+	path := &gnmi.Path{
+		Elem: []*gnmi.PathElem{{Name: "transaction", Key: map[string]string{"name": transactionName}}},
+	}
+
+	n, err := s.cache.Query(crSystemDeviceName, &gnmi.Path{Target: crSystemDeviceName}, path)
+	if err != nil {
+		return nil, err
+	}
+	resp := &gnmi.GetResponse{
+		Notification: []*gnmi.Notification{n},
+	}
+	return transaction.GetTransactionFromGnmiResponse(resp)
 }

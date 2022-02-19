@@ -175,7 +175,7 @@ func (x *itfce) DestroySchema(ctx context.Context, mg resource.Managed, deviceNa
 	if x.Get() != nil {
 		o := x.buildCR(mg, deviceName, labels)
 		if err := x.client.Delete(ctx, o); err != nil {
-			return errors.Wrap(err, errCreateInterface)
+			return errors.Wrap(resource.IgnoreNotFound(err), errDeleteInterface)
 		}
 	}
 	for _, r := range x.GetInterfaceSubinterfaces() {

@@ -177,7 +177,7 @@ func (x *systemnetworkinstanceprotocolsevpnesisbgpinstance) DestroySchema(ctx co
 	if x.Get() != nil {
 		o := x.buildCR(mg, deviceName, labels)
 		if err := x.client.Delete(ctx, o); err != nil {
-			return errors.Wrap(err, errCreateSystemNetworkinstanceProtocolsEvpnEsisBgpinstance)
+			return errors.Wrap(resource.IgnoreNotFound(err), errDeleteSystemNetworkinstanceProtocolsEvpnEsisBgpinstance)
 		}
 	}
 	for _, r := range x.GetSystemNetworkinstanceProtocolsEvpnEsisBgpinstanceEsis() {

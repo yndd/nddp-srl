@@ -175,7 +175,7 @@ func (x *tunnelinterface) DestroySchema(ctx context.Context, mg resource.Managed
 	if x.Get() != nil {
 		o := x.buildCR(mg, deviceName, labels)
 		if err := x.client.Delete(ctx, o); err != nil {
-			return errors.Wrap(err, errCreateTunnelinterface)
+			return errors.Wrap(resource.IgnoreNotFound(err), errDeleteTunnelinterface)
 		}
 	}
 	for _, r := range x.GetTunnelinterfaceVxlaninterfaces() {

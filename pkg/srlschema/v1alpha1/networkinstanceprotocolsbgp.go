@@ -196,7 +196,7 @@ func (x *networkinstanceprotocolsbgp) DestroySchema(ctx context.Context, mg reso
 	if x.Get() != nil {
 		o := x.buildCR(mg, deviceName, labels)
 		if err := x.client.Delete(ctx, o); err != nil {
-			return errors.Wrap(err, errCreateNetworkinstanceProtocolsBgp)
+			return errors.Wrap(resource.IgnoreNotFound(err), errDeleteNetworkinstanceProtocolsBgp)
 		}
 	}
 

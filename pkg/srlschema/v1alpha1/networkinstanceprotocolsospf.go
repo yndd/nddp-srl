@@ -175,7 +175,7 @@ func (x *networkinstanceprotocolsospf) DestroySchema(ctx context.Context, mg res
 	if x.Get() != nil {
 		o := x.buildCR(mg, deviceName, labels)
 		if err := x.client.Delete(ctx, o); err != nil {
-			return errors.Wrap(err, errCreateNetworkinstanceProtocolsOspf)
+			return errors.Wrap(resource.IgnoreNotFound(err), errDeleteNetworkinstanceProtocolsOspf)
 		}
 	}
 
